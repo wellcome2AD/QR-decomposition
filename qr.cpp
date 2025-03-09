@@ -3,6 +3,8 @@
 #include <vector>
 #include <iomanip>
 
+#include "invertible_matrix.h"
+
 typedef std::vector<float> fvector;
 typedef std::vector<std::vector<float>> fmatrix;
 
@@ -79,7 +81,8 @@ int main()
     const size_t N = 3;
     fmatrix A = {{1, -2, 1}, {2, 0, -3}, {2, -1, -1}};
     const fmatrix A_copy = A;
-    const fvector b = {1, 8, 5}, x = {0, 0, 0};
+    const fmatrix b = {{1, 8, 5}};
+    fmatrix x = {{0, 0, 0}};
     fmatrix Q;
     bool isFirst = true;
     for(size_t k = 0; k < N - 1; ++k) { // k-ый шаг алгоритма
@@ -124,5 +127,34 @@ int main()
     print_matr(Q);
     std::cout << std::endl;
     
+    double **Q_ptr = new double*[N];
+    for(size_t i = 0; i < N; ++i) {
+        Q_ptr[i] = new double[N];
+        for(size_t j = 0; j < N; ++j) {
+            Q_ptr[i][j] = Q[i][j];
+        }
+    }
+    double **Q_invert_ptr = Mreverse(Q_ptr, N);
+    fmatrix Q_invert(N, fvector(N));
+    for(size_t i = 0; i < N; ++i) {
+        for(size_t j = 0; j < N; ++j) {
+            Q_invert[i][j] = Q_invert_ptr[i][j];
+        }
+    }
+
+    fmatrix Q_b = matr_mult(Q_invert, b);
+    x[0][N - 1] = Q_b[0][N - 1] / A[N][N - 1];
+    for(ptrdiff_t i = N - 1; i >= 0; ++i) {
+        float sum = 0;
+        for(size_t j = i + 1; j < N; ++j) {
+            sum += A[i][j] * x[0][j];
+        }
+        x[0][i] = (Q_b[0][i] - sum) / A[i][i];
+    }
+
+    printf("x\n");
+    print_matr(x);
+    std::cout << std::endl;    
+
     return 0;
 }
