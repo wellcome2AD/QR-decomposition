@@ -16,17 +16,17 @@ float sign(float x) {
 
 fvector vec_mult(fvector v, float a) {
     fvector res(v.size());
-    for(size_t i = 0; i < v.size(); ++i) {
+    for(ptrdiff_t i = 0; i < v.size(); ++i) {
         res[i] = v[i] * a;
     }
     return res;
 }
 
 fmatrix vec_mult(fvector v1, fvector v2) {
-    size_t N = v1.size();
+    ptrdiff_t N = v1.size();
     fmatrix res(N, fvector(N));
-    for(size_t i = 0; i < N; ++i) {
-        for(size_t j = 0; j < N; ++j) {
+    for(ptrdiff_t i = 0; i < N; ++i) {
+        for(ptrdiff_t j = 0; j < N; ++j) {
             res[i][j] = v1[i] * v2[j];
         }
     }
@@ -34,9 +34,9 @@ fmatrix vec_mult(fvector v1, fvector v2) {
 }
 
 fmatrix matr_diff(fmatrix m1, fmatrix m2) {
-    size_t N = m1.size();
-    for(size_t i = 0; i < N; ++i) {
-        for(size_t j = 0; j < N; ++j) {
+    ptrdiff_t N = m1.size();
+    for(ptrdiff_t i = 0; i < N; ++i) {
+        for(ptrdiff_t j = 0; j < N; ++j) {
             m1[i][j] -= m2[i][j];
         }
     }
@@ -44,11 +44,12 @@ fmatrix matr_diff(fmatrix m1, fmatrix m2) {
 }
 
 fmatrix matr_mult(fmatrix m1, fmatrix m2) {
-    size_t N = m1.size();
-    fmatrix res(N, fvector(N, 0));
+    ptrdiff_t N = m1.size();
+    ptrdiff_t M = m2[0].size();
+    fmatrix res(N, fvector(M, 0));
     for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
-            for (int k = 0; k < N; ++k) {
+        for (int j = 0; j < M; ++j) {
+            for (int k = 0; k < M; ++k) {
                 res[i][j] += m1[i][k] * m2[k][j];
             }
         }
@@ -57,19 +58,20 @@ fmatrix matr_mult(fmatrix m1, fmatrix m2) {
 }
 
 fmatrix count_H(float beta, float mu, fvector w) {
-    size_t N = w.size();
+    ptrdiff_t N = w.size();
     fmatrix E(N, fvector(N, 0));
-    for(size_t i = 0; i < N; ++i) {
+    for(ptrdiff_t i = 0; i < N; ++i) {
         E[i][i] = 1;
     }
     return matr_diff(E, vec_mult(vec_mult(w, 2), w));
 }
 
 void print_matr(fmatrix m) {
-    size_t N = m.size();
-    for(size_t i = 0; i < N; ++i) {
+    ptrdiff_t N = m.size();
+    ptrdiff_t M = m[0].size();
+    for(ptrdiff_t i = 0; i < N; ++i) {
         std::cout << std::left << std::setw(15);
-        for(size_t j = 0; j < N; ++j) {
+        for(ptrdiff_t j = 0; j < M; ++j) {
             std::cout << m[i][j] << " ";
         }
         std::cout << std::endl;
@@ -78,17 +80,17 @@ void print_matr(fmatrix m) {
 
 int main()
 {
-    const size_t N = 3;
+    const ptrdiff_t N = 3;
     fmatrix A = {{1, -2, 1}, {2, 0, -3}, {2, -1, -1}};
     const fmatrix A_copy = A;
-    const fmatrix b = {{1, 8, 5}};
-    fmatrix x = {{0, 0, 0}};
+    const fmatrix b = { {1}, {8}, {5} };
+    fmatrix x = { {0}, {0}, {0} };
     fmatrix Q;
     bool isFirst = true;
-    for(size_t k = 0; k < N - 1; ++k) { // k-ый шаг алгоритма
+    for(ptrdiff_t k = 0; k < N - 1; ++k) { // k-ый шаг алгоритма
         fvector A_k_col(N);
         float sum_by_k_col = 0;
-        for(size_t str = k; str < N; ++str) { // нужен не весь столбец, а только начиная с k-ой строки
+        for(ptrdiff_t str = k; str < N; ++str) { // нужен не весь столбец, а только начиная с k-ой строки
             A_k_col[str] = A[str][k];
             sum_by_k_col += A[str][k]*A[str][k];
         }
@@ -100,12 +102,12 @@ int main()
 
         A_k_col[k] -= beta;
         fvector w = vec_mult(A_k_col, mu);
-        for(size_t index = 0; index < k; ++index) { // первые k позиций - нулевые
+        for(ptrdiff_t index = 0; index < k; ++index) { // первые k позиций - нулевые
             w[index] = 0;
         }
 
         fmatrix H = count_H(beta, mu, w);
-        printf("H[%ld]\n", k);
+        printf("H%ld\n", k+1);
         print_matr(H);
         std::cout << std::endl;
         
@@ -118,7 +120,7 @@ int main()
 
         // умножить Hk на A, получим новую Ak
         A = matr_mult(H, A);
-        printf("A[%ld]\n", k);
+        printf("A%ld\n", k+1);
         print_matr(A);
         std::cout << std::endl;
     }
@@ -126,35 +128,46 @@ int main()
     printf("Q\n");
     print_matr(Q);
     std::cout << std::endl;
-    
-    double **Q_ptr = new double*[N];
-    for(size_t i = 0; i < N; ++i) {
+
+    // обратный ход
+    double** Q_ptr = new double* [N];
+    for (ptrdiff_t i = 0; i < N; ++i) {
         Q_ptr[i] = new double[N];
-        for(size_t j = 0; j < N; ++j) {
+        for (ptrdiff_t j = 0; j < N; ++j) {
             Q_ptr[i][j] = Q[i][j];
         }
     }
-    double **Q_invert_ptr = Mreverse(Q_ptr, N);
+    double** Q_invert_ptr = Mreverse(Q_ptr, N);
     fmatrix Q_invert(N, fvector(N));
-    for(size_t i = 0; i < N; ++i) {
-        for(size_t j = 0; j < N; ++j) {
+    for (ptrdiff_t i = 0; i < N; ++i) {
+        for (ptrdiff_t j = 0; j < N; ++j) {
             Q_invert[i][j] = Q_invert_ptr[i][j];
         }
     }
 
     fmatrix Q_b = matr_mult(Q_invert, b);
-    x[0][N - 1] = Q_b[0][N - 1] / A[N][N - 1];
-    for(ptrdiff_t i = N - 1; i >= 0; ++i) {
+    x[N - 1][0] = Q_b[N - 1][0] / A[N - 1][N - 1];
+    for (ptrdiff_t i = N - 2; i >= 0; --i) {
         float sum = 0;
-        for(size_t j = i + 1; j < N; ++j) {
-            sum += A[i][j] * x[0][j];
+        for (ptrdiff_t j = i + 1; j < N; ++j) {
+            sum += A[i][j] * x[j][0];
         }
-        x[0][i] = (Q_b[0][i] - sum) / A[i][i];
+        x[i][0] = (Q_b[i][0] - sum) / A[i][i];
     }
 
     printf("x\n");
     print_matr(x);
-    std::cout << std::endl;    
+    std::cout << std::endl;
+
+    // проверка
+    fmatrix A_x = matr_mult(A, x);
+    for (ptrdiff_t i = 0; i < A_x.size(); ++i) {
+        for (ptrdiff_t j = 0; j < A_x[0].size(); ++j) {
+            if (b[i][j] != A_x[i][j]) {
+                std::cout << "error in " << i << " " << j << std::endl;
+            }
+        }
+    }
 
     return 0;
 }
