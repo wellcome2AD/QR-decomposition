@@ -130,20 +130,7 @@ int main()
     std::cout << std::endl;
 
     // обратный ход
-    double** Q_ptr = new double* [N];
-    for (ptrdiff_t i = 0; i < N; ++i) {
-        Q_ptr[i] = new double[N];
-        for (ptrdiff_t j = 0; j < N; ++j) {
-            Q_ptr[i][j] = Q[i][j];
-        }
-    }
-    double** Q_invert_ptr = Mreverse(Q_ptr, N);
-    fmatrix Q_invert(N, fvector(N));
-    for (ptrdiff_t i = 0; i < N; ++i) {
-        for (ptrdiff_t j = 0; j < N; ++j) {
-            Q_invert[i][j] = Q_invert_ptr[i][j];
-        }
-    }
+    fmatrix Q_invert = Mreverse(Q);
     printf("Q_invert\n");
     print_matr(Q_invert);
     std::cout << std::endl;
