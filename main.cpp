@@ -4,6 +4,7 @@
 #include <iomanip>
 
 #include "TVector.h"
+#include "TMatrix.h"
 
 float sign(float x) {
 	if (x > 0.0) return 1.0;
@@ -11,87 +12,26 @@ float sign(float x) {
 	return 1.0;
 }
 
-fmatrix matr_diff(fmatrix m1, fmatrix m2) {
-	auto N = m1.size();
-	for (auto i = 0; i < N; ++i) {
-		for (auto j = 0; j < N; ++j) {
-			m1[i][j] -= m2[i][j];
-		}
-	}
-	return m1;
-}
-
 template <typename T>
-TVector<T> matr_mult(fmatrix m, TVector<T> v) {
-	auto N = m.size();
-	TVector<T> res(N, 0);
-	for (auto i = 0; i < N; ++i) {
-		for (auto j = 0; j < N; ++j) {
-			res[i] += m[i][j] * v[j];
-		}
-	}
-	return res;
-}
-
-fmatrix matr_mult(fmatrix m1, fmatrix m2) {
-	auto N = m1.size();
-	auto M = m2[0].size();
-	fmatrix res(N, std::vector<float>(M, 0));
-	for (auto i = 0; i < N; ++i) {
-		for (auto j = 0; j < M; ++j) {
-			for (auto k = 0; k < N; ++k) {
-				res[i][j] += m1[i][k] * m2[k][j];
-			}
-		}
-	}
-	return res;
-}
-
-void print_matr(fmatrix m) {
-	auto N = m.size();
-	auto M = m[0].size();
-	for (auto i = 0; i < N; ++i) {
-		std::cout << std::left << std::setw(15);
-		for (auto j = 0; j < M; ++j) {
-			std::cout << m[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
-}
-
-fmatrix transpone(fmatrix mas) {
-	auto rows = mas.size();
-	auto cols = mas[0].size();
-	fmatrix res(rows, fvector(cols, 0));
-	for (int i = 0; i < cols; i++) {
-		for (int j = 0; j < rows; j++) {
-			res[i][j] = mas[j][i];
-		}
-	}
-	return res;
-}
-
-template <typename T>
-fmatrix count_H(float beta, float mu, TVector<T> w) {
+TMatrix<T> count_H(float beta, float mu, TVector<T> w) {
 	auto N = w.Size();
-	fmatrix E(N, std::vector<float>(N, 0));
+	TMatrix<T> E(N, N);
 	for (auto i = 0; i < N; ++i) {
-		E[i][i] = 1;
+		E[i][i] = 1.0;
 	}
-	return matr_diff(E, vec_mult<T>(vec_mult<T>(w, 2.0), w));
+	auto wt = w;
+	return E - w * wt * 2.0;
 }
 
 template <typename T>
-TVector<T> back_substitution(fmatrix Q, fmatrix A, TVector<T> b) {
+TVector<T> back_substitution(TMatrix<T> Q, TMatrix<T> A, TVector<T> b) {
 	const auto N = A.size();
 	TVector<T> res(N);
 
-	fmatrix Q_invert = transpone(Q);
-	printf("Q_invert\n");
-	print_matr(Q_invert);
-	std::cout << std::endl;
+	Q.Transpone();
+	std::cout << "Q_invert\n" << Q << std::endl;
 
-	TVector<T> Q_invert_b = matr_mult<T>(Q_invert, b);
+	Q_invert  = Q_invert * b;
 	printf("Q_invert_b\n");
 	std::cout << Q_invert_b << std::endl;
 	std::cout << std::endl;
@@ -110,10 +50,10 @@ TVector<T> back_substitution(fmatrix Q, fmatrix A, TVector<T> b) {
 
 int main() {
 	const int N = 3;
-	fmatrix A = { {1, -2, 1}, {2, 0, -3}, {2, -1, -1} };
-	const fmatrix A_copy = A;
+	TMatrix<float> A = { {1, -2, 1}, {2, 0, -3}, {2, -1, -1} };
+	const auto A_copy = A;
 	const TVector<float> b = { 1, 8, 5 };
-	fmatrix Q;
+	TMatrix<float> Q;
 	bool isFirst = true;
 	for (auto k = 0; k < N - 1; ++k) { // k-ый шаг алгоритма
 		TVector<float> w(N);
@@ -135,29 +75,26 @@ int main() {
 			w[index] = 0;
 		}
 
-		fmatrix H = count_H(beta, mu, w);
+		auto H = count_H(beta, mu, w);
 		printf("H%td\n", k + 1);
-		print_matr(H);
-		std::cout << std::endl;
+		std::cout << H << std::endl;
 
 		if (isFirst) {
 			isFirst = false;
 			Q = H;
 		}
 		else {
-			Q = matr_mult(Q, H);
+			Q = Q * H;
 		}
 
 		// умножить Hk на A, получим новую Ak
-		A = matr_mult(H, A);
+		A = H * A;
 		printf("A%td\n", k + 1);
 		print_matr(A);
 		std::cout << std::endl;
 	}
 
-	printf("Q\n");
-	print_matr(Q);
-	std::cout << std::endl;
+	std::cout << "Q\n" << Q << std::endl;
 
 	TVector<float> x = back_substitution<float>(Q, A, b);
 
@@ -166,7 +103,7 @@ int main() {
 
 	// проверка
 	const float eps = 0.000001;
-	TVector<float> A_x = matr_mult<float>(A_copy, x);
+	TVector<float> A_x = A_copy * x;
 	for (auto i = 0; i < A_x.Size(); ++i) {
 		float bi = b[i];
 		if (abs(bi - A_x[i]) >= eps) {
