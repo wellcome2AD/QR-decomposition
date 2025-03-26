@@ -49,7 +49,7 @@ fmatrix matr_mult(fmatrix m1, fmatrix m2) {
     fmatrix res(N, fvector(M, 0));
     for (int i = 0; i < N; ++i) {
         for (int j = 0; j < M; ++j) {
-            for (int k = 0; k < M; ++k) {
+            for (int k = 0; k < N; ++k) {
                 res[i][j] += m1[i][k] * m2[k][j];
             }
         }
@@ -144,15 +144,22 @@ int main()
             Q_invert[i][j] = Q_invert_ptr[i][j];
         }
     }
+    printf("Q_invert\n");
+    print_matr(Q_invert);
+    std::cout << std::endl;
 
-    fmatrix Q_b = matr_mult(Q_invert, b);
-    x[N - 1][0] = Q_b[N - 1][0] / A[N - 1][N - 1];
+    fmatrix Q_invert_b = matr_mult(Q_invert, b);
+    printf("Q_invert_b\n");
+    print_matr(Q_invert_b);
+    std::cout << std::endl;
+
+    x[N - 1][0] = Q_invert_b[N - 1][0] / A[N - 1][N - 1];
     for (ptrdiff_t i = N - 2; i >= 0; --i) {
         float sum = 0;
         for (ptrdiff_t j = i + 1; j < N; ++j) {
             sum += A[i][j] * x[j][0];
         }
-        x[i][0] = (Q_b[i][0] - sum) / A[i][i];
+        x[i][0] = (Q_invert_b[i][0] - sum) / A[i][i];
     }
 
     printf("x\n");
@@ -160,11 +167,12 @@ int main()
     std::cout << std::endl;
 
     // проверка
-    fmatrix A_x = matr_mult(A, x);
+    const float eps = 0.000001;
+    fmatrix A_x = matr_mult(A_copy, x);
     for (ptrdiff_t i = 0; i < A_x.size(); ++i) {
         for (ptrdiff_t j = 0; j < A_x[0].size(); ++j) {
-            if (b[i][j] != A_x[i][j]) {
-                std::cout << "error in " << i << " " << j << std::endl;
+            if (abs(b[i][j] - A_x[i][j]) >= eps) {
+                printf("error in %ld %ld: %f != %f\n", i, j, A_x[i][j], b[i][j]);
             }
         }
     }
