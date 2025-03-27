@@ -34,10 +34,9 @@ TVector<T> back_substitution(TMatrix<T> Q, TMatrix<T> A, TVector<T> b) {
 	Q_invert  = Q_invert * b;
 	printf("Q_invert_b\n");
 	std::cout << Q_invert_b << std::endl;
-	std::cout << std::endl;
 
 	res[N - 1] = Q_invert_b[N - 1] / A[N - 1][N - 1];
-	for (auto i = N - 2; i >= 0; --i) {
+	for (ptrdiff_t i = N - 2; i >= 0; --i) {
 		float sum = 0;
 		for (auto j = i + 1; j < N; ++j) {
 			sum += A[i][j] * res[j];
@@ -55,10 +54,10 @@ int main() {
 	const TVector<float> b = { 1, 8, 5 };
 	TMatrix<float> Q;
 	bool isFirst = true;
-	for (auto k = 0; k < N - 1; ++k) { // k-Ñ‹Ð¹ ÑˆÐ°Ð³ Ð°Ð»Ð³Ð¾Ñ€Ð¸Ñ‚Ð¼Ð°
+	for (auto k = 0; k < N - 1; ++k) { // k-ûé øàã àëãîðèòìà
 		TVector<float> w(N);
 		float sum_by_k_col = 0.0;
-		for (auto str = k; str < N; ++str) { // Ð½ÑƒÐ¶ÐµÐ½ Ð½Ðµ Ð²ÐµÑÑŒ ÑÑ‚Ð¾Ð»Ð±ÐµÑ†, Ð° Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ð½Ð°Ñ‡Ð¸Ð½Ð°Ñ Ñ k-Ð¾Ð¹ ÑÑ‚Ñ€Ð¾ÐºÐ¸
+		for (auto str = k; str < N; ++str) { // íóæåí íå âåñü ñòîëáåö, à òîëüêî íà÷èíàÿ ñ k-îé ñòðîêè
 			w[str] = A[str][k];
 			sum_by_k_col += A[str][k] * A[str][k];
 		}
@@ -71,7 +70,7 @@ int main() {
 
 		w[k] -= beta;
 		w = w * mu;
-		for (auto index = 0; index < k; ++index) { // Ð¿ÐµÑ€Ð²Ñ‹Ðµ k Ð¿Ð¾Ð·Ð¸Ñ†Ð¸Ð¹ - Ð½ÑƒÐ»ÐµÐ²Ñ‹Ðµ
+		for (auto index = 0; index < k; ++index) { // ïåðâûå k ïîçèöèé - íóëåâûå
 			w[index] = 0;
 		}
 
@@ -87,7 +86,7 @@ int main() {
 			Q = Q * H;
 		}
 
-		// ÑƒÐ¼Ð½Ð¾Ð¶Ð¸Ñ‚ÑŒ Hk Ð½Ð° A, Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ð¼ Ð½Ð¾Ð²ÑƒÑŽ Ak
+		// óìíîæèòü Hk íà A, ïîëó÷èì íîâóþ Ak
 		A = H * A;
 		printf("A%td\n", k + 1);
 		print_matr(A);
@@ -101,13 +100,13 @@ int main() {
 	printf("x\n");
 	std::cout << x;
 
-	// Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ°
+	// ïðîâåðêà
 	const float eps = 0.000001;
 	TVector<float> A_x = A_copy * x;
 	for (auto i = 0; i < A_x.Size(); ++i) {
 		float bi = b[i];
 		if (abs(bi - A_x[i]) >= eps) {
-			printf("error in %td: %f != %f\n", i, A_x[i], b[i]);
+			printf("error in %I32d: %f != %f\n", i, A_x[i], b[i]);
 		}
 	}
 
