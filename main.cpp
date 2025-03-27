@@ -3,7 +3,6 @@
 #include <vector>
 #include <iomanip>
 
-#include "TVector.h"
 #include "TMatrix.h"
 
 float sign(float x) {
@@ -19,19 +18,19 @@ TMatrix<T> count_H(float beta, float mu, TVector<T> w) {
 	for (auto i = 0; i < N; ++i) {
 		E[i][i] = 1.0;
 	}
-	auto wt = w;
-	return E - w * wt * 2.0;
+	TVector<T> wt = w;
+	return E - (w * wt * 2.0);
 }
 
 template <typename T>
 TVector<T> back_substitution(TMatrix<T> Q, TMatrix<T> A, TVector<T> b) {
-	const auto N = A.size();
+	const int N = A.Size();
 	TVector<T> res(N);
 
 	Q.Transpone();
 	std::cout << "Q_invert\n" << Q << std::endl;
 
-	Q_invert  = Q_invert * b;
+	auto Q_invert_b = Q * b;
 	printf("Q_invert_b\n");
 	std::cout << Q_invert_b << std::endl;
 
@@ -50,7 +49,7 @@ TVector<T> back_substitution(TMatrix<T> Q, TMatrix<T> A, TVector<T> b) {
 int main() {
 	const int N = 3;
 	TMatrix<float> A = { {1, -2, 1}, {2, 0, -3}, {2, -1, -1} };
-	const auto A_copy = A;
+	const TMatrix<float> A_copy = A;
 	const TVector<float> b = { 1, 8, 5 };
 	TMatrix<float> Q;
 	bool isFirst = true;
@@ -89,8 +88,7 @@ int main() {
 		// умножить Hk на A, получим новую Ak
 		A = H * A;
 		printf("A%td\n", k + 1);
-		print_matr(A);
-		std::cout << std::endl;
+		std::cout << A << std::endl;
 	}
 
 	std::cout << "Q\n" << Q << std::endl;
