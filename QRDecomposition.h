@@ -12,49 +12,53 @@ float sign(float x)
 }
 
 template <typename T>
-float count_beta(const TMatrix &A, int k_step)
+float count_beta(const TMatrix<T>& Ak, int k_step)
 {
-	const auto N = A.size();
+	const size_t N = Ak.Size();
 	float sum_by_k_col = 0.0;
-	for (auto str = k_step; str < N; ++str)
+	for (size_t str = k_step; str < N; ++str)
 	{ // нужен не весь столбец, а только начиная с k-ой строки
-		sum_by_k_col += A[str][k_step] * A[str][k_step];
+		sum_by_k_col += Ak[str][k_step] * Ak[str][k_step];
 	}
-	auto beta = sign(-A[k_step][k_step]) * sqrt(sum_by_k_col);
+	auto beta = sign(-Ak[k_step][k_step]) * sqrt(sum_by_k_col);
 	printf("beta%ld = %e\n", k_step, beta);
 	return beta;
 }
 
-float count_mu(float beta, int k_step)
+template <typename T>
+float count_mu(float beta, int k_step, const TMatrix<T>& Ak)
 {
-	auto mu = 1 / sqrt(2.0 * beta * beta - 2 * beta * A[k_step][k_step]);
+	auto mu = 1 / sqrt(2.0 * beta * beta - 2 * beta * Ak[k_step][k_step]);
 	printf("mu%ld = %e\n", k_step, mu);
 	return mu;
 }
 
-TVector<T> count_w(const TMatrix &A, int k_step, float beta, float mu)
+template <typename T>
+TVector<T> count_w(const TMatrix<T>& Ak, int k_step, float beta, float mu)
 {
-	for (auto str = k_step; str < N; ++str)
+	const size_t N = Ak.Size();
+	TVector<T> w(N);
+	for (size_t str = k_step; str < N; ++str)
 	{ // нужен не весь столбец, а только начиная с k-ой строки
-		w[str] = A[str][k_step];
+		w[str] = Ak[str][k_step];
 	}
 
 	w[k_step] -= beta;
 	w = w * mu;
-	for (auto index = 0; index < k_step; ++index)
+	for (size_t index = 0; index < k_step; ++index)
 	{ // первые k позиций - нулевые
 		w[index] = 0;
 	}
-	
+
 	return w;
 }
 
 template <typename T>
 TMatrix<T> count_H(float beta, float mu, TVector<T> w)
 {
-	auto N = w.Size();
+	size_t N = w.Size();
 	TMatrix<T> E(N, N);
-	for (auto i = 0; i < N; ++i)
+	for (size_t i = 0; i < N; ++i)
 	{
 		E[i][i] = 1.0;
 	}
@@ -63,74 +67,75 @@ TMatrix<T> count_H(float beta, float mu, TVector<T> w)
 	return H;
 }
 
-TMatrix<T>& count_Q(const TMatrix<T>& H, const TMatrix<T>& Q) {
+template <typename T>
+TMatrix<T>& count_Q(const TMatrix<T>& H, TMatrix<T>& Q) {
+	bool isFirst = Q.IsZero();
 	if (isFirst)
-		{
-			isFirst = false;
-			Q = H;
-		}
-		else
-		{
-			Q = Q * H;
-		}
+	{
+		isFirst = false;
+		Q = H;
+	}
+	else
+	{
+		Q = Q * H;
+	}
 
 	return Q;
 }
 
 template <typename T>
-TVector<T> back_substitution(const TMatrix<T>& Q, const TMatrix<T>& A, const TVector<T>& b)
+TVector<T> back_substitution(const TMatrix<T>& Q, const TMatrix<T>& AH, const TVector<T>& b)
 {
-	const auto N = A.size();
+	const size_t N = AH.Size();
 	TVector<T> res(N);
 
-	Q.Transpone();
+	auto Q_copy = Q;
+	Q_copy.Transpone();
 	std::cout << "Q_invert\n"
-			  << Q << std::endl;
+		<< Q_copy << std::endl;
 
-	Q_invert = Q_invert * b;
+	auto Q_invert_b = Q_copy * b;
 	printf("Q_invert_b\n");
 	std::cout << Q_invert_b << std::endl;
-	std::cout << std::endl;
 
-	res[N - 1] = Q_invert_b[N - 1] / A[N - 1][N - 1];
-	for (auto i = N - 2; i >= 0; --i)
+	res[N - 1] = Q_invert_b[N - 1] / AH[N - 1][N - 1];
+	for (ptrdiff_t i = N - 2; i >= 0; --i)
 	{
 		float sum = 0;
-		for (auto j = i + 1; j < N; ++j)
+		for (size_t j = i + 1; j < N; ++j)
 		{
-			sum += A[i][j] * res[j];
+			sum += AH[i][j] * res[j];
 		}
-		res[i] = (Q_invert_b[i] - sum) / A[i][i];
+		res[i] = (Q_invert_b[i] - sum) / AH[i][i];
 	}
 
 	return res;
 }
 
 template <typename T>
-TVector<T> QR_decomposition(const TMatrix<T> &A, const TVector<T> &b)
+TVector<T> QR_decomposition(const TMatrix<T>& A, const TVector<T>& b)
 {
-	const auto N = A.Size();
-	const auto A_copy = A;
+	const size_t N = A.Size();
+	auto A_copy = A;
 	TMatrix<float> Q;
 	bool isFirst = true;
-	for (auto k = 0; k < N - 1; ++k)
+	for (size_t k = 0; k < N - 1; ++k)
 	{ // k-ый шаг алгоритма
-		auto beta = count_bet();
-		auto mu = count_mu();
-		auto w = count_w();
+		auto beta = count_beta(A_copy, k);
+		auto mu = count_mu(beta, k, A_copy);
+		auto w = count_w(A_copy, k, beta, mu);
 		auto H = count_H(beta, mu, w);
-		printf("H%td\n", k_step + 1);
+		printf("H%td\n", k + 1);
 		std::cout << H << std::endl;
-		Q = count_Q();
+		Q = count_Q(H, Q);
 
 		// умножить Hk на A, получим новую Ak
-		A = H * A;
+		A_copy = H * A_copy;
 		printf("A%td\n", k + 1);
-		print_matr(A);
-		std::cout << std::endl;
+		std::cout << A_copy << std::endl;
 	}
 
 	std::cout << "Q\n" << Q << std::endl;
 
-	return back_substitution<float>(Q, A, b);
+	return back_substitution<float>(Q, A_copy, b);
 }

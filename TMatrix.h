@@ -14,6 +14,8 @@ public:
 
 	TMatrix<T>(std::initializer_list<TVector<T>> l) : _matrix(l) {}
 
+	TMatrix<T>(const TMatrix<T>& other) : _matrix(other._matrix) {}
+
 	TMatrix<T> operator-(const TMatrix<T>& m) const {
 		TMatrix<T> res(*this);
 		auto N = _matrix.Size();
@@ -62,16 +64,37 @@ public:
 		return res;
 	}
 
+	TMatrix<T>& operator=(const TMatrix<T>& other) {
+		_matrix = other._matrix;
+		return *this;
+	}
+
 	void Transpone() {
 		const auto N = _matrix.Size();
 		const auto M = _matrix[0].Size();
 		for (int i = 0; i < N - 1; i++) {
 			for (int j = i + 1; j < M; j++) {
 				auto temp = _matrix[i][j];
-				_matrix[i][j] = _matrix[j][i];				
+				_matrix[i][j] = _matrix[j][i];
 				_matrix[j][i] = temp;
 			}
 		}
+	}
+
+	bool IsZero() const {
+		const auto N = _matrix.Size();
+		if (N == 0) {
+			return true;
+		}
+		const auto M = _matrix[0].Size();
+		for (int i = 0; i < N - 1; i++) {
+			for (int j = i + 1; j < M; j++) {
+				if (_matrix[i][j] != 0) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	auto Size() const {
