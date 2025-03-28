@@ -3,10 +3,9 @@
 #include <vector>
 #include <iomanip>
 
-#include "TMatrix.h"
 #include "QRDecomposition.h"
 
-int main() {
+int main1() {
 	const int N = 3;
 	TMatrix<float> A = { {1, -2, 1}, {2, 0, -3}, {2, -1, -1} };
 	const TMatrix<float> A_copy = A;

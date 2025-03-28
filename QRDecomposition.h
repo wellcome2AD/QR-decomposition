@@ -2,7 +2,7 @@
 
 #include "TMatrix.h"
 
-float sign(float x)
+inline static float sign(float x)
 {
 	if (x > 0.0)
 		return 1.0;
@@ -12,7 +12,7 @@ float sign(float x)
 }
 
 template <typename T>
-float count_beta(const TMatrix<T>& Ak, int k_step)
+static float count_beta(const TMatrix<T>& Ak, int k_step)
 {
 	const size_t N = Ak.Size();
 	float sum_by_k_col = 0.0;
@@ -21,23 +21,23 @@ float count_beta(const TMatrix<T>& Ak, int k_step)
 		sum_by_k_col += Ak[str][k_step] * Ak[str][k_step];
 	}
 	auto beta = sign(-Ak[k_step][k_step]) * sqrt(sum_by_k_col);
-	printf("beta%ld = %e\n", k_step, beta);
+	// printf("beta%ld = %e\n", k_step, beta);
 	return beta;
 }
 
 template <typename T>
-float count_mu(float beta, int k_step, const TMatrix<T>& Ak)
+static float count_mu(float beta, int k_step, const TMatrix<T>& Ak)
 {
 	auto mu = 1 / sqrt(2.0 * beta * beta - 2 * beta * Ak[k_step][k_step]);
-	printf("mu%ld = %e\n", k_step, mu);
+	// printf("mu%ld = %e\n", k_step, mu);
 	return mu;
 }
 
 template <typename T>
-TVector<T> count_w(const TMatrix<T>& Ak, int k_step, float beta, float mu)
+static TVector<T> count_w(const TMatrix<T>& Ak, int k_step, float beta, float mu)
 {
 	const size_t N = Ak.Size();
-	TVector<T> w(N);
+	TVector<T> w(N, 0);
 	for (size_t str = k_step; str < N; ++str)
 	{ // нужен не весь столбец, а только начиная с k-ой строки
 		w[str] = Ak[str][k_step];
@@ -45,16 +45,12 @@ TVector<T> count_w(const TMatrix<T>& Ak, int k_step, float beta, float mu)
 
 	w[k_step] -= beta;
 	w = w * mu;
-	for (size_t index = 0; index < k_step; ++index)
-	{ // первые k позиций - нулевые
-		w[index] = 0;
-	}
 
 	return w;
 }
 
 template <typename T>
-TMatrix<T> count_H(float beta, float mu, TVector<T> w)
+static TMatrix<T> count_H(float beta, float mu, TVector<T> w)
 {
 	size_t N = w.Size();
 	TMatrix<T> E(N, N);
@@ -62,13 +58,12 @@ TMatrix<T> count_H(float beta, float mu, TVector<T> w)
 	{
 		E[i][i] = 1.0;
 	}
-	auto wt = w;
-	auto H = E - w * wt * 2.0;
+	auto H = E - w * w * 2.0;
 	return H;
 }
 
 template <typename T>
-TMatrix<T>& count_Q(const TMatrix<T>& H, TMatrix<T>& Q) {
+static TMatrix<T>& count_Q(const TMatrix<T>& H, TMatrix<T>& Q) {
 	bool isFirst = Q.IsZero();
 	if (isFirst)
 	{
@@ -84,19 +79,19 @@ TMatrix<T>& count_Q(const TMatrix<T>& H, TMatrix<T>& Q) {
 }
 
 template <typename T>
-TVector<T> back_substitution(const TMatrix<T>& Q, const TMatrix<T>& AH, const TVector<T>& b)
+static TVector<T> back_substitution(const TMatrix<T>& Q, const TMatrix<T>& AH, const TVector<T>& b)
 {
 	const size_t N = AH.Size();
 	TVector<T> res(N);
 
 	auto Q_copy = Q;
 	Q_copy.Transpone();
-	std::cout << "Q_invert\n"
-		<< Q_copy << std::endl;
+	/*std::cout << "Q_invert\n"
+		<< Q_copy << std::endl;*/
 
 	auto Q_invert_b = Q_copy * b;
-	printf("Q_invert_b\n");
-	std::cout << Q_invert_b << std::endl;
+	/*printf("Q_invert_b\n");
+	std::cout << Q_invert_b << std::endl;*/
 
 	res[N - 1] = Q_invert_b[N - 1] / AH[N - 1][N - 1];
 	for (ptrdiff_t i = N - 2; i >= 0; --i)
@@ -124,18 +119,20 @@ TVector<T> QR_decomposition(const TMatrix<T>& A, const TVector<T>& b)
 		auto beta = count_beta(A_copy, k);
 		auto mu = count_mu(beta, k, A_copy);
 		auto w = count_w(A_copy, k, beta, mu);
+
 		auto H = count_H(beta, mu, w);
-		printf("H%td\n", k + 1);
-		std::cout << H << std::endl;
+		/*printf("H%td\n", k + 1);
+		std::cout << H << std::endl;*/
+
 		Q = count_Q(H, Q);
 
 		// умножить Hk на A, получим новую Ak
 		A_copy = H * A_copy;
-		printf("A%td\n", k + 1);
-		std::cout << A_copy << std::endl;
+		/*printf("A%td\n", k + 1);
+		std::cout << A_copy << std::endl;*/
 	}
 
-	std::cout << "Q\n" << Q << std::endl;
+	// std::cout << "Q\n" << Q << std::endl;
 
 	return back_substitution<float>(Q, A_copy, b);
 }
