@@ -14,6 +14,8 @@ public:
 
 	TMatrix<T>(std::initializer_list<TVector<T>> l) : _matrix(l) {}
 
+	TMatrix<T>(const TMatrix<T>& other) : _matrix(other._matrix) {}
+
 	TMatrix<T> operator-(const TMatrix<T>& m) const {
 		TMatrix<T> res(*this);
 		auto N = _matrix.Size();
@@ -62,16 +64,55 @@ public:
 		return res;
 	}
 
+	TMatrix<T>& operator=(const TMatrix<T>& other) {
+		_matrix = other._matrix;
+		return *this;
+	}
+
+	bool operator==(const TMatrix<T>& m) const {
+		auto N = _matrix.Size();
+		auto M = m._matrix[0].Size();
+		const float eps = 0.000001;
+		for (auto i = 0; i < N; ++i) {
+			for (auto j = 0; j < M; ++j) {
+				if (abs(_matrix[i][j] - m._matrix[i][j]) > eps) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	bool operator!=(const TMatrix<T>& v) const {
+		return !(*this == v);
+	}
+
 	void Transpone() {
 		const auto N = _matrix.Size();
 		const auto M = _matrix[0].Size();
 		for (int i = 0; i < N - 1; i++) {
 			for (int j = i + 1; j < M; j++) {
 				auto temp = _matrix[i][j];
-				_matrix[i][j] = _matrix[j][i];				
+				_matrix[i][j] = _matrix[j][i];
 				_matrix[j][i] = temp;
 			}
 		}
+	}
+
+	bool IsZero() const {
+		const auto N = _matrix.Size();
+		if (N == 0) {
+			return true;
+		}
+		const auto M = _matrix[0].Size();
+		for (int i = 0; i < N - 1; i++) {
+			for (int j = i + 1; j < M; j++) {
+				if (_matrix[i][j] != 0) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	auto Size() const {
@@ -108,6 +149,18 @@ public:
 private:
 	TVector<TVector<T>> _matrix;
 };
+
+template <typename T>
+TMatrix<T> generate_matrix(int N, int M) {
+	TMatrix<T> res(N, M);
+	std::srand(std::time(0));
+	for (size_t i = 0; i < N; ++i) {
+		for (size_t j = 0; j < M; ++j) {
+			res[i][j] = std::rand() % 20 - 10;
+		}
+	}
+	return res;
+}
 
 template <typename T>
 TMatrix<T> operator*(TVector<T> v1, TVector<T> v2) {

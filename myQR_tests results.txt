@@ -1,0 +1,29 @@
+test size: 3
+time: 6.9e-06
+abs error: 8.78253e-07
+rel error: 1.75651e-07
+
+test size: 100
+time: 1.41896
+abs error: 0.000746433
+rel error: 1.28803e-06
+
+test size: 200
+time: 11.5924
+abs error: 0.00290193
+rel error: 2.5111e-06
+
+test size: 300
+time: 56.9126
+abs error: 0.00631109
+rel error: 3.63063e-06
+
+test size: 400
+time: 193.918
+abs error: 0.0112035
+rel error: 4.84842e-06
+
+test size: 500
+time: 486.252
+abs error: 0.0174695
+rel error: 6.04093e-06

@@ -31,6 +31,20 @@ public:
 		return _vector[index];
 	}
 
+	bool operator==(const TVector<T>& v) const {
+		const float eps = 0.000001;
+		for (auto i = 0; i < _vector.size(); ++i) {
+			if (abs(_vector[i] - v._vector[i]) > eps) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool operator!=(const TVector<T>& v) const {
+		return !(*this == v);
+	}
+
 	friend std::ostream& operator<<(std::ostream& os, const TVector<T>& vector) {
 		os << "[";
 		auto N = vector._vector.size();
@@ -38,7 +52,7 @@ public:
 			os << vector._vector[i];
 			os << ", ";
 		}
-		os << vector._vector[N - 1] << "]" << std::endl;
+		os << vector._vector[N - 1] << "]";
 		return os;
 	}
 

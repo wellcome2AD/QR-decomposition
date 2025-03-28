@@ -9,8 +9,6 @@
 *.opendb
 *.ipch
 *.sqlite
-*.sln
-*.vcxproj
 *.filters
 *.user
 *.obj
@@ -21,5 +19,7 @@
 *.pdb
 *.tlog
 *.lastbuildstate
-*.txt
 *.idb
+/x64/Release/*.iobj
+/x64/Release/*.ipdb
+/x64/Release/*.txt
