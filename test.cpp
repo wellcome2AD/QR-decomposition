@@ -5,6 +5,8 @@
 
 #include "QRDecomposition.h"
 
+void test
+
 int test_main() {
 	const int N = 3;
 	TMatrix<float> A = { {1, -2, 1}, {2, 0, -3}, {2, -1, -1} };
