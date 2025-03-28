@@ -9,8 +9,6 @@
 *.opendb
 *.ipch
 *.sqlite
-*.sln
-*.vcxproj
 *.filters
 *.user
 *.obj
