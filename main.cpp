@@ -4,6 +4,7 @@
 #include <iomanip>
 
 #include "QRDecomposition.h"
+#include "LinearEquationSystem.h"
 
 int main1() {
 	const int N = 3;
@@ -11,16 +12,14 @@ int main1() {
 	const TMatrix<float> A_copy = A;
 	const TVector<float> b = { 1, 8, 5 };
 	TVector<float> x = QR_decomposition(A, b);
-	std::cout << "x\n" << x;
+	//std::cout << "x\n" << x;
 
-	// проверка
-	const float eps = 0.000001;
-	TVector<float> A_x = A_copy * x;
-	for (auto i = 0; i < A_x.Size(); ++i) {
-		float bi = b[i];
-		if (abs(bi - A_x[i]) >= eps) {
-			printf("error in %I32d: %f != %f\n", i, A_x[i], b[i]);
-		}
+	auto counted_b = substitution(A, x);
+	if (counted_b == b) {
+		std::cout << "x is correct";
+	}
+	else {
+		std::cout << "x is incorrect";
 	}
 
 	return 0;
