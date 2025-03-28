@@ -13,9 +13,9 @@ float sign(float x) {
 
 template <typename T>
 TMatrix<T> count_H(float beta, float mu, TVector<T> w) {
-	auto N = w.Size();
+	const size_t N = w.Size();
 	TMatrix<T> E(N, N);
-	for (auto i = 0; i < N; ++i) {
+	for (size_t i = 0; i < N; ++i) {
 		E[i][i] = 1.0;
 	}
 	TVector<T> wt = w;
@@ -37,7 +37,7 @@ TVector<T> back_substitution(TMatrix<T> Q, TMatrix<T> A, TVector<T> b) {
 	res[N - 1] = Q_invert_b[N - 1] / A[N - 1][N - 1];
 	for (ptrdiff_t i = N - 2; i >= 0; --i) {
 		float sum = 0;
-		for (auto j = i + 1; j < N; ++j) {
+		for (size_t j = i + 1; j < N; ++j) {
 			sum += A[i][j] * res[j];
 		}
 		res[i] = (Q_invert_b[i] - sum) / A[i][i];
@@ -47,16 +47,16 @@ TVector<T> back_substitution(TMatrix<T> Q, TMatrix<T> A, TVector<T> b) {
 }
 
 int main() {
-	const int N = 3;
+	const size_t N = 3;
 	TMatrix<float> A = { {1, -2, 1}, {2, 0, -3}, {2, -1, -1} };
 	const TMatrix<float> A_copy = A;
 	const TVector<float> b = { 1, 8, 5 };
 	TMatrix<float> Q;
 	bool isFirst = true;
-	for (auto k = 0; k < N - 1; ++k) { // k-ый шаг алгоритма
+	for (size_t k = 0; k < N - 1; ++k) { // k-ый шаг алгоритма
 		TVector<float> w(N);
 		float sum_by_k_col = 0.0;
-		for (auto str = k; str < N; ++str) { // нужен не весь столбец, а только начиная с k-ой строки
+		for (size_t str = k; str < N; ++str) { // нужен не весь столбец, а только начиная с k-ой строки
 			w[str] = A[str][k];
 			sum_by_k_col += A[str][k] * A[str][k];
 		}
@@ -69,7 +69,7 @@ int main() {
 
 		w[k] -= beta;
 		w = w * mu;
-		for (auto index = 0; index < k; ++index) { // первые k позиций - нулевые
+		for (size_t index = 0; index < k; ++index) { // первые k позиций - нулевые
 			w[index] = 0;
 		}
 
@@ -101,7 +101,7 @@ int main() {
 	// проверка
 	const float eps = 0.000001;
 	TVector<float> A_x = A_copy * x;
-	for (auto i = 0; i < A_x.Size(); ++i) {
+	for (size_t i = 0; i < A_x.Size(); ++i) {
 		float bi = b[i];
 		if (abs(bi - A_x[i]) >= eps) {
 			printf("error in %I32d: %f != %f\n", i, A_x[i], b[i]);

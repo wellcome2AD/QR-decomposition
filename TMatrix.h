@@ -63,11 +63,13 @@ public:
 	}
 
 	void Transpone() {
-		auto rows = _matrix.Size();
-		auto cols = _matrix[0].Size();
-		for (int i = 0; i < cols; i++) {
-			for (int j = 0; j < rows; j++) {
-				_matrix[i][j] = _matrix[j][i];
+		const auto N = _matrix.Size();
+		const auto M = _matrix[0].Size();
+		for (int i = 0; i < N - 1; i++) {
+			for (int j = i + 1; j < M; j++) {
+				auto temp = _matrix[i][j];
+				_matrix[i][j] = _matrix[j][i];				
+				_matrix[j][i] = temp;
 			}
 		}
 	}
@@ -89,11 +91,12 @@ public:
 		auto N = m._matrix.Size();
 		auto M = m._matrix[0].Size();
 		for (auto i = 0; i < N; ++i) {
+			std::cout << std::left << std::setw(5);
 			for (auto j = 0; j < M - 1; ++j) {
 				os << m._matrix[i][j] << ", ";
 			}
 			os << m._matrix[i][M - 1];
-			if (i != N - 1) {
+			if (i == N - 1) {
 				os << "]";
 			}
 			os << std::endl;
