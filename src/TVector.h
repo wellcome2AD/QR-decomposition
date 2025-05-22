@@ -34,7 +34,7 @@ public:
 	bool operator==(const TVector<T>& v) const {
 		const float eps = 0.000001;
 		for (auto i = 0; i < _vector.size(); ++i) {
-			if (abs(_vector[i] - v._vector[i]) < eps) {
+			if (abs(_vector[i] - v._vector[i]) > eps) {
 				return false;
 			}
 		}
@@ -52,7 +52,7 @@ public:
 			os << vector._vector[i];
 			os << ", ";
 		}
-		os << vector._vector[N - 1] << "]" << std::endl;
+		os << vector._vector[N - 1] << "]";
 		return os;
 	}
 

@@ -69,6 +69,24 @@ public:
 		return *this;
 	}
 
+	bool operator==(const TMatrix<T>& m) const {
+		auto N = _matrix.Size();
+		auto M = m._matrix[0].Size();
+		const float eps = 0.000001;
+		for (auto i = 0; i < N; ++i) {
+			for (auto j = 0; j < M; ++j) {
+				if (abs(_matrix[i][j] - m._matrix[i][j]) > eps) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	bool operator!=(const TMatrix<T>& v) const {
+		return !(*this == v);
+	}
+
 	void Transpone() {
 		const auto N = _matrix.Size();
 		const auto M = _matrix[0].Size();

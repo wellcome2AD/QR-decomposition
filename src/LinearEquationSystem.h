@@ -24,3 +24,29 @@ TVector<T> substitution(const TMatrix<T>& A, const TVector<T>& x) {
 	TVector<T> res = A * x;
 	return res;
 }
+
+
+template <typename T>
+TVector<T> back_substitution(const TMatrix<T>& Q, const TMatrix<T>& R, const TVector<T>& b)
+{
+	const size_t N = R.Size();
+	TVector<T> res(N);
+
+	auto Q_copy = Q;
+	Q_copy.Transpone();
+
+	auto Q_invert_b = Q_copy * b;
+
+	res[N - 1] = Q_invert_b[N - 1] / R[N - 1][N - 1];
+	for (ptrdiff_t i = N - 2; i >= 0; --i)
+	{
+		float sum = 0;
+		for (size_t j = i + 1; j < N; ++j)
+		{
+			sum += R[i][j] * res[j];
+		}
+		res[i] = (Q_invert_b[i] - sum) / R[i][i];
+	}
+
+	return res;
+}
