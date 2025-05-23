@@ -74,7 +74,7 @@ static void count_Q(const TMatrix<T>& H, TMatrix<T>& Q) {
 }
 
 template <typename T>
-void QR_decomposition(const TMatrix<T>& A, const TVector<T>& b, TMatrix<T>& Q, TMatrix<T>& R)
+void QR_decomposition(const TMatrix<T>& A, TMatrix<T>& Q, TMatrix<T>& R)
 {
 	const size_t N = A.Size();
 	R = A;
