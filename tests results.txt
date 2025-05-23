@@ -1,0 +1,41 @@
+test size: 3
+time: 1.88e-05
+abs error: 8.78253e-07
+rel error: 1.75651e-07
+
+test size: 3
+time: 1.64e-05
+abs error: 1.841e-06
+rel error: 2.41735e-07
+
+test size: 3
+time: 1.73e-05
+abs error: 6.84805e-07
+rel error: 7.60895e-08
+
+test size: 100
+time: 1.16342
+abs error: 0.000720554
+rel error: 1.24538e-06
+
+test size: 200
+time: 13.3866
+abs error: 0.00284575
+rel error: 2.45608e-06
+
+test size: 300
+time: 63.1726
+abs error: 0.00642196
+rel error: 3.68958e-06
+
+test size: 400
+time: 166.098
+abs error: 0.0112447
+rel error: 4.86644e-06
+
+test size: 500
+time: 514.434
+abs error: 0.0174183
+rel error: 6.02558e-06
+
+all tests passed
