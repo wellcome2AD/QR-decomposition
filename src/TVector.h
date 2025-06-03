@@ -12,13 +12,6 @@ public:
 
 	TVector<T>(std::initializer_list<T> l) : _vector(l) {}
 
-	TVector<T>& operator*(T a) {
-		for (auto i = 0; i < _vector.size(); ++i) {
-			_vector[i] = _vector[i] * a;
-		}
-		return *this;
-	}
-
 	auto Size() const {
 		return _vector.size();
 	}

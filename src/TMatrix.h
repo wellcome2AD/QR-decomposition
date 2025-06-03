@@ -6,6 +6,8 @@
 
 #include "TVector.h"
 
+size_t thread_num = 8;
+
 template <typename T> class TMatrix {
 public:
 	TMatrix<T>() : _matrix() {}
@@ -27,37 +29,22 @@ public:
 		return res;
 	}
 
-	TMatrix<T> operator*(T a) const {
-		auto N = _matrix.Size();
-		auto M = _matrix[0].Size();
-		TMatrix<T> res(N, M, 0);
-		for (auto i = 0; i < N; ++i) {
-			for (auto j = 0; j < M; ++j) {
-				res[i][j] = _matrix[i][j] * a;
-			}
-		}
-		return res;
-	}
-
-	TVector<T> operator*(const TVector<T>& v) const {
-		auto N = _matrix.Size();
-		TVector<T> res(N, 0);
-		for (auto i = 0; i < N; ++i) {
-			for (auto j = 0; j < N; ++j) {
-				res[i] += _matrix[i][j] * v[j];
-			}
-		}
-		return res;
-	}
-
 	TMatrix<T> operator*(const TMatrix<T>& m) const {
-		auto N = _matrix.Size();
-		auto M = m._matrix[0].Size();
-		TMatrix<T> res(N, M, 0);
-		for (auto i = 0; i < N; ++i) {
-			for (auto j = 0; j < M; ++j) {
-				for (auto k = 0; k < N; ++k) {
-					res[i][j] += _matrix[i][k] * m._matrix[k][j];
+		assert(Size() == m.Size());
+		auto N = Size();
+		TMatrix<T> res(N, N, 0);
+		int s = 50;
+#pragma omp parallel for num_threads(thread_num)
+		for (int i = 0; i < N; i++) {
+			for (int jj = 0; jj < N; jj += s) {
+				for (int kk = 0; kk < N; kk += s) {
+					for (int j = jj; j < ((jj + s) > N ? N : (jj + s)); j++) {
+						T temp = 0;
+						for (int k = kk; k < ((kk + s) > N ? N : (kk + s)); k++) {
+							temp += _matrix[i][k] * m[k][j];
+						}
+						res[i][j] += temp;
+					}
 				}
 			}
 		}
@@ -87,33 +74,6 @@ public:
 		return !(*this == v);
 	}
 
-	void Transpone() {
-		const auto N = _matrix.Size();
-		const auto M = _matrix[0].Size();
-		for (int i = 0; i < N - 1; i++) {
-			for (int j = i + 1; j < M; j++) {
-				auto temp = _matrix[i][j];
-				_matrix[i][j] = _matrix[j][i];
-				_matrix[j][i] = temp;
-			}
-		}
-	}
-
-	bool IsZero() const {
-		const auto N = _matrix.Size();
-		if (N == 0) {
-			return true;
-		}
-		const auto M = _matrix[0].Size();
-		for (int i = 0; i < N - 1; i++) {
-			for (int j = i + 1; j < M; j++) {
-				if (_matrix[i][j] != 0) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
 
 	auto Size() const {
 		return _matrix.Size();
@@ -157,19 +117,6 @@ TMatrix<T> generate_matrix(int N, int M) {
 	for (size_t i = 0; i < N; ++i) {
 		for (size_t j = 0; j < M; ++j) {
 			res[i][j] = std::rand() % 20 - 10;
-		}
-	}
-	return res;
-}
-
-template <typename T>
-TMatrix<T> operator*(TVector<T> v1, TVector<T> v2) {
-	auto N = v1.Size();
-	auto M = v2.Size();
-	TMatrix<T> res(N, N, 0);
-	for (auto i = 0; i < N; ++i) {
-		for (auto j = 0; j < M; ++j) {
-			res[i][j] = v1[i] * v2[j];
 		}
 	}
 	return res;
