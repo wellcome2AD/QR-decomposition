@@ -1,29 +1,39 @@
 test size: 3
-time: 6.9e-06
-abs error: 8.78253e-07
-rel error: 1.75651e-07
+time: 4.2e-06
+abs error: 6.95104e-07
+rel error: 1.39021e-07
+
+test size: 3
+time: 4.1e-06
+abs error: 1.28531e-06
+rel error: 1.68769e-07
+
+test size: 3
+time: 3.3e-06
+abs error: 6.84805e-07
+rel error: 7.60895e-08
 
 test size: 100
-time: 0.508163
-abs error: 0.000746433
-rel error: 1.28803e-06
+time: 0.494328
+abs error: 0.000588086
+rel error: 1.02171e-06
 
 test size: 200
-time: 11.5924
-abs error: 0.00290193
-rel error: 2.5111e-06
+time: 7.92753
+abs error: 0.00173891
+rel error: 1.50756e-06
 
 test size: 300
-time: 50.2007
-abs error: 0.00631109
-rel error: 3.63063e-06
+time: 36.2374
+abs error: 0.00321594
+rel error: 1.85563e-06
 
 test size: 400
-time: 176.922
-abs error: 0.0112035
-rel error: 4.84842e-06
+time: 112.263
+abs error: 0.00503326
+rel error: 2.17534e-06
 
 test size: 500
-time: 465.319
-abs error: 0.0174695
-rel error: 6.04093e-06
+time: 278.5
+abs error: 0.00711048
+rel error: 2.45835e-06

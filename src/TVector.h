@@ -13,6 +13,7 @@ public:
 	TVector<T>(std::initializer_list<T> l) : _vector(l) {}
 
 	TVector<T>& operator*(T a) {
+#pragma omp parallel for num_treads(thread_num)
 		for (auto i = 0; i < _vector.size(); ++i) {
 			_vector[i] = _vector[i] * a;
 		}
