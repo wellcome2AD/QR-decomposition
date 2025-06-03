@@ -12,35 +12,34 @@ inline static float sign(float x)
 }
 
 template <typename T>
-static float count_beta(const TMatrix<T>& Ak, int k_step)
+static double count_beta(const TMatrix<T>& Ak, int k_step)
 {
-	const size_t N = Ak.Size();
-    float sum_by_k_col = 0.0;
-    for (size_t str = k_step; str < N; ++str)
-    {
-		sum_by_k_col += Ak[str][k_step] * Ak[str][k_step];
+    const size_t N = Ak.Size();
+    double sum_by_k_col = 0.0;
+// #pragma omp parallel for num_threads(thread_num) reduction(+:sum_by_k_col)
+    for (int str = k_step; str < N; ++str) {
+        sum_by_k_col += Ak[str][k_step] * Ak[str][k_step];
     }
-	auto beta = sign(-Ak[k_step][k_step]) * sqrt(sum_by_k_col);
+    auto beta = sign(-Ak[k_step][k_step]) * sqrt(sum_by_k_col);
     return beta;
 }
 
 template <typename T>
-static float count_mu(float beta, int k_step, const TMatrix<T>& Ak)
+static double count_mu(float beta, int k_step, const TMatrix<T>& Ak)
 {
-	auto mu = 1 / sqrt(2.0 * beta * beta - 2 * beta * Ak[k_step][k_step]);
+    double mu = 1 / sqrt(2.0 * beta * beta - 2 * beta * Ak[k_step][k_step]);
     return mu;
 }
 
 template <typename T>
 static TVector<T> count_w(const TMatrix<T>& Ak, int k_step, float beta, float mu)
 {
-	const size_t N = Ak.Size();
+    const size_t N = Ak.Size();
     TVector<T> w(N);
-    for (size_t str = 0; str < N; ++str)
-    {
-		w[str] = str < k_step ? 0 : Ak[str][k_step] * mu;
+// #pragma omp parallel for num_threads(thread_num)
+    for (int str = 0; str < N; ++str) {
+        w[str] = str < k_step ? 0 : Ak[str][k_step] * mu;
     }
-
     w[k_step] -= beta * mu;
     return w;
 }
@@ -49,43 +48,36 @@ template <typename T>
 static TMatrix<T> count_H(float beta, float mu, TVector<T> w)
 {
     size_t N = w.Size();
-    TMatrix<T> E(N, N);
-    for (size_t i = 0; i < N; ++i)
-    {
-		E[i][i] = 1.0;
+    TMatrix<T> H(N, N, 0);
+#pragma omp parallel for num_threads(thread_num)
+    for (int i = 0; i < N; ++i) {
+        H[i][i] = 1.0;
+        for (int j = 0; j < N; ++j) {
+            H[i][j] -= w[i] * w[j] * 2.0;
+        }
     }
-    auto H = E - w * w * 2.0;
     return H;
-}
-
-template <typename T>
-static void count_Q(const TMatrix<T>& H, TMatrix<T>& Q) {
-    bool isFirst = Q.IsZero();
-    if (isFirst)
-    {
-        Q = H;
-    }
-    else
-    {
-        Q = Q * H;
-    }
-
-    return;
 }
 
 template <typename T>
 void QR_decomposition(const TMatrix<T>& A, TMatrix<T>& Q, TMatrix<T>& R)
 {
-	const size_t N = A.Size();
+    const size_t N = A.Size();
     R = A;
-    for (size_t k = 0; k < N - 1; ++k)
-    {
+    bool isFirst = true;
+    for (size_t k = 0; k < N - 1; ++k) {
         auto beta = count_beta(R, k);
         auto mu = count_mu(beta, k, R);
         auto w = count_w(R, k, beta, mu);
 
         auto H = count_H(beta, mu, w);
-        count_Q(H, Q);
+
+        if (k == 0) {
+            Q = H;
+        }
+        else {
+            Q = Q * H;
+        }
 
         R = H * R;
     }
