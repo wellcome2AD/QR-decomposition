@@ -151,6 +151,18 @@ private:
 };
 
 template <typename T>
+TMatrix<T> generate_matrix(int N, int M) {
+	TMatrix<T> res(N, M);
+	std::srand(std::time(0));
+	for (size_t i = 0; i < N; ++i) {
+		for (size_t j = 0; j < M; ++j) {
+			res[i][j] = std::rand() % 20 - 10;
+		}
+	}
+	return res;
+}
+
+template <typename T>
 TMatrix<T> operator*(TVector<T> v1, TVector<T> v2) {
 	auto N = v1.Size();
 	auto M = v2.Size();

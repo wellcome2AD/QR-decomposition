@@ -20,3 +20,6 @@
 *.tlog
 *.lastbuildstate
 *.idb
+/x64/Release/*.iobj
+/x64/Release/*.ipdb
+/x64/Release/*.txt

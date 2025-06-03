@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "QRDecomposition.h"
-#include "LinearEquationSystem.h"
+#include "TMatrix.h"
 
 template <typename T>
 double Fnorm(TMatrix<T> m) {
@@ -35,8 +35,6 @@ void writeMatrixToFile(std::string fileName, TMatrix<T> m) {
 void test_with_known_system_1() {
 	std::cout << "test size: " << 3 << std::endl;
 	TMatrix<float> A = { {1, -2, 1}, {2, 0, -3}, {2, -1, -1} }, Q(3, 3), R(3, 3);
-	const TVector<float> b = { 1, 8, 5 };
-	const TVector<float> expec_x = { 1, -1, -2 };
 	
 	writeMatrixToFile("test_data\\matrixA_" + std::to_string(3) + "_1.txt", A);
 
@@ -55,8 +53,6 @@ void test_with_known_system_1() {
 void test_with_known_system_2() {
 	std::cout << "test size: " << 3 << std::endl;
 	TMatrix<float> A = { {3, 2, -5}, {2, -1, 3}, {1, 2, -1} }, Q(3, 3), R(3, 3);
-	const TVector<float> b = { -1, 13, 9 };
-	const TVector<float> expec_x = { 3, 5, 4 };
 	
 	writeMatrixToFile("test_data\\matrixA_" + std::to_string(3) + "_2.txt", A);
 
@@ -75,8 +71,6 @@ void test_with_known_system_2() {
 void test_with_known_system_3() {
 	std::cout << "test size: " << 3 << std::endl;
 	TMatrix<float> A = { { 4, 2, -1 }, { 5, 3, -2 }, { 3, 2, -3 } }, Q(3, 3), R(3, 3);
-	const TVector<float> b = { 1, 2, 0 };
-	const TVector<float> expec_x = { -1, 3, 1 };
 	
 	writeMatrixToFile("test_data\\matrixA_" + std::to_string(3) + "_3.txt", A);
 
@@ -94,11 +88,8 @@ void test_with_known_system_3() {
 
 void test_with_generated_system(int N) {
 	std::cout << "test size: " << N << std::endl;
-	TMatrix<float> A(N, N), Q(N, N), R(N, N);
-	TVector<float> b(N), expec_x(N);
-	generate_linear_equation_system<float>(A, b, expec_x);
+	TMatrix<float> A = generate_matrix<float>(N, N), Q(N, N), R(N, N);
 	writeMatrixToFile("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
-
 
 	double start = omp_get_wtime();
 	QR_decomposition(A, Q, R);
@@ -116,11 +107,10 @@ int main() {
 	test_with_known_system_1();
 	test_with_known_system_2();
 	test_with_known_system_3();
-	std::vector<int> sizes{100, 200, 300, 400, 500};
+	std::vector<int> sizes{100, 200, 300, 400, 500, 1000, 1500, 2000};
 	for (auto&& size : sizes) {
 		test_with_generated_system(size);
 	}
 	std::cout << "all tests passed";
-	// сравнить со scilab, eigen по времени
 	return 0;
 }
