@@ -13,9 +13,9 @@
 template <typename T>
 double Fnorm(TMatrix<T> m) {
 	double res = 0.0;
-	for (size_t i = 0; i < m.GetN(); ++i) {
-		for (size_t j = 0; j < m.GetM(); ++j) {
-			res += m.get(i, j) * m.get(i, j);
+	for (size_t i = 0; i < m.Size(); ++i) {
+		for (size_t j = 0; j < m[0].Size(); ++j) {
+			res += m[i][j] * m[i][j];
 		}
 	}
 	return sqrt(res);
@@ -24,9 +24,9 @@ double Fnorm(TMatrix<T> m) {
 template <typename T>
 void writeMatrixToFile(std::string fileName, TMatrix<T> m) {
 	std::ofstream file(fileName);
-	for (size_t i = 0; i < m.GetN(); ++i) {
-		for (size_t j = 0; j < m.GetM(); ++j) {
-			file << m.get(i,j) << " ";
+	for (size_t i = 0; i < m.Size(); ++i) {
+		for (size_t j = 0; j < m[0].Size(); ++j) {
+			file << m[i][j] << " ";
 		}
 		file << "; ";
 	}
