@@ -1,0 +1,144 @@
+test size: 100
+time: 0.345972
+abs error: 0.000580911
+rel error: 1.01592e-06
+
+test size: 200
+time: 4.45997
+abs error: 0.00174633
+rel error: 1.50641e-06
+
+test size: 300
+time: 24.0261
+abs error: 0.00315339
+rel error: 1.81703e-06
+
+test size: 400
+time: 87.9575
+abs error: 0.00500631
+rel error: 2.16494e-06
+
+test size: 500
+time: 241.204
+abs error: 0.00715659
+rel error: 2.47325e-06
+
+test size: 100
+time: 0.181726
+abs error: 0.000605901
+rel error: 1.04956e-06
+
+test size: 200
+time: 4.38711
+abs error: 0.00177168
+rel error: 1.52997e-06
+
+test size: 300
+time: 15.98
+abs error: 0.00319334
+rel error: 1.8395e-06
+
+test size: 400
+time: 55.9396
+abs error: 0.00507847
+rel error: 2.19308e-06
+
+test size: 100
+time: 0.228408
+abs error: 0.000597507
+rel error: 1.03554e-06
+
+test size: 200
+time: 3.41448
+abs error: 0.00169405
+rel error: 1.46654e-06
+
+test size: 300
+time: 14.0999
+abs error: 0.00320424
+rel error: 1.84674e-06
+
+test size: 400
+time: 49.0165
+abs error: 0.00508935
+rel error: 2.19759e-06
+
+test size: 100
+time: 0.0976722
+abs error: 0.000574453
+rel error: 9.9561e-07
+
+test size: 200
+time: 2.30424
+abs error: 0.00175965
+rel error: 1.52225e-06
+
+test size: 300
+time: 16.1712
+abs error: 0.003233
+rel error: 1.86291e-06
+
+test size: 400
+time: 49.2555
+abs error: 0.0051133
+rel error: 2.21059e-06
+
+test size: 100
+time: 0.225863
+abs error: 0.000596683
+rel error: 1.03958e-06
+
+test size: 200
+time: 3.38945
+abs error: 0.00170888
+rel error: 1.48162e-06
+
+test size: 300
+time: 15.5395
+abs error: 0.00318347
+rel error: 1.83627e-06
+
+test size: 400
+time: 48.7228
+abs error: 0.00498743
+rel error: 2.15234e-06
+
+test size: 100
+time: 0.212912
+abs error: 0.000586126
+rel error: 1.01538e-06
+
+test size: 200
+time: 1.5908
+abs error: 0.00175338
+rel error: 1.51816e-06
+
+test size: 300
+time: 14.3734
+abs error: 0.00328727
+rel error: 1.8918e-06
+
+test size: 400
+time: 45.7722
+abs error: 0.00504048
+rel error: 2.17682e-06
+
+test size: 100
+time: 0.0880403
+abs error: 0.000581076
+rel error: 1.00847e-06
+
+test size: 200
+time: 1.91838
+abs error: 0.00172067
+rel error: 1.48541e-06
+
+test size: 300
+time: 14.1315
+abs error: 0.0032188
+rel error: 1.85377e-06
+
+test size: 400
+time: 40.5733
+abs error: 0.00499316
+rel error: 2.15834e-06
