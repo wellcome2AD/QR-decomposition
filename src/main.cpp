@@ -146,11 +146,11 @@ int main() {
 	Household_QR_decomposition(A, expected_Q, expected_R);
 	Household_QR_decomposition_experimental(A, Q, R);
 
-	//std::cout << "Q:" << Q << std::endl;
-	//std::cout << "expec Q:" << expected_Q << std::endl;
+	std::cout << "Q:" << Q << std::endl;
+	std::cout << "expec Q:" << expected_Q << std::endl;
 
-	std::cout << "R:" << R << std::endl;
-	std::cout << "expec R:" << expected_R << std::endl;
+	//std::cout << "R:" << R << std::endl;
+	//std::cout << "expec R:" << expected_R << std::endl;
 	//
 	//auto QR = Q * R;
 	//std::cout << "Q * R:" << QR << std::endl;

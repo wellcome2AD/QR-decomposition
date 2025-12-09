@@ -71,6 +71,7 @@ void Household_QR_decomposition(const TMatrix<T>& A, TMatrix<T>& Q, TMatrix<T>& 
 		auto w = count_w(R, k, beta, mu);
 
 		auto H = count_H(beta, mu, w);
+		std::cout << "H" << k + 1 << ":" << H << std::endl;
 
 		if (k == 0) {
 			Q = H;
@@ -91,12 +92,7 @@ void Household_QR_decomposition_experimental(const TMatrix<T>& A, TMatrix<T>& Q,
 	const size_t N = A.Size();
 	R = A;
 
-	Q = TMatrix<T>(N, N, 0);
-	for (auto i = 0; i < N; i++)
-	{
-		Q[i][i] = 1;
-	}
-
+	// вычисление R
 	for (size_t k = 0; k < N - 1; ++k) {
 		auto beta = count_beta(R, k);
 		auto mu = count_mu(beta, k, R);
@@ -119,8 +115,8 @@ void Household_QR_decomposition_experimental(const TMatrix<T>& A, TMatrix<T>& Q,
 			y[0][i] *= 2.0;
 		}
 
-		// w * y = матрица размером n×m, где (i,j)-й элемент = w[i] * y[j]
-		// w это вектор nx1, y это вектор 1xm
+		// w * y = матрица размером n×n, где (i,j)-й элемент = w[i] * y[j]
+		// w это вектор nx1, y это вектор 1xn
 		TMatrix<T> wy(N, N);
 		for (size_t i = 0; i < N; ++i)
 		{
@@ -132,6 +128,71 @@ void Household_QR_decomposition_experimental(const TMatrix<T>& A, TMatrix<T>& Q,
 
 		// R = R - w * y   (w * y — внешнее произведение, outer product)
 		R = R - wy;
+
+		// сохраним в столбце k вектор wk с элемента k+1
+		for (auto i = k + 1; i < N; ++i)
+		{
+			R[i][k] = w[i];
+		}
+	}
+	std::cout << "R:" << R << std::endl;
+	Q = TMatrix<T>(N, N, 0);
+	for (auto i = 0; i < N; i++)
+	{
+		Q[i][i] = 1;
+	}
+	// теперь для вычисления Q достанем вектора wk из R
+	for (ptrdiff_t k = N - 2; k >= 0; --k) {
+		// первые k элементов =0, w[k]=1;
+		TVector<T> w(N, 0);
+		w[k] = 1;
+		double sum = 0.0;
+		for (size_t i = k + 1; i < N; ++i) {
+			w[i] = R[i][k];
+			R[i][k] = 0.0; // занулим заодно эти элементы в R
+			sum += w[i] * w[i];
+		}
+		// на диагонали хранится sigma, вычислим tau
+		// tau = -sigma / (sigma^2 + sum_i( w[i]^2 )  где i = k+1..N-1
+		// или эквивалентно beta = 2 * tau = -2sigma / (sigma^2 + sum_i( w[i]^2 )
+		// double sigma = R[k][k];
+		//double tau = -sigma / (sigma * sigma + sum); // todo: это надо вообще? у меня стоит коэффициент 2
+
+		// Q = H_{N-2} * Q = Q - tau * w * (wT * Q)
+		TMatrix<T> wTQ(1, N, 0);
+		for (size_t i = 0; i < N; ++i)
+		{
+			for (size_t j = 0; j < N; ++j) // todo: нужно оптимизировать, умножать не полностью; видимо, с k-го элемента
+			{
+				wTQ[0][i] += w[j] * Q[j][i];
+			}
+		}
+
+		// w = τ * w
+		for (size_t i = k; i < N; ++i)
+		{
+			w[i] *= 2; //tau;
+		}
+
+		// w * wTQ = матрица размером n×n, где (i,j)-й элемент = w[i] * y[j]
+		// w это вектор nx1, wTQ это вектор 1xn
+		TMatrix<T> wwTQ(N, N);
+		for (size_t i = 0; i < N; ++i)
+		{
+			for (size_t j = 0; j < N; ++j)
+			{
+				wwTQ[i][j] = w[i] * wTQ[0][j];
+			}
+		}
+
+		// теперь вычитаем из Q полученную матрицу wwTQ
+		for (size_t i = 0; i < N; ++i)
+		{
+			for (size_t j = 0; j < N; ++j)
+			{
+				Q[i][j] -= wwTQ[i][j];
+			}
+		}
 	}
 
 	return;
