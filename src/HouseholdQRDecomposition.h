@@ -132,7 +132,7 @@ void Household_QR_decomposition_experimental(const TMatrix<T>& A, TMatrix<T>& Q,
 		// сохраним в столбце k вектор wk с элемента k+1
 		for (auto i = k + 1; i < N; ++i)
 		{
-			R[i][k] = w[i];
+			R[i][k] = w[i] / w[k];
 		}
 	}
 	std::cout << "R:" << R << std::endl;
@@ -141,6 +141,8 @@ void Household_QR_decomposition_experimental(const TMatrix<T>& A, TMatrix<T>& Q,
 	{
 		Q[i][i] = 1;
 	}
+
+	/*
 	// теперь для вычисления Q достанем вектора wk из R
 	for (ptrdiff_t k = N - 2; k >= 0; --k) {
 		// первые k элементов =0, w[k]=1;
@@ -191,6 +193,46 @@ void Household_QR_decomposition_experimental(const TMatrix<T>& A, TMatrix<T>& Q,
 			for (size_t j = 0; j < N; ++j)
 			{
 				Q[i][j] -= wwTQ[i][j];
+			}
+		}
+	}
+	*/
+
+	// Строим Q из сохранённых в R векторов
+	for (ptrdiff_t k = N - 2; k >= 0; --k) {
+		// 1. Восстанавливаем вектор w
+		//    w[k] = 1, w[k+1..N-1] берём из R
+		TVector<T> w(N - k);  // только ненулевая часть!
+		w[0] = 1.0;  // w[k] = 1
+
+		double w_squared_sum = 0.0;
+		for (size_t i = 0; i < N - k - 1; ++i) {
+			w[i + 1] = R[k + 1 + i][k];  // берём из сохранённого
+			R[k + 1 + i][k] = 0.0; // занулим заодно эти элементы в R
+			w_squared_sum += w[i + 1] * w[i + 1];
+		}
+
+		// 2. Вычисляем τ = 2 / (wᵀw)
+		//    wᵀw = 1² + sum(w[i]²) = 1 + w_squared_sum
+		double tau = 2.0 / (1.0 + w_squared_sum);
+
+		// 3. Вычисляем y = τ * (wᵀ * Q[k:N, :])
+		//    y — вектор-строка размером N
+		TVector<T> y(N, 0.0);
+
+		for (size_t col = 0; col < N; ++col) {
+			double dot = 0.0;
+			// Умножаем только ненулевую часть w на соответствующие строки Q
+			for (size_t i = 0; i < N - k; ++i) {
+				dot += w[i] * Q[k + i][col];
+			}
+			y[col] = tau * dot;
+		}
+
+		// 4. Обновляем только Q[k:N, :] = Q[k:N, :] - w * y
+		for (size_t i = 0; i < N - k; ++i) {
+			for (size_t col = 0; col < N; ++col) {
+				Q[k + i][col] -= w[i] * y[col];
 			}
 		}
 	}

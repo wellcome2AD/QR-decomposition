@@ -142,22 +142,22 @@ int main() {
 	//			   expected_Q = { {-0.123091, 0.904534, 0.408248},
 	//							  {-0.492366, 0.301511, -0.816496},
 	//							  {-0.86164, -0.301511, 0.408248} };
-	
+
 	Household_QR_decomposition(A, expected_Q, expected_R);
 	Household_QR_decomposition_experimental(A, Q, R);
 
 	std::cout << "Q:" << Q << std::endl;
 	std::cout << "expec Q:" << expected_Q << std::endl;
 
-	//std::cout << "R:" << R << std::endl;
-	//std::cout << "expec R:" << expected_R << std::endl;
-	//
-	//auto QR = Q * R;
-	//std::cout << "Q * R:" << QR << std::endl;
-	//std::cout << "A:" << A << std::endl;
-	//
-	//std::cout << "abs error: " << Fnorm(QR - A) << std::endl;
-	//std::cout << "rel error: " << Fnorm(QR - A) / Fnorm(A) << std::endl << std::endl;
+	std::cout << "R:" << R << std::endl;
+	std::cout << "expec R:" << expected_R << std::endl;
+
+	auto QR = Q * R;
+	std::cout << "Q * R:" << QR << std::endl;
+	std::cout << "A:" << A << std::endl;
+
+	std::cout << "abs error: " << Fnorm(QR - A) << std::endl;
+	std::cout << "rel error: " << Fnorm(QR - A) / Fnorm(A) << std::endl << std::endl;
 
 	return 0;
 }
