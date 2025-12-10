@@ -74,45 +74,45 @@ void defaultTest() {
 	TMatrix<currentType> A, Q, R, expected_Q, expected_R;
 
 	// 2х2 тест
-	{
-		A = { {1, 2}, {3, 4} };
-	}
+	//{
+	//	A = { {1, 2}, {3, 4} };
+	//}
 	// 3х3 тест
 	{
-		TMatrix<currentType> A = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };
+		A = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };
 	}
 
-	// сгенерированная матрица указанного N
-	{
-		int N = 6;
-		A = generate_matrix<currentType>(N, N);
-	}
+	//// сгенерированная матрица указанного N
+	//{
+	//	int N = 4;
+	//	A = generate_matrix<currentType>(N, N);
+	//}
 
 	Household_QR_decomposition(A, expected_Q, expected_R);
 	Household_QR_decomposition_experimental(A, Q, R);
 
-	std::cout << "Q:" << Q << std::endl;
-	std::cout << "expec Q:" << expected_Q << std::endl;
+	//std::cout << "Q:" << Q << std::endl;
+	//std::cout << "expec Q:" << expected_Q << std::endl;
 
-	std::cout << "R:" << R << std::endl;
-	std::cout << "expec R:" << expected_R << std::endl;
+	//std::cout << "R:" << R << std::endl;
+	//std::cout << "expec R:" << expected_R << std::endl;
 
 	auto QR = Q * R;
 	std::cout << "Q * R:" << QR << std::endl;
 	std::cout << "A:" << A << std::endl;
-
+	
 	std::cout << "abs error: " << Fnorm(QR - A) << std::endl;
 	std::cout << "rel error: " << Fnorm(QR - A) / Fnorm(A) << std::endl << std::endl;
 }
 
 int main() {
-	{
-		std::cout << "---------------Household method---------------\n";
-		std::vector<int> sizes{ 100, 200, 300, 400, 500 };
-		for (auto&& size : sizes) {
-			HOUSEHOLD_test_with_generated_system(size, false);
-		}
-	}
+	//{
+	//	std::cout << "---------------Household method---------------\n";
+	//	std::vector<int> sizes{ 100, 200, 300, 400, 500 };
+	//	for (auto&& size : sizes) {
+	//		HOUSEHOLD_test_with_generated_system(size, false);
+	//	}
+	//}
 	{
 		std::cout << "---------------Household optimized method---------------\n";
 		std::vector<int> sizes{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500 };

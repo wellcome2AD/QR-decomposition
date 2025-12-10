@@ -90,96 +90,102 @@ void Household_QR_decomposition_experimental(const TMatrix<T>& A, TMatrix<T>& Q,
 {
 	const ptrdiff_t N = A.Size();
 	R = A;
-	TMatrix<T> all_w(N, N);
+	TMatrix<T> all_w(N, N, 0);
 	// вычисление R
 	for (ptrdiff_t k = 0; k < N - 1; ++k) {
-		auto beta = count_beta(R, k);
-		auto mu = count_mu(beta, k, R);
-		auto w = count_w(R, k, beta, mu);
+		double tau = 0.0, sigma = 0.0;
+		TVector<T> w(N, 0);
+		// вычисление w, tau, sigma
+		// w = x - sigma*(1,0...0)
+		// tau = 2 / (wTw)
+		// sigma = -sign(x0) * ||x||
+		[&R, k, N, &w, &tau, &sigma]() {
+			double sum_sq = 0.0;
+			for (ptrdiff_t str = k; str < N; ++str) {
+				sum_sq += R[str][k] * R[str][k];
+			}
 
-		// H * R = (I - 2 * w * wᵀ) * R = R - 2 * w * (wT * R)
-		// формируем (wT * R)
-		TMatrix<T> y(1, N, 0);
-		for (ptrdiff_t i = 0; i < N; ++i)
-		{
-			for (ptrdiff_t j = 0; j < N; ++j)
-			{
-				y[0][i] += w[j] * R[j][i];
+			// sigma = -sign(x0) * ||x||
+			double norm_x = sqrt(sum_sq);
+			sigma = -sign(R[k][k]) * norm_x;
+
+			// w = x - sigma*(1,0...0)
+			w[k] = R[k][k] - sigma;
+			for (ptrdiff_t str = k + 1; str < N; ++str) {
+				w[str] = R[str][k];
+			}
+
+			// tau = 2 / (wTw)
+			double denominator = 0;
+			for (ptrdiff_t i = k; i < N; ++i) {
+				denominator += w[i] * w[i];
+			}
+
+			if (denominator != 0) {
+				tau = 2.0 / denominator;
+			}
+		}();
+
+		R[k][k] = sigma;
+		for (ptrdiff_t col = k + 1; col < N; ++col) {
+			double dot = 0;
+			for (ptrdiff_t row = k; row < N; ++row) {
+				dot += w[row] * R[row][col];
+			}
+
+			double scale = tau * dot;
+			for (ptrdiff_t row = k; row < N; ++row) {
+				R[row][col] -= w[row] * scale;
 			}
 		}
 
-		// y = 2 * y
-		for (ptrdiff_t i = 0; i < N; ++i)
-		{
-			y[0][i] *= 2.0;
+		// зануляем столбец под диагональю
+		for (ptrdiff_t i = k + 1; i < N; ++i) {
+			R[i][k] = 0;
 		}
 
-		// w * y = матрица размером n×n, где (i,j)-й элемент = w[i] * y[j]
-		// w это вектор nx1, y это вектор 1xn
-		TMatrix<T> wy(N, N);
-		for (ptrdiff_t i = 0; i < N; ++i)
-		{
-			for (ptrdiff_t j = 0; j < N; ++j)
-			{
-				wy[i][j] = w[i] * y[0][j];
+		// сохраняем w для Q (масштабированную)
+		if (w[k] != 0) {
+			for (ptrdiff_t i = k; i < N; ++i) {
+				all_w[i][k] = w[i] / w[k];
 			}
-		}
-
-		// R = R - w * y   (w * y — внешнее произведение, outer product)
-		R = R - wy;
-
-		// сохраним в столбце k вектор wk с элемента k+1
-		for (auto i = 0; i < N; ++i)
-		{
-			all_w[i][k] = w[i];
 		}
 	}
 
+	// вычисление Q
 	Q = TMatrix<T>(N, N, 0);
-	for (auto i = 0; i < N; i++)
-	{
+	for (auto i = 0; i < N; i++) {
 		Q[i][i] = 1;
 	}
-	// теперь для вычисления Q достанем вектора wk
+	// применяем отражения в обратном порядке
 	for (ptrdiff_t k = N - 2; k >= 0; --k) {
-		double sum = 0.0;
-		for (ptrdiff_t i = 0; i < N; ++i) {
-			sum += all_w[i][k] * all_w[i][k];
+		// берём вектор w из all_w
+		int m = N - k;  // размер w
+		TVector<T> w(m);
+		w[0] = 1.0;
+		for (ptrdiff_t i = 1; i < m; ++i) {
+			w[i] = all_w[k + i][k];
 		}
 
-		// Q = H_{N-2} * Q = Q - 2 * w * (wT * Q)
-		TMatrix<T> wTQ(1, N, 0);
-		for (ptrdiff_t i = k; i < N; ++i)
-		{
-			for (ptrdiff_t j = k; j < N; ++j) // todo: нужно оптимизировать, умножать не полностью; видимо, с k-го элемента
-			{
-				wTQ[0][i] += all_w[j][k] * Q[j][i];
+		// tau = 2 / (wTw)
+		double w_norm_sq = 0;
+		for (ptrdiff_t i = 0; i < m; ++i) {
+			w_norm_sq += w[i] * w[i];
+		}
+		double tau = 2.0 / w_norm_sq;
+
+		// H = I - tau * w * wT к Q[k:N, :]
+		for (ptrdiff_t col = 0; col < N; ++col) {
+			// dot = wT * Q[k:N, col]
+			double dot = 0;
+			for (ptrdiff_t i = 0; i < m; ++i) {
+				dot += w[i] * Q[k + i][col];
 			}
-		}
+			dot *= tau;
 
-		// w = 2 * w
-		for (ptrdiff_t i = k; i < N; ++i)
-		{
-			all_w[i][k] *= 2;
-		}
-
-		// w * wTQ = матрица размером n×n, где (i,j)-й элемент = w[i] * y[j]
-		// w это вектор nx1, wTQ это вектор 1xn
-		TMatrix<T> wwTQ(N, N);
-		for (ptrdiff_t i = 0; i < N; ++i)
-		{
-			for (ptrdiff_t j = 0; j < N; ++j)
-			{
-				wwTQ[i][j] = all_w[i][k] * wTQ[0][j];
-			}
-		}
-
-		// теперь вычитаем из Q полученную матрицу wwTQ
-		for (ptrdiff_t i = 0; i < N; ++i)
-		{
-			for (ptrdiff_t j = 0; j < N; ++j)
-			{
-				Q[i][j] -= wwTQ[i][j];
+			// Q[k:N, col] -= dot * w
+			for (ptrdiff_t i = 0; i < m; ++i) {
+				Q[k + i][col] -= dot * w[i];
 			}
 		}
 	}
