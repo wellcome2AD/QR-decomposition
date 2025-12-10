@@ -1,5 +1,6 @@
 #pragma once
 
+#include "IHouseholderMethodSolver.h"
 #include "..\TMatrix.h"
 #include "math.h"
 

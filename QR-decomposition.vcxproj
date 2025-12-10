@@ -117,6 +117,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,15 +125,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\GivensQRDecomposition.h" />
+    <ClInclude Include="src\Givens_Method\GivensBasic.h" />
+    <ClInclude Include="src\Givens_Method\IGivensMethodSolver.h" />
     <ClInclude Include="src\Householder_method\HouseholderBasic.h" />
     <ClInclude Include="src\Householder_method\HouseholderWithNormW.h" />
     <ClInclude Include="src\Householder_method\HouseholderWithoutMatrixMul.h" />
     <ClInclude Include="src\Householder_method\IHouseholderMethodSolver.h" />
+    <ClInclude Include="src\IQRSolver.h" />
     <ClInclude Include="src\math.h" />
     <ClInclude Include="src\TMatrix.h" />
     <ClInclude Include="src\TVector.h" />
-    <ClInclude Include="src\QRDecomposition.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />

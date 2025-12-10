@@ -8,10 +8,16 @@
 #include <vector>
 #include <map>
 
+#include "IQRSolver.h"
+
 #include "Householder_method/IHouseholderMethodSolver.h"
 #include "Householder_method/HouseholderBasic.h"
 #include "Householder_method/HouseholderWithoutMatrixMul.h"
 #include "Householder_method/HouseholderWithNormW.h"
+
+#include "Givens_method/IGivensMethodSolver.h"
+#include "Givens_method/GivensBasic.h"
+
 #include "TMatrix.h"
 
 typedef double currentType;
@@ -19,9 +25,9 @@ typedef double currentType;
 template <typename T>
 double Fnorm(TMatrix<T> m) {
 	double res = 0.0;
-	for (size_t i = 0; i < m.GetN(); ++i) {
-		for (size_t j = 0; j < m.GetM(); ++j) {
-			res += m.get(i, j) * m.get(i, j);
+	for (size_t i = 0; i < m.Size(); ++i) {
+		for (size_t j = 0; j < m[0].Size(); ++j) {
+			res += m[i][j] * m[i][j];
 		}
 	}
 	return sqrt(res);
@@ -30,16 +36,16 @@ double Fnorm(TMatrix<T> m) {
 template <typename T>
 void writeMatrixToFile(std::string fileName, TMatrix<T> m) {
 	std::ofstream file(fileName);
-	for (size_t i = 0; i < m.GetN(); ++i) {
-		for (size_t j = 0; j < m.GetM(); ++j) {
-			file << m.get(i,j) << " ";
+	for (size_t i = 0; i < m.Size(); ++i) {
+		for (size_t j = 0; j < m[0].Size(); ++j) {
+			file << m[i][j] << " ";
 		}
 		file << "; ";
 	}
 }
 
 template <typename T>
-void HOUSEHOLDER_test_with_generated_system(IHouseholderMethodSolver<T>* solver, int N, bool writeToFile) {
+void QR_decomposition_test_with_generated_matrix(IQRSolver<T>* solver, int N, bool writeToFile) {
 	std::cout << "test size: " << N << std::endl;
 	TMatrix<currentType> A = generate_matrix<currentType>(N, N), Q, R;
 
@@ -58,7 +64,7 @@ void HOUSEHOLDER_test_with_generated_system(IHouseholderMethodSolver<T>* solver,
 }
 
 struct testParams {
-	IHouseholderMethodSolver<currentType>* solver;
+	IQRSolver<currentType>* solver;
 	std::string description;
 	std::vector<int> sizes;
 };
@@ -66,28 +72,34 @@ struct testParams {
 int main() {
 	auto methods = std::map<int, testParams>{};
 
+	//methods[0] = {
+	//	new HouseholderMethodBasic<currentType>(),
+	//	"Householder basic version",
+	//	{ 100, 200, 300, 400, 500 },
+	//};
+
+	//methods[1] = {
+	//	new HouseholderMethodWithoutMatrixMults<currentType>(),
+	//	"Householder without matrix multiplications",
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500 },
+	//};
+
+	//methods[2] = {
+	//	new HouseholderMethodWithNormW < currentType>,
+	//	"Householder with normal w in-place",
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500 },
+	//};
+
 	methods[0] = {
-		new HouseholderMethodBasic<currentType>(),
-		"Householder basic version",
-		{ 100, 200, 300, 400, 500 },
-	};
-
-	methods[1] = {
-		new HouseholderMethodWithoutMatrixMults<currentType>(),
-		"Householder without matrix multiplications",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500 },
-	};
-
-	methods[2] = {
-		new HouseholderMethodWithNormW < currentType>,
-		"Householder with normal w in-place",
+		new GivensMethodBasic<currentType>(),
+		"Givens basic version",
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500 },
 	};
 
 	for (const auto& method : methods) {
 		std::cout << method.second.description << std::endl;
 		for (auto&& size : method.second.sizes) {
-			HOUSEHOLDER_test_with_generated_system(method.second.solver, size, false);
+			QR_decomposition_test_with_generated_matrix(method.second.solver, size, false);
 		}
 	}
 	std::cout << "all tests passed";
