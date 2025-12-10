@@ -6,111 +6,91 @@
 #include <omp.h>
 #include <string>
 #include <vector>
+#include <map>
 
-#include "QRDecomposition.h"
+#include "Householder_method/IHouseholderMethodSolver.h"
+#include "Householder_method/HouseholderBasic.h"
+#include "Householder_method/HouseholderWithoutMatrixMul.h"
+#include "Householder_method/HouseholderWithNormW.h"
 #include "TMatrix.h"
+
+typedef double currentType;
 
 template <typename T>
 double Fnorm(TMatrix<T> m) {
-    double res = 0.0;
-    for (size_t i = 0; i < m.Size(); ++i) {
-        for (size_t j = 0; j < m[0].Size(); ++j) {
-            res += m[i][j] * m[i][j];
-        }
-    }
-    return sqrt(res);
+	double res = 0.0;
+	for (size_t i = 0; i < m.Size(); ++i) {
+		for (size_t j = 0; j < m[0].Size(); ++j) {
+			res += m[i][j] * m[i][j];
+		}
+	}
+	return sqrt(res);
 }
 
 template <typename T>
 void writeMatrixToFile(std::string fileName, TMatrix<T> m) {
-    std::ofstream file(fileName);
-    for (size_t i = 0; i < m.Size(); ++i) {
-        for (size_t j = 0; j < m[0].Size(); ++j) {
-            file << m[i][j] << " ";
-        }
-        file << "; ";
-    }
+	std::ofstream file(fileName);
+	for (size_t i = 0; i < m.Size(); ++i) {
+		for (size_t j = 0; j < m[0].Size(); ++j) {
+			file << m[i][j] << " ";
+		}
+		file << "; ";
+	}
 }
 
-void test_with_known_system_1() {
-    std::cout << "test size: " << 3 << std::endl;
-    TMatrix<float> A = { {1, -2, 1}, {2, 0, -3}, {2, -1, -1} }, Q(3, 3), R(3, 3);
+template <typename T>
+void HOUSEHOLDER_test_with_generated_system(IHouseholderMethodSolver<T>* solver, int N, bool writeToFile) {
+	std::cout << "test size: " << N << std::endl;
+	TMatrix<currentType> A = generate_matrix<currentType>(N, N), Q, R;
 
-    writeMatrixToFile("test_data\\matrixA_" + std::to_string(3) + "_1.txt", A);
+	double start = omp_get_wtime();
+	solver->QR_decomposition(A, Q, R);
+	double end = omp_get_wtime();
+	std::cout << "time: " << end - start << std::endl;
+	std::cout << "abs error: " << Fnorm(Q * R - A) << std::endl;
+	std::cout << "rel error: " << Fnorm(Q * R - A) / Fnorm(A) << std::endl << std::endl;
 
-    double start = omp_get_wtime();
-    QR_decomposition(A, Q, R);
-    double end = omp_get_wtime();
-    std::cout << "time: " << end - start << std::endl;
-
-    writeMatrixToFile("test_data\\matrixQ_" + std::to_string(3) + "_1.txt", Q);
-    writeMatrixToFile("test_data\\matrixR_" + std::to_string(3) + "_1.txt", R);
-
-    std::cout << "abs error: " << Fnorm(Q * R - A) << std::endl;
-    std::cout << "rel error: " << Fnorm(Q * R - A) / Fnorm(A) << std::endl << std::endl;
+	if (writeToFile) {
+		writeMatrixToFile("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
+		writeMatrixToFile("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
+		writeMatrixToFile("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
+	}
 }
 
-void test_with_known_system_2() {
-    std::cout << "test size: " << 3 << std::endl;
-    TMatrix<float> A = { {3, 2, -5}, {2, -1, 3}, {1, 2, -1} }, Q(3, 3), R(3, 3);
-
-    writeMatrixToFile("test_data\\matrixA_" + std::to_string(3) + "_2.txt", A);
-
-    double start = omp_get_wtime();
-    QR_decomposition(A, Q, R);
-    double end = omp_get_wtime();
-    std::cout << "time: " << end - start << std::endl;
-
-    writeMatrixToFile("test_data\\matrixQ_" + std::to_string(3) + "_2.txt", Q);
-    writeMatrixToFile("test_data\\matrixR_" + std::to_string(3) + "_2.txt", R);
-
-    std::cout << "abs error: " << Fnorm(Q * R - A) << std::endl;
-    std::cout << "rel error: " << Fnorm(Q * R - A) / Fnorm(A) << std::endl << std::endl;
-}
-
-void test_with_known_system_3() {
-    std::cout << "test size: " << 3 << std::endl;
-    TMatrix<float> A = { { 4, 2, -1 }, { 5, 3, -2 }, { 3, 2, -3 } }, Q(3, 3), R(3, 3);
-
-    writeMatrixToFile("test_data\\matrixA_" + std::to_string(3) + "_3.txt", A);
-
-    double start = omp_get_wtime();
-    QR_decomposition(A, Q, R);
-    double end = omp_get_wtime();
-    std::cout << "time: " << end - start << std::endl;
-
-    writeMatrixToFile("test_data\\matrixQ_" + std::to_string(3) + "_3.txt", Q);
-    writeMatrixToFile("test_data\\matrixR_" + std::to_string(3) + "_3.txt", R);
-
-    std::cout << "abs error: " << Fnorm(Q * R - A) << std::endl;
-    std::cout << "rel error: " << Fnorm(Q * R - A) / Fnorm(A) << std::endl << std::endl;
-}
-
-void test_with_generated_system(int N) {
-    std::cout << "test size: " << N << std::endl;
-    TMatrix<float> A = generate_matrix<float>(N, N), Q(N, N), R(N, N);
-    writeMatrixToFile("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
-
-    double start = omp_get_wtime();
-    QR_decomposition(A, Q, R);
-    double end = omp_get_wtime();
-    std::cout << "time: " << end - start << std::endl;
-
-    writeMatrixToFile("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
-    writeMatrixToFile("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
-
-    std::cout << "abs error: " << Fnorm(Q * R - A) << std::endl;
-    std::cout << "rel error: " << Fnorm(Q * R - A) / Fnorm(A) << std::endl << std::endl;
-}
+struct testParams {
+	IHouseholderMethodSolver<currentType>* solver;
+	std::string description;
+	std::vector<int> sizes;
+};
 
 int main() {
-    test_with_known_system_1();
-    test_with_known_system_2();
-    test_with_known_system_3();
-    std::vector<int> sizes{100, 200, 300, 400, 500, 1000, 1500, 2000};
-    for (auto&& size : sizes) {
-        test_with_generated_system(size);
-    }
-    std::cout << "all tests passed";
-    return 0;
+	auto methods = std::map<int, testParams>{};
+
+	methods[0] = {
+		new HouseholderMethodBasic<currentType>(),
+		"Householder basic version",
+		{ 100, 200, 300, 400, 500 },
+	};
+
+	methods[1] = {
+		new HouseholderMethodWithoutMatrixMults<currentType>(),
+		"Householder without matrix multiplications",
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500 },
+	};
+
+	methods[2] = {
+		new HouseholderMethodWithNormW < currentType>,
+		"Householder with normal w in-place",
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500 },
+	};
+
+	for (const auto& method : methods) {
+		std::cout << method.second.description << std::endl;
+		for (auto&& size : method.second.sizes) {
+			HOUSEHOLDER_test_with_generated_system(method.second.solver, size, false);
+		}
+	}
+	std::cout << "all tests passed";
+
+	return 0;
 }

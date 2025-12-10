@@ -88,19 +88,19 @@ public:
 	}
 
 	friend std::ostream& operator<<(std::ostream& os, const TMatrix<T>& m) {
-		os << "[";
+		os << "[\n  ";
 		auto N = m._matrix.Size();
 		auto M = m._matrix[0].Size();
 		for (auto i = 0; i < N; ++i) {
-			std::cout << std::left << std::setw(5);
+			std::cout << std::left << std::setw(7);
 			for (auto j = 0; j < M - 1; ++j) {
 				os << m._matrix[i][j] << ", ";
 			}
 			os << m._matrix[i][M - 1];
 			if (i == N - 1) {
-				os << "]";
+				os << "\n]";
 			}
-			os << std::endl;
+			os << "\n  ";
 		}
 		return os;
 	}
