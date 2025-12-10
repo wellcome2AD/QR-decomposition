@@ -34,114 +34,59 @@ void writeMatrixToFile(std::string fileName, TMatrix<T> m) {
 	}
 }
 
-template<typename T>
-bool nearly_equal_abs(T a, T b, T eps = std::numeric_limits<T>::epsilon()) {
-	return std::abs(a - b) <= eps;
-}
-
-void HOUSEHOLD_test_with_known_system_1() {
-	std::cout << "test size: " << 3 << std::endl;
-	TMatrix<currentType> A = { {1, -2, 1}, {2, 0, -3}, {2, -1, -1} }, Q(3, 3), R(3, 3);
-
-	writeMatrixToFile("test_data\\matrixA_" + std::to_string(3) + "_1.txt", A);
-
-	double start = omp_get_wtime();
-	Household_QR_decomposition(A, Q, R);
-	double end = omp_get_wtime();
-	std::cout << "time: " << end - start << std::endl;
-
-	writeMatrixToFile("test_data\\matrixQ_" + std::to_string(3) + "_1.txt", Q);
-	writeMatrixToFile("test_data\\matrixR_" + std::to_string(3) + "_1.txt", R);
-
-	std::cout << "abs error: " << Fnorm(Q * R - A) << std::endl;
-	std::cout << "rel error: " << Fnorm(Q * R - A) / Fnorm(A) << std::endl << std::endl;
-}
-
-void HOUSEHOLD_test_with_known_system_2() {
-	std::cout << "test size: " << 3 << std::endl;
-	TMatrix<currentType> A = { {3, 2, -5}, {2, -1, 3}, {1, 2, -1} }, Q(3, 3), R(3, 3);
-
-	writeMatrixToFile("test_data\\matrixA_" + std::to_string(3) + "_2.txt", A);
-
-	double start = omp_get_wtime();
-	Household_QR_decomposition(A, Q, R);
-	double end = omp_get_wtime();
-	std::cout << "time: " << end - start << std::endl;
-
-	writeMatrixToFile("test_data\\matrixQ_" + std::to_string(3) + "_2.txt", Q);
-	writeMatrixToFile("test_data\\matrixR_" + std::to_string(3) + "_2.txt", R);
-
-	std::cout << "abs error: " << Fnorm(Q * R - A) << std::endl;
-	std::cout << "rel error: " << Fnorm(Q * R - A) / Fnorm(A) << std::endl << std::endl;
-}
-
-void HOUSEHOLD_test_with_known_system_3() {
-	std::cout << "test size: " << 3 << std::endl;
-	TMatrix<currentType> A = { { 4, 2, -1 }, { 5, 3, -2 }, { 3, 2, -3 } }, Q(3, 3), R(3, 3);
-
-	writeMatrixToFile("test_data\\matrixA_" + std::to_string(3) + "_3.txt", A);
-
-	double start = omp_get_wtime();
-	Household_QR_decomposition(A, Q, R);
-	double end = omp_get_wtime();
-	std::cout << "time: " << end - start << std::endl;
-
-	writeMatrixToFile("test_data\\matrixQ_" + std::to_string(3) + "_3.txt", Q);
-	writeMatrixToFile("test_data\\matrixR_" + std::to_string(3) + "_3.txt", R);
-
-	std::cout << "abs error: " << Fnorm(Q * R - A) << std::endl;
-	std::cout << "rel error: " << Fnorm(Q * R - A) / Fnorm(A) << std::endl << std::endl;
-}
-
-void HOUSEHOLD_test_with_generated_system(int N) {
+void HOUSEHOLD_test_with_generated_system(int N, bool writeToFile) {
 	std::cout << "test size: " << N << std::endl;
-	TMatrix<currentType> A = generate_matrix<currentType>(N, N), Q(N, N), R(N, N);
-	writeMatrixToFile("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
+	TMatrix<currentType> A = generate_matrix<currentType>(N, N), Q, R;
 
 	double start = omp_get_wtime();
 	Household_QR_decomposition(A, Q, R);
 	double end = omp_get_wtime();
 	std::cout << "time: " << end - start << std::endl;
-
-	writeMatrixToFile("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
-	writeMatrixToFile("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
-
 	std::cout << "abs error: " << Fnorm(Q * R - A) << std::endl;
 	std::cout << "rel error: " << Fnorm(Q * R - A) / Fnorm(A) << std::endl << std::endl;
+
+	if (writeToFile) {
+		writeMatrixToFile("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
+		writeMatrixToFile("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
+		writeMatrixToFile("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
+	}
 }
 
-int main() {
-	///*{
-	//	std::cout << "---------------Household method---------------\n";
-	//	HOUSEHOLD_test_with_known_system_1();
-	//	HOUSEHOLD_test_with_known_system_2();
-	//	HOUSEHOLD_test_with_known_system_3();
-	//	std::vector<int> sizes{ 100, 200, 300, 400, 500, 1000, 1500, 2000 };
-	//	for (auto&& size : sizes) {
-	//		HOUSEHOLD_test_with_generated_system(size);
-	//	}
-	//}*/
-	//{
-	//	std::cout << "---------------Givens method---------------\n";
-	//	std::cout << "non-parallel execution\n";
-	//	// GIVENS_test_with_known_system_1();
-	//	// GIVENS_test_with_known_system_2();
-	//	std::vector<int> sizes{ 100, 200, 300, 400, 500, 1000, 1500, 2000,2500, 3000, 3500};
-	//	for (auto&& size : sizes) {
-	//		GIVENS_test_with_generated_system(size);
-	//	}
-	//}
-	//std::cout << "all tests passed";
-	//return 0;
+void HOUSEHOLD_OPTIMIZED_test_with_generated_system(int N, bool writeToFile) {
+	std::cout << "test size: " << N << std::endl;
+	TMatrix<currentType> A = generate_matrix<currentType>(N, N), Q, R;
 
-	TMatrix<currentType> A = { {1, 2}, {3, 4} }, Q, R, expected_Q, expected_R;
-	int n = A.Size();
-	//TMatrix<float> expected_R = { {-8.12404, -9.60114, -11.0782},
-	//						      {-4.97338e-07, 0.904534, 1.80907},
-	//						      {-1.92022e-07, 6.70552e-08, 8.9407e-08} },	
-	//			   expected_Q = { {-0.123091, 0.904534, 0.408248},
-	//							  {-0.492366, 0.301511, -0.816496},
-	//							  {-0.86164, -0.301511, 0.408248} };
+	double start = omp_get_wtime();
+	Household_QR_decomposition_experimental(A, Q, R);
+	double end = omp_get_wtime();
+	std::cout << "time: " << end - start << std::endl;
+	std::cout << "abs error: " << Fnorm(Q * R - A) << std::endl;
+	std::cout << "rel error: " << Fnorm(Q * R - A) / Fnorm(A) << std::endl << std::endl;
+
+	if (writeToFile) {
+		writeMatrixToFile("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
+		writeMatrixToFile("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
+		writeMatrixToFile("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
+	}
+}
+
+void defaultTest() {
+	TMatrix<currentType> A, Q, R, expected_Q, expected_R;
+
+	// 2х2 тест
+	{
+		A = { {1, 2}, {3, 4} };
+	}
+	// 3х3 тест
+	{
+		TMatrix<currentType> A = { {1, 2, 3}, {4, 5, 6}, {7, 8, 9} };
+	}
+
+	// сгенерированная матрица указанного N
+	{
+		int N = 6;
+		A = generate_matrix<currentType>(N, N);
+	}
 
 	Household_QR_decomposition(A, expected_Q, expected_R);
 	Household_QR_decomposition_experimental(A, Q, R);
@@ -158,6 +103,24 @@ int main() {
 
 	std::cout << "abs error: " << Fnorm(QR - A) << std::endl;
 	std::cout << "rel error: " << Fnorm(QR - A) / Fnorm(A) << std::endl << std::endl;
+}
+
+int main() {
+	{
+		std::cout << "---------------Household method---------------\n";
+		std::vector<int> sizes{ 100, 200, 300, 400, 500 };
+		for (auto&& size : sizes) {
+			HOUSEHOLD_test_with_generated_system(size, false);
+		}
+	}
+	{
+		std::cout << "---------------Household optimized method---------------\n";
+		std::vector<int> sizes{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500 };
+		for (auto&& size : sizes) {
+			HOUSEHOLD_OPTIMIZED_test_with_generated_system(size, false);
+		}
+	}
+	std::cout << "all tests passed";
 
 	return 0;
 }
