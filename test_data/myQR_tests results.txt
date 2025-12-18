@@ -127,6 +127,8 @@ time: 51,9997
 abs error: 0,0249887
 rel error: 1,23357e-06
 
+Givens basic version
+
 double
 Householder basic version
 test size: 100
@@ -275,3 +277,54 @@ test size: 4000
 time: 32.6651
 abs error: 1.49834e-10
 rel error: 6.47127e-15
+
+Givens basic version
+test size: 100
+time: 0.002975
+abs error: 8.52019e-13
+rel error: 1.47872e-15
+
+test size: 200
+time: 0.0125681
+abs error: 2.47509e-12
+rel error: 2.13883e-15
+
+test size: 300
+time: 0.0439199
+abs error: 4.49007e-12
+rel error: 2.58286e-15
+
+test size: 400
+time: 0.0931757
+abs error: 6.68248e-12
+rel error: 2.8863e-15
+
+test size: 500
+time: 0.173882
+abs error: 9.4247e-12
+rel error: 3.2548e-15
+
+test size: 1000
+time: 1.20351
+abs error: 2.70746e-11
+rel error: 4.67868e-15
+
+test size: 1500
+time: 4.07919
+abs error: 4.99765e-11
+rel error: 5.75722e-15
+
+test size: 2000
+time: 9.72236
+abs error: 7.55185e-11
+rel error: 6.51938e-15
+
+test size: 2500
+time: 20.1973
+abs error: 1.06158e-10
+rel error: 7.33733e-15
+
+test size: 3000
+time: 34.5466
+abs error: 1.4072e-10
+rel error: 8.1061e-15

@@ -130,6 +130,10 @@
       </AdditionalOptions>
       <EnableModules>false</EnableModules>
       <Optimization>Full</Optimization>
+      <AdditionalOptions>
+      </AdditionalOptions>
+      <EnableModules>false</EnableModules>
+      <Optimization>Full</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
