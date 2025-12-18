@@ -1,15 +1,17 @@
 ﻿#pragma once
 
-#include "..\TMatrix.h"
+#include <vector>
+
+#include "matrix.h"
 
 template <typename T>
 class HouseholderMethodWithoutMatrixMults : public IHouseholderMethodSolver<T> {
 	// вторая версия, избавлена от недостатка первой -- двух матричных умножений на каждой итерации
-	virtual void QR_decomposition(const TMatrix<T>& A, TMatrix<T>& Q, TMatrix<T>& R) override
+	virtual void QR_decomposition(const  std::vector<std::vector<T>>& A,  std::vector<std::vector<T>>& Q,  std::vector<std::vector<T>>& R) override
 	{
-		const ptrdiff_t N = A.Size();
+		const ptrdiff_t N = A.size();
 		R = A;
-		TMatrix<T> all_w(N, N);
+		 std::vector<std::vector<T>> all_w(N, std::vector<T>(N));
 		// вычисление R
 		for (ptrdiff_t k = 0; k < N - 1; ++k) {
 			double beta = count_beta(R, k);
@@ -18,7 +20,7 @@ class HouseholderMethodWithoutMatrixMults : public IHouseholderMethodSolver<T> {
 
 			// H * R = (I - 2 * w * wᵀ) * R = R - 2 * w * (wT * R)
 			// формируем (wT * R)
-			TMatrix<T> y(1, N, 0);
+			 std::vector<std::vector<T>> y(1, std::vector<T>(N, 0));
 			for (ptrdiff_t i = 0; i < N; ++i)
 			{
 				for (ptrdiff_t j = 0; j < N; ++j)
@@ -35,7 +37,7 @@ class HouseholderMethodWithoutMatrixMults : public IHouseholderMethodSolver<T> {
 
 			// w * y = матрица размером n×n, где (i,j)-й элемент = w[i] * y[j]
 			// w это вектор nx1, y это вектор 1xn
-			TMatrix<T> wy(N, N);
+			 std::vector<std::vector<T>> wy(N, std::vector<T>(N));
 			for (ptrdiff_t i = 0; i < N; ++i)
 			{
 				for (ptrdiff_t j = 0; j < N; ++j)
@@ -45,7 +47,7 @@ class HouseholderMethodWithoutMatrixMults : public IHouseholderMethodSolver<T> {
 			}
 
 			// R = R - w * y   (w * y — внешнее произведение, outer product)
-			R = R - wy;
+			R = substractMatrix(R, wy);
 
 			// сохраним в столбце k вектор wk с элемента k+1
 			for (ptrdiff_t i = 0; i < N; ++i)
@@ -54,7 +56,7 @@ class HouseholderMethodWithoutMatrixMults : public IHouseholderMethodSolver<T> {
 			}
 		}
 
-		Q = TMatrix<T>(N, N, 0);
+		Q =  std::vector<std::vector<T>>(N, std::vector<T>(N, 0));
 		for (ptrdiff_t i = 0; i < N; i++)
 		{
 			Q[i][i] = 1;
@@ -67,7 +69,7 @@ class HouseholderMethodWithoutMatrixMults : public IHouseholderMethodSolver<T> {
 			}
 
 			// Q = H * Q = Q - 2 * w * (wT * Q)
-			TMatrix<T> wTQ(1, N, 0);
+			 std::vector<std::vector<T>> wTQ(1, std::vector<T>(N, 0));
 			for (ptrdiff_t i = k; i < N; ++i)
 			{
 				for (ptrdiff_t j = k; j < N; ++j)
@@ -84,7 +86,7 @@ class HouseholderMethodWithoutMatrixMults : public IHouseholderMethodSolver<T> {
 
 			// w * wTQ = матрица размером n×n, где (i,j)-й элемент = w[i] * y[j]
 			// w это вектор nx1, wTQ это вектор 1xn
-			TMatrix<T> wwTQ(N, N);
+			 std::vector<std::vector<T>> wwTQ(N, std::vector<T>(N));
 			for (ptrdiff_t i = 0; i < N; ++i)
 			{
 				for (ptrdiff_t j = 0; j < N; ++j)
@@ -105,9 +107,9 @@ class HouseholderMethodWithoutMatrixMults : public IHouseholderMethodSolver<T> {
 	}
 
 private:
-	double count_beta(const TMatrix<T>& Ak, int k_step)
+	double count_beta(const  std::vector<std::vector<T>>& Ak, int k_step)
 	{
-		const ptrdiff_t N = Ak.Size();
+		const ptrdiff_t N = Ak.size();
 		double sum_by_k_col = 0.0;
 #pragma omp parallel for num_threads(thread_num) reduction(+:sum_by_k_col)
 		for (int str = k_step; str < N; ++str) {
@@ -117,16 +119,16 @@ private:
 		return beta;
 	}
 
-	double count_mu(double beta, int k_step, const TMatrix<T>& Ak)
+	double count_mu(double beta, int k_step, const  std::vector<std::vector<T>>& Ak)
 	{
 		double mu = 1 / sqrt(2.0 * beta * beta - 2 * beta * Ak[k_step][k_step]);
 		return mu;
 	}
 
-	TVector<T> count_w(const TMatrix<T>& Ak, int k_step, double beta, double mu)
+	std::vector<T> count_w(const  std::vector<std::vector<T>>& Ak, int k_step, double beta, double mu)
 	{
-		const ptrdiff_t N = Ak.Size();
-		TVector<T> w(N);
+		const ptrdiff_t N = Ak.size();
+		std::vector<T> w(N);
 #pragma omp parallel for num_threads(thread_num)
 		for (int str = 0; str < N; ++str) {
 			w[str] = str < k_step ? 0 : Ak[str][k_step] * mu;

@@ -1,19 +1,20 @@
 #pragma once
 
-#include "../TMatrix.h"
+#include <vector>
+
 #include "../math.h"
 
 template <typename T>
 class HouseholderMethodWithNormW : public IHouseholderMethodSolver<T> {
 	// третья версия, на основе второй. w вычисляется проще для уменьшения роста ошибки, нормированный w сохраняется в R
-	virtual void QR_decomposition(const TMatrix<T>& A, TMatrix<T>& Q, TMatrix<T>& R) override
+	virtual void QR_decomposition(const  std::vector<std::vector<T>>& A,  std::vector<std::vector<T>>& Q,  std::vector<std::vector<T>>& R) override
 	{
-		const ptrdiff_t N = A.Size();
+		const ptrdiff_t N = A.size();
 		R = A;
 		// вычисление R
 		for (ptrdiff_t k = 0; k < N - 1; ++k) {
 			double tau = 0.0, sigma = 0.0;
-			TVector<T> w(N, 0);
+			std::vector<T> w(N, 0);
 			// вычисление w, tau, sigma
 			// w = x - sigma*(1,0...0)
 			// tau = 2 / (wTw)
@@ -70,7 +71,7 @@ class HouseholderMethodWithNormW : public IHouseholderMethodSolver<T> {
 		}
 
 		// вычисление Q
-		Q = TMatrix<T>(N, N, 0);
+		Q =  std::vector<std::vector<T>>(N, std::vector<T>(N, 0));
 #pragma omp parallel for
 		for (ptrdiff_t i = 0; i < N; ++i) {
 			Q[i][i] = 1;
@@ -80,7 +81,7 @@ class HouseholderMethodWithNormW : public IHouseholderMethodSolver<T> {
 		for (ptrdiff_t k = N - 2; k >= 0; --k) {
 			// берём вектор w из R
 			int m = N - k;  // размер w
-			TVector<T> w(m);
+			std::vector<T> w(m);
 			w[0] = 1.0;
 			for (ptrdiff_t i = 1; i < m; ++i) {
 				w[i] = R[k + i][k];

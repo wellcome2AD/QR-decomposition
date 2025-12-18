@@ -1,16 +1,18 @@
 #pragma once
 
+#include <vector>
+
 #include "IHouseholderMethodSolver.h"
-#include "..\TMatrix.h"
 #include "math.h"
+#include "matrix.h"
 
 template <typename T>
 class HouseholderMethodBasic : public IHouseholderMethodSolver<T> {
 	// первая, самая неоптимальная версия. на каждом шаге алгоритма выполняется два матричных умножения,
 	// используется много лишней памяти
-	virtual void QR_decomposition(const TMatrix<T>& A, TMatrix<T>& Q, TMatrix<T>& R) override
+	virtual void QR_decomposition(const std::vector<std::vector<T>>& A, std::vector<std::vector<T>>& Q, std::vector<std::vector<T>>& R) override
 	{
-		const ptrdiff_t N = A.Size();
+		const ptrdiff_t N = A.size();
 		R = A;
 		bool isFirst = true;
 		for (ptrdiff_t k = 0; k < N - 1; ++k) {
@@ -24,17 +26,17 @@ class HouseholderMethodBasic : public IHouseholderMethodSolver<T> {
 				Q = H;
 			}
 			else {
-				Q = Q * H;
+				Q = multiplyMatrix(Q, H);
 			}
 
-			R = H * R;
+			R = multiplyMatrix(H, R);
 		}
 	}
 
 private:
-	double count_beta(const TMatrix<T>& Ak, int k_step)
+	double count_beta(const std::vector<std::vector<T>>& Ak, int k_step)
 	{
-		const ptrdiff_t N = Ak.Size();
+		const ptrdiff_t N = Ak.size();
 		double sum_by_k_col = 0.0;
 #pragma omp parallel for num_threads(thread_num) reduction(+:sum_by_k_col)
 		for (int str = k_step; str < N; ++str) {
@@ -44,16 +46,16 @@ private:
 		return beta;
 	}
 
-	double count_mu(double beta, int k_step, const TMatrix<T>& Ak)
+	double count_mu(double beta, int k_step, const std::vector<std::vector<T>>& Ak)
 	{
 		double mu = 1.0 / sqrt(2.0 * beta * beta - 2 * beta * double(Ak[k_step][k_step]));
 		return mu;
 	}
 
-	TVector<T> count_w(const TMatrix<T>& Ak, int k_step, double beta, double mu)
+	std::vector<T> count_w(const std::vector<std::vector<T>>& Ak, int k_step, double beta, double mu)
 	{
-		const ptrdiff_t N = Ak.Size();
-		TVector<T> w(N);
+		const ptrdiff_t N = Ak.size();
+		std::vector<T> w(N);
 #pragma omp parallel for num_threads(thread_num)
 		for (int str = 0; str < N; ++str) {
 			w[str] = str < k_step ? 0 : Ak[str][k_step] * mu;
@@ -62,10 +64,10 @@ private:
 		return w;
 	}
 
-	TMatrix<T> count_H(double beta, double mu, TVector<T> w)
+	 std::vector<std::vector<T>> count_H(double beta, double mu, std::vector<T> w)
 	{
-		ptrdiff_t N = w.Size();
-		TMatrix<T> H(N, N, 0);
+		ptrdiff_t N = w.size();
+		 std::vector<std::vector<T>> H(N, std::vector<T>(N, 0));
 #pragma omp parallel for num_threads(thread_num)
 		for (int i = 0; i < N; ++i) {
 			H[i][i] = 1.0;

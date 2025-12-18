@@ -1,21 +1,21 @@
 #pragma once
 
+#include <vector>
 #include <iostream>
 #include <cmath>
 
 #include "IGivensMethodSolver.h"
-#include "..\TMatrix.h"
 #include "math.h"
 
 template <typename T>
 class GivensMethodBasic : public IGivensMethodSolver<T> {
 	// первая, неоптимальная версия
-	virtual void QR_decomposition(const TMatrix<T>& A, TMatrix<T>& Q, TMatrix<T>& R) override
+	virtual void QR_decomposition(const std::vector<std::vector<T>>& A, std::vector<std::vector<T>>& Q, std::vector<std::vector<T>>& R) override
 	{
-		auto n = A.Size(), m = A[0].Size();
+		auto n = A.size(), m = A[0].size();
 		R = A;
 
-		Q = TMatrix<T>(n, n, 0);
+		Q = std::vector<std::vector<T>>(n, std::vector<T>(n, 0));
 		for (auto i = 0; i < n; i++)
 		{
 			Q[i][i] = 1;

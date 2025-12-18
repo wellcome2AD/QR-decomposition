@@ -133,8 +133,7 @@
     <ClInclude Include="src\Householder_method\IHouseholderMethodSolver.h" />
     <ClInclude Include="src\IQRSolver.h" />
     <ClInclude Include="src\math.h" />
-    <ClInclude Include="src\TMatrix.h" />
-    <ClInclude Include="src\TVector.h" />
+    <ClInclude Include="src\matrix.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
