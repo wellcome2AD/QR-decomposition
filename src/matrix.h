@@ -26,7 +26,41 @@ inline void writeMatrixToFile(std::string fileName, std::vector<std::vector<T>> 
 }
 
 template <typename T>
-inline std::vector<std::vector<T>> generate_matrix(int N, int M) {
+inline void printMatrix(std::vector<std::vector<T>> m) {
+	std::cout << "[\n  ";
+	auto N = m.size();
+	auto M = m[0].size();
+	for (auto i = 0; i < N; ++i) {
+		std::cout << std::left << std::setw(7);
+		for (auto j = 0; j < M - 1; ++j) {
+			std::cout << m[i][j] << ", ";
+		}
+		std::cout << m[i][M - 1];
+		if (i == N - 1) {
+			std::cout << "\n]";
+		}
+		std::cout << "\n  ";
+	}
+}
+
+template <typename T>
+inline void printFlatMatrix(std::vector<T> m, size_t N, size_t M) {
+	std::cout << "[\n  ";
+	for (auto i = 0; i < N; ++i) {
+		std::cout << std::left << std::setw(7);
+		for (auto j = 0; j < M - 1; ++j) {
+			std::cout << m[i * M + j] << ", ";
+		}
+		std::cout << m[i * M + M - 1];
+		if (i == N - 1) {
+			std::cout << "\n]";
+		}
+		std::cout << "\n  ";
+	}
+}
+
+template <typename T>
+inline std::vector<std::vector<T>> generateMatrix(int N, int M) {
 	std::vector<std::vector<T>> res(N, std::vector<T>(M));
 	std::srand(std::time(0));
 	for (size_t i = 0; i < N; ++i) {

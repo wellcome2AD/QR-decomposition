@@ -2,138 +2,140 @@
 
 #include <vector>
 
+#include "IHouseholderMethodSolver.h"
 #include "matrix.h"
 
 template <typename T>
 class HouseholderMethodWithoutMatrixMults : public IHouseholderMethodSolver<T> {
+public:
 	// вторая версия, избавлена от недостатка первой -- двух матричных умножений на каждой итерации
-	virtual void QR_decomposition(const  std::vector<std::vector<T>>& A,  std::vector<std::vector<T>>& Q,  std::vector<std::vector<T>>& R) override
+	virtual void QR_decomposition(const std::vector<std::vector<T>>& A, std::vector<std::vector<T>>& Q, std::vector<std::vector<T>>& R) override
 	{
-		const ptrdiff_t N = A.size();
-		R = A;
-		 std::vector<std::vector<T>> all_w(N, std::vector<T>(N));
-		// вычисление R
-		for (ptrdiff_t k = 0; k < N - 1; ++k) {
-			double beta = count_beta(R, k);
-			double mu = count_mu(beta, k, R);
-			auto w = count_w(R, k, beta, mu);
-
-			// H * R = (I - 2 * w * wᵀ) * R = R - 2 * w * (wT * R)
-			// формируем (wT * R)
-			 std::vector<std::vector<T>> y(1, std::vector<T>(N, 0));
-			for (ptrdiff_t i = 0; i < N; ++i)
-			{
-				for (ptrdiff_t j = 0; j < N; ++j)
-				{
-					y[0][i] += w[j] * R[j][i];
-				}
-			}
-
-			// y = 2 * y
-			for (ptrdiff_t i = 0; i < N; ++i)
-			{
-				y[0][i] *= 2.0;
-			}
-
-			// w * y = матрица размером n×n, где (i,j)-й элемент = w[i] * y[j]
-			// w это вектор nx1, y это вектор 1xn
-			 std::vector<std::vector<T>> wy(N, std::vector<T>(N));
-			for (ptrdiff_t i = 0; i < N; ++i)
-			{
-				for (ptrdiff_t j = 0; j < N; ++j)
-				{
-					wy[i][j] = w[i] * y[0][j];
-				}
-			}
-
-			// R = R - w * y   (w * y — внешнее произведение, outer product)
-			R = substractMatrix(R, wy);
-
-			// сохраним в столбце k вектор wk с элемента k+1
-			for (ptrdiff_t i = 0; i < N; ++i)
-			{
-				all_w[i][k] = w[i];
-			}
-		}
-
-		Q =  std::vector<std::vector<T>>(N, std::vector<T>(N, 0));
-		for (ptrdiff_t i = 0; i < N; i++)
-		{
-			Q[i][i] = 1;
-		}
-		// теперь для вычисления Q достанем вектора wk
-		for (ptrdiff_t k = N - 2; k >= 0; --k) {
-			double sum = 0.0;
+		const size_t N = A.size();
+		// Конвертируем входные данные в плоские массивы
+		std::vector<T> A_flat(N * N), Q_flat;
+		for (ptrdiff_t j = 0; j < N; ++j) {
 			for (ptrdiff_t i = 0; i < N; ++i) {
-				sum += all_w[i][k] * all_w[i][k];
+				A_flat[i * N + j] = A[i][j];
 			}
+		}
 
-			// Q = H * Q = Q - 2 * w * (wT * Q)
-			 std::vector<std::vector<T>> wTQ(1, std::vector<T>(N, 0));
-			for (ptrdiff_t i = k; i < N; ++i)
+		auto R_flat = A_flat;
+		std::vector<T> all_w(N * (N - 1), 0.0); // все вектора Хаусхолдера будут хранится в одной матрице подряд, без незначащих нулей
+
+		// вычисление R
+		// H * R = (I - 2 * w * wT) * R = R - 2 * w * (wT * R)
+		for (ptrdiff_t k = 0; k < N - 1; ++k)
+		{
+			T* w_k = &all_w[k * N]; // часть матрицы с вектором wk
+			ptrdiff_t w_length = N - k; // длина вектора wk
+			ptrdiff_t kN = k * N; // предвычисленное смещение для k строки
+
+			T* R_col_k = &R_flat[kN + k]; // 0 элемент k столбца матрицы R, чтобы получить следующий -- прибавить строку
+			double beta = 0.0;
+			// count beta
 			{
-				for (ptrdiff_t j = k; j < N; ++j)
-				{
-					wTQ[0][i] += all_w[j][k] * Q[j][i];
+				double sum_by_k_col = 0.0;
+#pragma omp parallel for num_threads(thread_num) reduction(+:sum_by_k_col) if(N >= 1000)
+				for (int i = 0; i < w_length; ++i) {
+					T val = R_col_k[i * N];
+					sum_by_k_col += static_cast<double>(val) * static_cast<double>(val);
 				}
-			}
-
-			// w = 2 * w
-			for (ptrdiff_t i = k; i < N; ++i)
-			{
-				all_w[i][k] *= 2;
-			}
-
-			// w * wTQ = матрица размером n×n, где (i,j)-й элемент = w[i] * y[j]
-			// w это вектор nx1, wTQ это вектор 1xn
-			 std::vector<std::vector<T>> wwTQ(N, std::vector<T>(N));
-			for (ptrdiff_t i = 0; i < N; ++i)
-			{
-				for (ptrdiff_t j = 0; j < N; ++j)
+				if (fabs(sum_by_k_col) < std::numeric_limits<T>::epsilon()) // eсли знаменатель близок к 0, вектор отражения не нужен
 				{
-					wwTQ[i][j] = all_w[i][k] * wTQ[0][j];
+					continue;
 				}
+				double norm_x = sqrt(sum_by_k_col);
+				beta = (R_flat[kN + k] >= 0.0) ? -norm_x : norm_x;
 			}
 
-			// теперь вычитаем из Q полученную матрицу wwTQ
-			for (ptrdiff_t i = 0; i < N; ++i)
+			double mu = 0.0;
+			// count mu
 			{
-				for (ptrdiff_t j = 0; j < N; ++j)
+				double denominator = 2.0 * beta * (beta - R_flat[kN + k]);
+				if (fabs(denominator) < std::numeric_limits<T>::epsilon()) // eсли знаменатель близок к 0, вектор отражения не нужен
 				{
-					Q[i][j] -= wwTQ[i][j];
+					continue;
+				}
+				mu = 1.0 / sqrt(denominator);
+			}
+
+			// count w
+#pragma omp parallel for num_threads(thread_num) if(N >= 1000)
+			for (int i = 0; i < w_length; ++i) {
+				w_k[i] = R_col_k[i * N] * mu;
+			}
+			w_k[0] -= beta * mu;
+
+			// отражение
+			// R - 2 * w * (wT * R)
+			std::vector<double> _2wTR(N - k); // предварительно вычисляем wTR для каждого столбца
+#pragma omp parallel for num_threads(thread_num) if(N >= 1000)
+			for (ptrdiff_t j = k; j < N; ++j) {
+				T* R_col_j = &R_flat[kN + j]; // начальный элемент для умножения из j-ого столбца R, прибавить строку
+				double wTR = 0.0;
+				for (int i = 0; i < w_length; ++i) {
+					wTR += w_k[i] * R_col_j[i * N];
+				}
+				_2wTR[j - k] = 2.0 * wTR;
+			}
+
+			// обновление R
+			// R - w * 2wTR
+#pragma omp parallel for num_threads(thread_num) if(N >= 1000)
+			for (ptrdiff_t j = k; j < N; ++j) {
+				for (int i = 0; i < w_length; ++i) {
+					T* R_col_j = &R_flat[kN + j];
+					R_col_j[i * N] -= w_k[i] * _2wTR[j - k];
 				}
 			}
 		}
-	}
 
-private:
-	double count_beta(const  std::vector<std::vector<T>>& Ak, int k_step)
-	{
-		const ptrdiff_t N = Ak.size();
-		double sum_by_k_col = 0.0;
-#pragma omp parallel for num_threads(thread_num) reduction(+:sum_by_k_col)
-		for (int str = k_step; str < N; ++str) {
-			sum_by_k_col += Ak[str][k_step] * Ak[str][k_step];
+		// вычисление Q
+		// начать с Q_{N-1} = H_{N-2} * I = I - 2 * w_{N-2} * (w_{N-2}T * I) и домножать слева на матрицы отражения
+		// Q = H_{1} * ... * (H_{k} * Q_{k-1} ) = H_{1} * ... * (Q_{k-1} - 2 * w_{k} * (w_{k}T * Q_{k-1})
+		Q_flat.assign(N * N, 0.0); // создание единичной матрицы
+#pragma omp parallel for num_threads(thread_num) if(N >= 1000)
+		for (ptrdiff_t i = 0; i < N; ++i) {
+			Q_flat[i * N + i] = 1.0;
 		}
-		double beta = sign(-Ak[k_step][k_step]) * sqrt(sum_by_k_col);
-		return beta;
-	}
 
-	double count_mu(double beta, int k_step, const  std::vector<std::vector<T>>& Ak)
-	{
-		double mu = 1 / sqrt(2.0 * beta * beta - 2 * beta * Ak[k_step][k_step]);
-		return mu;
-	}
+		std::vector<T> _2wTQ(N, 0.0);
+		for (ptrdiff_t k = N - 2; k >= 0; --k)
+		{
+			T* w_k = &all_w[k * N]; // взятие вектора wk
+			ptrdiff_t w_length = N - k; // длина вектора wk
 
-	std::vector<T> count_w(const  std::vector<std::vector<T>>& Ak, int k_step, double beta, double mu)
-	{
-		const ptrdiff_t N = Ak.size();
-		std::vector<T> w(N);
-#pragma omp parallel for num_threads(thread_num)
-		for (int str = 0; str < N; ++str) {
-			w[str] = str < k_step ? 0 : Ak[str][k_step] * mu;
+			// 2wTQ параллельно по столбцам
+#pragma omp parallel for num_threads(thread_num) if(N >= 1000)
+			for (ptrdiff_t j = 0; j < N; ++j) {
+				double sum = 0.0;
+				for (int i = 0; i < w_length; ++i) {
+					ptrdiff_t row = k + i;
+					sum += w_k[i] * Q_flat[row * N + j];
+				}
+				_2wTQ[j] = 2.0 * sum;
+			}
+
+			// Q - w * 2wTQ параллельно по строкам
+#pragma omp parallel for num_threads(thread_num) if (N >= 1000)
+			for (int i = 0; i < w_length; ++i) {
+				ptrdiff_t row = k + i;
+				double wi = w_k[i];
+				T* Q_row = &Q_flat[row * N];
+
+				for (ptrdiff_t j = 0; j < N; ++j) {
+					Q_row[j] -= wi * _2wTQ[j];
+				}
+			}
 		}
-		w[k_step] -= beta * mu;
-		return w;
+
+#pragma omp parallel for num_threads(thread_num) collapse(2)
+		for (ptrdiff_t i = 0; i < N; ++i) {
+			for (ptrdiff_t j = 0; j < N; ++j) {
+				R[i][j] = R_flat[i * N + j];
+				Q[i][j] = Q_flat[i * N + j];
+			}
+		}
 	}
 };

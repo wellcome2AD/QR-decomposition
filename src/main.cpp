@@ -23,16 +23,43 @@ typedef double currentType;
 size_t thread_num = 8;
 
 template <typename T>
-void QR_decomposition_test_with_generated_matrix(IQRSolver<T>* solver, int N, bool writeToFile) {
+void printResultWithExpected(const std::vector<std::vector<T>>& A, const std::vector<std::vector<T>>& Q, const std::vector<std::vector<T>>& R)
+{
+	// проверка на соответствие для малых тестов с помощью базовой реализации
+	IQRSolver<currentType>* basicMethod = new GivensMethodBasic<currentType>();
+	std::vector<std::vector<T>> expecQ, expecR;
+	basicMethod->QR_decomposition(A, expecQ, expecR);
+	std::cout << "Q:";
+	printMatrix(Q);
+	std::cout << std::endl;
+	std::cout << "expected Q:";
+	printMatrix(expecQ);
+	std::cout << std::endl;
+
+	std::cout << "R:";
+	printMatrix(R);
+	std::cout << std::endl;
+	std::cout << "expected R:";
+	printMatrix(expecR);
+	std::cout << std::endl;
+}
+
+template <typename T>
+void QR_decomposition_test_with_generated_matrix(IQRSolver<T>* solver, int N, bool writeToFile)
+{
 	std::cout << "test size: " << N << std::endl;
-	std::vector<std::vector<T>> A = generate_matrix<T>(N, N), Q, R;
+	std::vector<std::vector<T>> A = generateMatrix<T>(N, N);
+	std::vector<std::vector<T>> Q(N, std::vector<T>(N, 0)), R(N, std::vector<T>(N, 0));
 
 	double start = omp_get_wtime();
 	solver->QR_decomposition(A, Q, R);
 	double end = omp_get_wtime();
+
 	std::cout << "time: " << end - start << std::endl;
 	std::cout << "abs error: " << Fnorm(substractMatrix(multiplyMatrix(Q, R), A)) << std::endl;
 	std::cout << "rel error: " << Fnorm(substractMatrix(multiplyMatrix(Q, R), A)) / Fnorm(A) << std::endl << std::endl;
+
+	// printResultWithExpected(A, Q, R);
 
 	if (writeToFile) {
 		writeMatrixToFile("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
@@ -41,13 +68,15 @@ void QR_decomposition_test_with_generated_matrix(IQRSolver<T>* solver, int N, bo
 	}
 }
 
-struct testParams {
+struct testParams
+{
 	IQRSolver<currentType>* solver;
 	std::string description;
 	std::vector<int> sizes;
 };
 
-int main() {
+int main()
+{
 	auto methods = std::map<int, testParams>{};
 
 	methods[0] = {
@@ -59,13 +88,13 @@ int main() {
 	methods[1] = {
 		new HouseholderMethodWithoutMatrixMults<currentType>(),
 		"Householder without matrix multiplications",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500 },
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
 
 	methods[2] = {
 		new HouseholderMethodWithNormW < currentType>,
 		"Householder with normal w in-place",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500 },
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
 
 	methods[3] = {
@@ -74,9 +103,11 @@ int main() {
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500 },
 	};
 
-	for (const auto& method : methods) {
+	for (const auto& method : methods)
+	{
 		std::cout << method.second.description << std::endl;
-		for (auto&& size : method.second.sizes) {
+		for (auto&& size : method.second.sizes)
+		{
 			QR_decomposition_test_with_generated_matrix(method.second.solver, size, false);
 		}
 	}
