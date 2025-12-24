@@ -2,12 +2,12 @@
 
 #include <vector>
 
-#include "IHouseholderMethodSolver.h"
+#include "../IQRSolver.h"
 #include "math.h"
 #include "matrix.h"
 
 template <typename T>
-class HouseholderMethodBasic : public IHouseholderMethodSolver<T> {
+class HouseholderMethodBasic : public IQRSolver<T> {
 	// первая, самая неоптимальная версия. на каждом шаге алгоритма выполняется два матричных умножения,
 	// используется много лишней памяти
 	virtual void QR_decomposition(const std::vector<std::vector<T>>& A, std::vector<std::vector<T>>& Q, std::vector<std::vector<T>>& R) override

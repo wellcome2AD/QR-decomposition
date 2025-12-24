@@ -9,12 +9,10 @@
 
 #include "IQRSolver.h"
 
-#include "Householder_method/IHouseholderMethodSolver.h"
 #include "Householder_method/HouseholderBasic.h"
 #include "Householder_method/HouseholderWithoutMatrixMul.h"
 #include "Householder_method/HouseholderWithNormW.h"
 
-#include "Givens_method/IGivensMethodSolver.h"
 #include "Givens_method/GivensBasic.h"
 
 #include "matrix.h"
@@ -100,7 +98,7 @@ int main()
 	methods[3] = {
 		new GivensMethodBasic<currentType>(),
 		"Givens basic version",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500 },
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
 
 	for (const auto& method : methods)
