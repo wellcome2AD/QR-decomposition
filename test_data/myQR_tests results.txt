@@ -156,102 +156,122 @@ rel error: 4,54581e-15
 
 Householder without matrix multiplications
 test size: 100
-time: 0,0084987
-abs error: 5,58233e-13
-rel error: 9,64763e-16
+time: 0.0237682
+abs error: 5.8672e-13
+rel error: 1.01007e-15
 
 test size: 200
-time: 0,0570417
-abs error: 1,38346e-12
-rel error: 1,19368e-15
+time: 0.0116767
+abs error: 1.49541e-12
+rel error: 1.28951e-15
 
 test size: 300
-time: 0,242626
-abs error: 2,41204e-12
-rel error: 1,38996e-15
+time: 0.036125
+abs error: 2.66634e-12
+rel error: 1.53719e-15
 
 test size: 400
-time: 0,608641
-abs error: 3,65183e-12
-rel error: 1,57688e-15
+time: 0.104648
+abs error: 4.04411e-12
+rel error: 1.7494e-15
 
 test size: 500
-time: 0,990515
-abs error: 5,00024e-12
-rel error: 1,72869e-15
+time: 0.202559
+abs error: 5.45373e-12
+rel error: 1.88509e-15
 
 test size: 1000
-time: 11,3051
-abs error: 1,3408e-11
-rel error: 2,31503e-15
+time: 0.932899
+abs error: 1.355e-11
+rel error: 2.34026e-15
 
 test size: 1500
-time: 42,6503
-abs error: 2,4549e-11
-rel error: 2,8277e-15
+time: 4.37828
+abs error: 2.44172e-11
+rel error: 2.81228e-15
 
 test size: 2000
-time: 109,991
-abs error: 3,75119e-11
-rel error: 3,24054e-15
+time: 14.0579
+abs error: 3.75431e-11
+rel error: 3.2424e-15
 
 test size: 2500
-time: 368,064
-abs error: 5,22113e-11
-rel error: 3,60756e-15
+time: 29.4335
+abs error: 5.24206e-11
+rel error: 3.62225e-15
+
+test size: 3000
+time: 50.2499
+abs error: 6.94527e-11
+rel error: 3.99799e-15
+
+test size: 3500
+time: 120.269
+abs error: 8.59005e-11
+rel error: 4.24078e-15
+
+test size: 4000
+time: 198.896
+abs error: 1.04289e-10
+rel error: 4.50406e-15
 
 Householder with normal w in-place
 test size: 100
-time: 0,0037081
-abs error: 6,89229e-13
-rel error: 1,17243e-15
+time: 0.0015131
+abs error: 5.65525e-13
+rel error: 9.81486e-16
 
 test size: 200
-time: 0,0103264
-abs error: 1,46499e-12
-rel error: 1,2606e-15
+time: 0.0116367
+abs error: 1.58856e-12
+rel error: 1.37326e-15
 
 test size: 300
-time: 0,0187815
-abs error: 2,48079e-12
-rel error: 1,42533e-15
+time: 0.0367377
+abs error: 2.91128e-12
+rel error: 1.67476e-15
 
 test size: 400
-time: 0,0404791
-abs error: 3,9344e-12
-rel error: 1,69602e-15
+time: 0.0836668
+abs error: 4.55116e-12
+rel error: 1.96361e-15
 
 test size: 500
-time: 0,0892301
-abs error: 5,41015e-12
-rel error: 1,86582e-15
+time: 0.0548197
+abs error: 5.94933e-12
+rel error: 2.05383e-15
 
 test size: 1000
-time: 0,701897
-abs error: 1,73542e-11
-rel error: 2,99607e-15
+time: 0.269424
+abs error: 1.76496e-11
+rel error: 3.04765e-15
 
 test size: 1500
-time: 3,07461
-abs error: 2,78265e-11
-rel error: 3,20415e-15
+time: 0.931864
+abs error: 3.16902e-11
+rel error: 3.65029e-15
 
 test size: 2000
-time: 8,5319
-abs error: 4,23803e-11
-rel error: 3,66034e-15
+time: 2.52006
+abs error: 4.81518e-11
+rel error: 4.15796e-15
 
 test size: 2500
-time: 17,2398
-abs error: 5,99792e-11
-rel error: 4,14403e-15
+time: 5.91977
+abs error: 6.72733e-11
+rel error: 4.64926e-15
 
 test size: 3000
-time: 32,3486
-abs error: 7,81241e-11
-rel error: 4,49705e-15
+time: 10.1685
+abs error: 8.78734e-11
+rel error: 5.05907e-15
 
 test size: 3500
-time: 52,5276
-abs error: 9,84869e-11
-rel error: 4,86151e-15
+time: 20.5822
+abs error: 1.11571e-10
+rel error: 5.50724e-15
+
+test size: 4000
+time: 32.6651
+abs error: 1.49834e-10
+rel error: 6.47127e-15

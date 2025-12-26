@@ -1,115 +1,138 @@
-#pragma once
+п»ї#pragma once
 
-#include "../TMatrix.h"
+#include <vector>
+
+#include "IHouseholderMethodSolver.h"
+#include "../Matrix/TransposedMatrix.h"
 #include "../math.h"
 
 template <typename T>
 class HouseholderMethodWithNormW : public IHouseholderMethodSolver<T> {
-	// третья версия, на основе второй. w вычисляется проще для уменьшения роста ошибки, нормированный w сохраняется в R
-	virtual void QR_decomposition(const TMatrix<T>& A, TMatrix<T>& Q, TMatrix<T>& R) override
-	{
-		const ptrdiff_t N = A.Size();
-		R = A;
-		// вычисление R
-		for (ptrdiff_t k = 0; k < N - 1; ++k) {
-			double tau = 0.0, sigma = 0.0;
-			TVector<T> w(N, 0);
-			// вычисление w, tau, sigma
-			// w = x - sigma*(1,0...0)
-			// tau = 2 / (wTw)
-			// sigma = -sign(x0) * ||x||
-			double sum_sq = 0.0;
-#pragma omp parallel for reduction(+:sum_sq)
-			for (ptrdiff_t str = k; str < N; ++str) {
-				sum_sq += R[str][k] * R[str][k];
-			}
+public:
+	// С‚СЂРµС‚СЊСЏ РІРµСЂСЃРёСЏ, РЅР° РѕСЃРЅРѕРІРµ РІС‚РѕСЂРѕР№. w РІС‹С‡РёСЃР»СЏРµС‚СЃСЏ РїСЂРѕС‰Рµ РґР»СЏ СѓРјРµРЅСЊС€РµРЅРёСЏ СЂРѕСЃС‚Р° РѕС€РёР±РєРё, РЅРѕСЂРјРёСЂРѕРІР°РЅРЅС‹Р№ w СЃРѕС…СЂР°РЅСЏРµС‚СЃСЏ РІ R
+    virtual void QR_decomposition(
+        const std::vector<std::vector<T>>& A, 
+        std::vector<std::vector<T>>& Q, 
+        std::vector<std::vector<T>>& R) override
+    {
+        const size_t N = A.size();
+        TransposedMatrix<T> A_T(A), R_T(A);
+        TransposedMatrix<T> Q_T(N, N, 0.0);
 
-			double norm_x = sqrt(sum_sq);
-			sigma = -sign(R[k][k]) * norm_x;
+        // РІС‹С‡РёСЃР»РµРЅРёРµ R
+        for (ptrdiff_t k = 0; k < N - 1; ++k) {
+            double tau = 0.0, sigma = 0.0;
 
-			w[k] = R[k][k] - sigma;
-#pragma omp parallel for // if(N-k-1 > 1000)
-			for (ptrdiff_t str = k + 1; str < N; ++str) {
-				w[str] = R[str][k];
-			}
+            // РІС‹С‡РёСЃР»РµРЅРёРµ w, tau, sigma
+            // sigma = -sign(Akk) * ||Ak||
+            // w = Ak - sigma*(1,0...0)
+            // tau = 2 / (wTw)
 
-			double denominator = 0;
-#pragma omp parallel for reduction(+:denominator)
-			for (ptrdiff_t i = k; i < N; ++i) {
-				denominator += w[i] * w[i];
-			}
+            double sum_sq = 0.0;
+            for (ptrdiff_t row = k; row < N; ++row) {
+                T val = R_T.At(row, k);
+                sum_sq += static_cast<double>(val) * static_cast<double>(val);
+            }
 
-			if (denominator != 0) {
-				tau = 2.0 / denominator;
-			}
+            double norm = sqrt(sum_sq);
+            sigma = -sign(R_T.At(k, k)) * norm;
 
-			// сохраняем w для Q (нормированный, чтобы w[0]=1), теперь можно хранить в R под диагональю
-			if (w[k] != 0) {
-				double scale = 1.0 / w[k];
-#pragma omp parallel for
-				for (ptrdiff_t i = k + 1; i < N; ++i) {
-					R[i][k] = w[i] * scale;
-				}
-			}
+            // РІС‹С‡РёСЃР»СЏРµРј w, С…СЂР°РЅРёРј Р±РµР· k РЅСѓР»РµР№ РІ РЅР°С‡Р°Р»Рµ
+            std::vector<T> w(N - k);
+            for (ptrdiff_t i = 1; i < N - k; ++i) {
+                ptrdiff_t row = k + i;
+                w[i] = R_T.At(row, k);
+            }
+            w[0] = R_T.At(k, k) - sigma;
 
-			R[k][k] = sigma;
+            double denominator = w[0] * w[0];
+            for (ptrdiff_t i = 1; i < N - k; ++i) {
+                denominator += w[i] * w[i];
+            }
 
-			// применяем отражения к правой части
-#pragma omp parallel for
-			for (ptrdiff_t col = k + 1; col < N; ++col) {
-				double dot = 0;
-				for (ptrdiff_t row = k; row < N; ++row) {
-					dot += w[row] * R[row][col];
-				}
+            if (denominator != 0) {
+                tau = 2.0 / denominator;
+            }
 
-				double scale = tau * dot;
-				for (ptrdiff_t row = k; row < N; ++row) {
-					R[row][col] -= w[row] * scale;
-				}
-			}
-		}
+            // СЃРѕС…СЂР°РЅСЏРµРј РЅРѕСЂРјРёСЂРѕРІР°РЅРЅС‹Р№ w РґР»СЏ Q (w[0]=1) РІ R РїРѕРґ РґРёР°РіРѕРЅР°Р»СЊСЋ
+            if (w[0] != 0) {
+                double scale = 1.0 / w[0];
+                for (ptrdiff_t i = 1; i < N - k; ++i) {
+                    ptrdiff_t row = k + i;
+                    R_T.At(row, k) = w[i] * scale;
+                }
+            }
+            R_T.At(k, k) = sigma;
 
-		// вычисление Q
-		Q = TMatrix<T>(N, N, 0);
-#pragma omp parallel for
-		for (ptrdiff_t i = 0; i < N; ++i) {
-			Q[i][i] = 1;
-		}
+            // РїСЂРёРјРµРЅСЏРµРј РѕС‚СЂР°Р¶РµРЅРёСЏ Рє РїСЂР°РІРѕР№ С‡Р°СЃС‚Рё
+#pragma omp parallel for if(N >= 1000)
+            for (ptrdiff_t col = k + 1; col < N; ++col) {
+                double wTR = 0;
+                // Р’С‹С‡РёСЃР»СЏРµРј wTR = wT * СЃС‚РѕР»Р±РµС† col
+                for (ptrdiff_t i = 0; i < N - k; ++i) {
+                    ptrdiff_t row = k + i;
+                    wTR += w[i] * R_T.At(row, col);
+                }
 
-		// применяем отражения в обратном порядке
-		for (ptrdiff_t k = N - 2; k >= 0; --k) {
-			// берём вектор w из R
-			int m = N - k;  // размер w
-			TVector<T> w(m);
-			w[0] = 1.0;
-			for (ptrdiff_t i = 1; i < m; ++i) {
-				w[i] = R[k + i][k];
-				R[k + i][k] = 0;
-			}
+                double scale = tau * wTR;
 
-			// tau = 2 / (wTw)
-			double w_norm_sq = 1.0; // w[0] = 1
-			for (ptrdiff_t i = 1; i < m; ++i) {
-				w_norm_sq += w[i] * w[i];
-			}
-			double tau = 2.0 / w_norm_sq;
+                // РѕР±РЅРѕРІР»СЏРµРј СЃС‚РѕР»Р±РµС† col: R[:,col] -= w * scale
+                for (ptrdiff_t i = 0; i < N - k; ++i) {
+                    ptrdiff_t row = k + i;
+                    R_T.At(row, col) -= w[i] * scale;
+                }
+            }
+        }
 
-			// H = I - tau * w * wT к Q[k:N, :]
-#pragma omp parallel for
-			for (ptrdiff_t col = 0; col < N; ++col) {
-				// dot = wT * Q[k:N, col]
-				double dot = Q[k][col]; // w[0] = 1
-				for (ptrdiff_t i = 1; i < m; ++i) {
-					dot += w[i] * Q[k + i][col];
-				}
-				dot *= tau;
+        // РІС‹С‡РёСЃР»РµРЅРёРµ Q
+        for (ptrdiff_t i = 0; i < N; ++i) {
+            Q_T.At(i, i) = 1.0;
+        }
 
-				// Q[k:N, col] -= dot * w
-				Q[k][col] -= dot;  // w[0] = 1
-				for (ptrdiff_t i = 1; i < m; ++i) {
-					Q[k + i][col] -= dot * w[i];
-				}
-			}
-		}
-	}
+        // РїСЂРёРјРµРЅСЏРµРј РѕС‚СЂР°Р¶РµРЅРёСЏ РІ РѕР±СЂР°С‚РЅРѕРј РїРѕСЂСЏРґРєРµ
+        for (ptrdiff_t k = N - 2; k >= 0; --k) {
+            // Р±РµСЂС‘Рј РІРµРєС‚РѕСЂ w РёР· R
+            ptrdiff_t m = N - k;  // СЂР°Р·РјРµСЂ w
+            std::vector<T> w(m);
+            w[0] = 1.0;
+
+            for (ptrdiff_t i = 1; i < m; ++i) {
+                ptrdiff_t row = k + i;
+                w[i] = R_T.At(row, k);
+                R_T.At(row, k) = 0;  // РѕС‡РёС‰Р°РµРј
+            }
+
+            // tau = 2 / (wTw)
+            double w_norm_sq = 1.0; // w[0] = 1
+            for (ptrdiff_t i = 1; i < m; ++i) {
+                w_norm_sq += w[i] * w[i];
+            }
+            double tau = 2.0 / w_norm_sq;
+
+            // H = I - tau * w * wT Рє Q[k:N, :]
+#pragma omp parallel for if(N >= 1000)
+            for (ptrdiff_t col = 0; col < N; ++col) {
+                // wTQ = wT * Q[k:N, col]
+                double wTQ = Q_T.At(k, col); // w[0] = 1
+
+                for (ptrdiff_t i = 1; i < m; ++i) {
+                    ptrdiff_t row = k + i;
+                    wTQ += w[i] * Q_T.At(row, col);
+                }
+                wTQ *= tau;
+
+                // Q[k:N, col] -= wTQ * w
+                Q_T.At(k, col) -= wTQ;  // w[0] = 1
+
+                for (ptrdiff_t i = 1; i < m; ++i) {
+                    ptrdiff_t row = k + i;
+                    Q_T.At(row, col) -= wTQ * w[i];
+                }
+            }
+        }
+
+        // РїРµСЂРµРІРµСЃС‚Рё РІ РѕР±С‹С‡РЅСѓСЋ РјР°С‚СЂРёС†Сѓ
+        Q = Q_T.Transpose();
+        R = R_T.Transpose();
+    }
 };
