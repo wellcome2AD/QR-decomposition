@@ -2,12 +2,12 @@
 
 #include <vector>
 
-#include "IHouseholderMethodSolver.h"
+#include "../IQRSolver.h"
 #include "../Matrix/TransposedMatrix.h"
 #include "../math.h"
 
 template <typename T>
-class HouseholderMethodWithNormW : public IHouseholderMethodSolver<T> {
+class HouseholderMethodWithNormW : public IQRSolver<T> {
 public:
 	// третья версия, на основе второй. w вычисляется проще для уменьшения роста ошибки, нормированный w сохраняется в R
     virtual void QR_decomposition(
