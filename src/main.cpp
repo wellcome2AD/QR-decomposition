@@ -73,7 +73,7 @@ struct testParams
 	std::vector<int> sizes;
 };
 
-int main()
+void tests()
 {
 	auto methods = std::map<int, testParams>{};
 
@@ -110,6 +110,17 @@ int main()
 		}
 	}
 	std::cout << "all tests passed";
+}
 
+// »спользование: QR разложение матрицы ’ессенберга с использованием вращений
+// ћатрицы ’ессенберга:
+// * верхн€€ (квадратна€ матрица, у которой все элементы лежащие ниже первой поддиагонали равны нулю, т.е. m[i,j]=0 дл€ любого i>j+1)
+// * нижн€€ (при транспонировании получаетс€ верхн€€ матрица ’ессенберга)
+
+int main()
+{
+	// tests();
+	auto res = generateHassenbergMatrix<double>(4, true, true);
+	printMatrix(res);
 	return 0;
 }

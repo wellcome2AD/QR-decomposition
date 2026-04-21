@@ -105,3 +105,49 @@ std::vector<std::vector<T>> substractMatrix(const std::vector<std::vector<T>>& m
 	}
 	return res;
 }
+
+template <typename T>
+T randomNotZeroValue()
+{
+	T value = 0;
+	while (value == 0)
+	{
+		value = std::rand() % 20 - 10;
+	}
+	return value;
+}
+
+template <typename T>
+std::vector<std::vector<T>> generateHassenbergMatrix(size_t size, bool upper, bool lower)
+{
+	std::srand(std::time(0));
+	std::vector<std::vector<T>> res(size, std::vector<T>(size, 0));
+	size_t N = size, M = size;
+	if (upper == true && lower == true)
+	{
+		for (size_t i = 0; i < N; ++i) {
+			if (i != 0) res[i][i - 1] = randomNotZeroValue<T>();
+			if (i != N - 1) res[i][i + 1] = randomNotZeroValue<T>();
+			res[i][i] = randomNotZeroValue<T>();
+		}
+	}
+	else if (upper == true)
+	{
+		for (size_t i = 0; i < N; ++i) {
+			if (i != 0) res[i][i - 1] = randomNotZeroValue<T>();
+			for (size_t j = i; j < M; ++j) {
+				res[i][j] = randomNotZeroValue<T>();
+			}
+		}
+	}
+	else if (lower == true)
+	{
+		for (size_t i = 0; i < N; ++i) {
+			if (i != N - 1) res[i][i + 1] = randomNotZeroValue<T>();
+			for (size_t j = 0; j < i + 1; ++j) {
+				res[i][j] = randomNotZeroValue<T>();
+			}
+		}
+	}
+	return res;
+}
