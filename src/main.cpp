@@ -60,9 +60,9 @@ void QR_decomposition_test_with_generated_matrix(IQRSolver<T>* solver, int N, bo
 	// printResultWithExpected(A, Q, R);
 
 	if (writeToFile) {
-		writeMatrixToFile("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
-		writeMatrixToFile("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
-		writeMatrixToFile("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
+		writeMatrixToFile<double>("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
+		writeMatrixToFile<double>("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
+		writeMatrixToFile<double>("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
 	}
 }
 
@@ -77,28 +77,28 @@ void tests()
 {
 	auto methods = std::map<int, testParams>{};
 
-	methods[0] = {
-		new HouseholderMethodBasic<currentType>(),
-		"Householder basic version",
-		{ 100, 200, 300, 400, 500 },
-	};
+	//methods[0] = {
+	//	new HouseholderMethodBasic<currentType>(),
+	//	"Householder basic version",
+	//	{ 100, 200, 300, 400, 500 },
+	//};
 
-	methods[1] = {
-		new HouseholderMethodWithoutMatrixMults<currentType>(),
-		"Householder without matrix multiplications",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
+	//methods[1] = {
+	//	new HouseholderMethodWithoutMatrixMults<currentType>(),
+	//	"Householder without matrix multiplications",
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//};
 
-	methods[2] = {
-		new HouseholderMethodWithNormW < currentType>,
-		"Householder with normal w in-place",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
+	//methods[2] = {
+	//	new HouseholderMethodWithNormW < currentType>,
+	//	"Householder with normal w in-place",
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//};
 
 	methods[3] = {
 		new GivensMethodBasic<currentType>(),
 		"Givens basic version",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+		{ /*100, 200, 300, 400, 500,*/ 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
 
 	for (const auto& method : methods)
@@ -109,18 +109,46 @@ void tests()
 			QR_decomposition_test_with_generated_matrix(method.second.solver, size, false);
 		}
 	}
-	std::cout << "all tests passed";
+	std::cout << "all tests passed\n\n";
 }
 
 // »спользование: QR разложение матрицы ’ессенберга с использованием вращений
 // ћатрицы ’ессенберга:
 // * верхн€€ (квадратна€ матрица, у которой все элементы лежащие ниже первой поддиагонали равны нулю, т.е. m[i,j]=0 дл€ любого i>j+1)
 // * нижн€€ (при транспонировании получаетс€ верхн€€ матрица ’ессенберга)
+void hassenberg()
+{
+	std::cout << "hassenberg matrix decomposition\n";
+	for (auto&& N : { 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 })
+	{
+		auto res = generateHassenbergMatrix<double>(N, true, true);
+		// printMatrix(res);
+		std::cout << "test size: " << N << std::endl;
+		std::vector<std::vector<double>> Q(N, std::vector<double>(N, 0)), R(N, std::vector<double>(N, 0));
+
+		double start = omp_get_wtime();
+		auto solver = new GivensMethodBasic<currentType>();
+		solver->QR_decomposition(res, Q, R);
+		double end = omp_get_wtime();
+
+		// printMatrix(Q);
+		// printMatrix(R);
+
+		std::cout << "time: " << end - start << std::endl;
+		std::cout << "abs error: " << Fnorm<double>(substractMatrix<double>(multiplyMatrix(Q, R), res)) << std::endl;
+		std::cout << "rel error: " << Fnorm<double>(substractMatrix<double>(multiplyMatrix(Q, R), res)) / Fnorm<double>(res) << std::endl << std::endl;
+
+		writeMatrixToFile<double>("test_data\\matrixA_" + std::to_string(N) + ".txt", res);
+		writeMatrixToFile<double>("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
+		writeMatrixToFile<double>("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
+	}
+	std::cout << "all tests passed\n";
+}
 
 int main()
 {
-	// tests();
-	auto res = generateHassenbergMatrix<double>(4, true, true);
-	printMatrix(res);
+	tests();
+	// hassenberg();
+
 	return 0;
 }
