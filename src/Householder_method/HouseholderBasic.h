@@ -10,6 +10,7 @@ template <typename T>
 class HouseholderMethodBasic : public IQRSolver<T> {
 	// первая, самая неоптимальная версия. на каждом шаге алгоритма выполняется два матричных умножения,
 	// используется много лишней памяти
+public:
 	virtual void QR_decomposition(const std::vector<std::vector<T>>& A, std::vector<std::vector<T>>& Q, std::vector<std::vector<T>>& R) override
 	{
 		const ptrdiff_t N = A.size();

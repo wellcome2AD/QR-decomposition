@@ -77,28 +77,28 @@ int main()
 {
 	auto methods = std::map<int, testParams>{};
 
-	methods[0] = {
-		new HouseholderMethodBasic<currentType>(),
-		"Householder basic version",
-		{ 100, 200, 300, 400, 500 },
-	};
+	//methods[0] = {
+	//	new HouseholderMethodBasic<currentType>(),
+	//	"Householder basic version",
+	//	{ 100, 200, 300, 400, 500 },
+	//};
 
-	methods[1] = {
-		new HouseholderMethodWithoutMatrixMults<currentType>(),
-		"Householder without matrix multiplications",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
+	//methods[1] = {
+	//	new HouseholderMethodWithoutMatrixMults<currentType>(),
+	//	"Householder without matrix multiplications",
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//};
 
-	methods[2] = {
-		new HouseholderMethodWithNormW < currentType>,
-		"Householder with normal w in-place",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
+	//methods[2] = {
+	//	new HouseholderMethodWithNormW < currentType>,
+	//	"Householder with normal w in-place",
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//};
 
 	methods[3] = {
 		new GivensMethodBasic<currentType>(),
 		"Givens basic version",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+		{ 300/*100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000*/ },
 	};
 
 	for (const auto& method : methods)
