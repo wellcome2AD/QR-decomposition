@@ -25,6 +25,7 @@ public:
 		{ // зануляем весь столбец j
 			for (auto i = j + 1; i < N; i++)
 			{ // под главной диагональю
+				std::cout << "rotate " << i << " and " << j << " rows\n";
 				double Rjj = R[j][j];
 				double Rij = R[i][j];
 
