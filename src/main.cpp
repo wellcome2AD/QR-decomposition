@@ -14,17 +14,18 @@
 #include "Householder_method/HouseholderWithNormW.h"
 
 #include "Givens_method/GivensBasic.h"
+#include "Givens_Method/GivensQRInOneMatrix.h"
 
 #include "matrix.h"
 
-typedef double currentType;
+typedef float currentType;
 size_t thread_num = 8;
 
 template <typename T>
 void printResultWithExpected(const std::vector<std::vector<T>>& A, const std::vector<std::vector<T>>& Q, const std::vector<std::vector<T>>& R)
 {
 	// проверка на соответствие для малых тестов с помощью базовой реализации
-	IQRSolver<currentType>* basicMethod = new GivensMethodBasic<currentType>();
+	IQRSolver<currentType>* basicMethod = new HouseholderMethodWithNormW<currentType>();
 	std::vector<std::vector<T>> expecQ, expecR;
 	basicMethod->QR_decomposition(A, expecQ, expecR);
 	std::cout << "Q:";
@@ -98,7 +99,13 @@ int main()
 	methods[3] = {
 		new GivensMethodBasic<currentType>(),
 		"Givens basic version",
-		{ 300/*100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000*/ },
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	};
+
+	methods[4] = {
+		new GivensMethodQRInOneMatrix<currentType>(),
+		"Givens with less memory accesses version",
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
 
 	for (const auto& method : methods)
