@@ -1,7 +1,9 @@
 #pragma once
 
+#include <iomanip>
 #include <vector>
 #include <string>
+#include <cassert>
 
 template <typename T>
 inline double Fnorm(const std::vector<std::vector<T>>& m) {

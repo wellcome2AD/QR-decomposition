@@ -8,80 +8,119 @@
 #include <cassert>
 #include <memory>
 #include <new>
+#include <algorithm>
 
 #include "../IQRSolver.h"
 #include "math.h"
 
-static constexpr auto c_align = 64;
+static constexpr std::align_val_t c_align = std::align_val_t(64);
 
 template <typename T>
 class GivensMethodSIMD : public IQRSolver<T> {
 public:
-	virtual void QR_decomposition(const std::vector<std::vector<T>>& A, std::vector<std::vector<T>>& Q, std::vector<std::vector<T>>& R) override
+	// Константа выравнивания (64 байта для AVX-512)
+
+	virtual void QR_decomposition(const std::vector<std::vector<T>>& A,
+		std::vector<std::vector<T>>& Q,
+		std::vector<std::vector<T>>& R) override
 	{
-		auto N = A.size();
-		auto R_aligned = static_cast<T *>(::operator new[](N * N * sizeof(T), std::align_val_t(c_align)));
-		for (int i = 0; i < N; ++i)
-		{
-			for (int j = 0; j < N; ++j)
-			{
-				R_aligned[i * N + j] = A[i][j];
+		const auto N = A.size();
+		if (N == 0) return;
+
+		// ---------- 1. Выделение памяти с выравниванием строк ----------
+		constexpr size_t elem_size = sizeof(T);
+		constexpr size_t align_mod = 64 / elem_size;   // 8 для double
+		// Шаг с padding: каждая строка начинается с выровненного адреса
+		size_t stride = N;
+		size_t rem = N % align_mod;
+		if (rem != 0) stride += align_mod - rem;       // stride теперь кратен 8
+
+		// RAII-обёртки для автоматического освобождения памяти
+		auto deleter = [](T* p) { ::operator delete[](p, c_align); };
+		std::unique_ptr<T[], decltype(deleter)> R_data{
+			static_cast<T*>(::operator new[](N* stride* elem_size, c_align)), deleter };
+		std::unique_ptr<T[], decltype(deleter)> Q_data{
+			static_cast<T*>(::operator new[](N* stride* elem_size, c_align)), deleter };
+
+		// Функция доступа: R_data[i * stride + j]
+#define R(i, j) R_data[(i)*stride + (j)]
+#define Q_T(i, j) Q_data[(i)*stride + (j)]   // Q в транспонированном виде
+
+// ---------- 2. Копирование A в R, Q = I (только диагональ) ----------
+#pragma omp parallel for num_threads(thread_num) if (N >= 1000)
+		for (int i = 0; i < N; ++i) {
+			for (size_t j = 0; j < N; ++j) {
+				R(i, j) = A[i][j];        // заполняем только первые N столбцов
+			}
+			// padding-элементы в конце строки не трогаем (их значения не используются)
+			Q_T(i, i) = 1.0;              // единичная диагональ
+		}
+		// (Остальные элементы Q_T уже равны 0, так как память zero-initialized?)
+		// Нет, new[] не обнуляет. Явно обнулим только что созданную матрицу Q_data:
+#pragma omp parallel for num_threads(thread_num) if (N >= 1000)
+		for (int i = 0; i < N; ++i) {
+			for (size_t j = 0; j < N; ++j) {
+				if (i != j) Q_T(i, j) = 0.0;
 			}
 		}
 
-		auto Q_aligned = static_cast<T*>(::operator new[](N* N * sizeof(T), std::align_val_t(c_align)));
-#pragma omp parallel for num_threads(thread_num) if (N >= 1000)
-		for (int i = 0; i < N; ++i)
-		{
-			Q_aligned[i * N + i] = 1.0;
-		}
+		// ---------- 3. Основной цикл вращений Гивенса ----------
+		for (int j = 0; j < N - 1; ++j) {
+			for (int i = j + 1; i < N; ++i) {
+				const double Rjj = R(j, j);
+				const double Rij = R(i, j);
 
-		auto&& Q_T = Q_aligned;
-
-		for (auto j = 0; j < N - 1; j++)
-		{
-			for (auto i = j + 1; i < N; i++)
-			{
-				double Rjj = R_aligned[j * N + j];
-				double Rij = R_aligned[i * N + j];
-
-				double denom = std::max(std::abs(Rjj), 1.0);
-				if (std::abs(Rij) < 1e-11 * denom || std::abs(Rij) < 1e-11 * std::abs(Rjj))
+				const double denom = std::max(std::abs(Rjj), 1.0);
+				if (std::abs(Rij) < 1e-11 * denom ||
+					std::abs(Rij) < 1e-11 * std::abs(Rjj))
 					continue;
 
-				double sqrt_val = std::sqrt(Rjj * Rjj + Rij * Rij);
+				const double sqrt_val = std::sqrt(Rjj * Rjj + Rij * Rij);
 				if (std::abs(sqrt_val) < 1e-11)
 					continue;
 
-				double c = Rjj / sqrt_val, s = -Rij / sqrt_val;
+				const double c = Rjj / sqrt_val;
+				const double s = -Rij / sqrt_val;
 
-#pragma omp simd aligned(R_aligned, Q_T: 64)
-				for (auto k = 0; k < N; k++) {
-					T Rj =  R_aligned[j * N + k];
-					T Ri = R_aligned[i * N + k];
-					T Qj = Q_T[j * N + k];
-					T Qi = Q_T[i * N + k];
+				// Локальные указатели на строки (выровнены!)
+				T* __restrict Rj_ptr = &R_data[j * stride];
+				T* __restrict Ri_ptr = &R_data[i * stride];
+				T* __restrict Qj_ptr = &Q_data[j * stride];
+				T* __restrict Qi_ptr = &Q_data[i * stride];
 
-					R_aligned[j * N + k] = Rj * c - Ri * s;
-					R_aligned[i * N + k] = Rj * s + Ri * c;
-					Q_T[j * N + k] = Qj * c - Qi * s;
-					Q_T[i * N + k] = Qj * s + Qi * c;
+				// Явно сообщаем компилятору о выравнивании
+#pragma omp simd aligned(Rj_ptr, Ri_ptr, Qj_ptr, Qi_ptr : 64)
+				for (size_t k = 0; k < stride; ++k) {
+					const T Rj = Rj_ptr[k];
+					const T Ri = Ri_ptr[k];
+					const T Qj = Qj_ptr[k];
+					const T Qi = Qi_ptr[k];
+
+					Rj_ptr[k] = Rj * c - Ri * s;
+					Ri_ptr[k] = Rj * s + Ri * c;
+					Qj_ptr[k] = Qj * c - Qi * s;
+					Qi_ptr[k] = Qj * s + Qi * c;
 				}
+
+				// Зануляем R(i, j) для надёжности (он должен был стать ~0)
+				R(i, j) = 0.0;
 			}
 		}
 
-		R = Q = std::vector<std::vector<T>>(N, std::vector<T>(N));
+		// ---------- 4. Копирование обратно в векторы векторов ----------
+		Q = std::vector<std::vector<T>>(N, std::vector<T>(N));
+		R = std::vector<std::vector<T>>(N, std::vector<T>(N));
+
 #pragma omp parallel for num_threads(thread_num) if (N >= 1000)
-		for (int i = 0; i < N; ++i)
-		{
-			for (int j = 0; j < N; ++j)
-			{
-				R[i][j] = R_aligned[i * N + j];
-				Q[i][j] = Q_T[j * N + i];
+		for (int i = 0; i < N; ++i) {
+			for (size_t j = 0; j < N; ++j) {
+				R[i][j] = R(i, j);
+				// Q получается транспонированием Q_T: Q[i][j] = Q_T(j, i)
+				Q[i][j] = Q_T(j, i);
 			}
 		}
 
-		::operator delete[](R_aligned, std::align_val_t(c_align));
-		::operator delete[](Q_aligned, std::align_val_t(c_align));
+#undef R
+#undef Q_T
 	}
 };

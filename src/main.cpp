@@ -1,13 +1,11 @@
-#include <cassert>
 #include <cmath>
-#include <iomanip>
 #include <iostream>
 #include <fstream>
 #include <omp.h>
-#include <string>
 #include <map>
-
-#include <sstream>
+#include <vector>
+#include <memory>
+#include <new>
 
 #include "IQRSolver.h"
 
