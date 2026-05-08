@@ -17,6 +17,7 @@
 
 #include "Givens_method/GivensBasic.h"
 #include "Givens_Method/GivensQRInOneMatrix.h"
+#include "Givens_Method/GivensSIMD.h"
 
 #include "matrix.h"
 
@@ -87,7 +88,7 @@ void QRtests()
 {
 	auto methods = std::map<int, testParams>{};
 
-	methods[0] = {
+	/*methods[0] = {
 		new HouseholderMethodBasic<currentType>(),
 		"Householder basic version",
 		{ 100, 200, 300, 400, 500 },
@@ -109,12 +110,18 @@ void QRtests()
 		new GivensMethodBasic<currentType>(),
 		"Givens basic version",
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
+	};*/
 
 	methods[4] = {
 		new GivensMethodQRInOneMatrix<currentType>(),
 		"Givens with less memory accesses version",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500/*, 3000, 3500, 4000*/ },
+	};
+
+	methods[5] = {
+		new GivensMethodSIMD<currentType>(),
+		"Givens SIMD",
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500/*, 3000, 3500, 4000*/ },
 	};
 
 	for (const auto& method : methods)
@@ -144,7 +151,7 @@ void hassenberg_tests()
 		std::vector<std::vector<double>> Q(N, std::vector<double>(N, 0)), R(N, std::vector<double>(N, 0));
 
 		double start = omp_get_wtime();
-		auto solver = new GivensMethodBasic<currentType>();
+		auto solver = new GivensMethodQRInOneMatrix<currentType>();
 		solver->QR_decomposition(res, Q, R);
 		double end = omp_get_wtime();
 
@@ -165,7 +172,7 @@ void hassenberg_tests()
 int main()
 {
 	QRtests();
-	hassenberg_tests();
+	//hassenberg_tests();
 	return 0;
 }
 

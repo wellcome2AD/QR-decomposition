@@ -15,9 +15,8 @@
 static constexpr auto c_align = 64;
 
 template <typename T>
-class GivensMethodBasic : public IQRSolver<T> {
+class GivensMethodSIMD : public IQRSolver<T> {
 public:
-	// первая, неоптимальная версия
 	virtual void QR_decomposition(const std::vector<std::vector<T>>& A, std::vector<std::vector<T>>& Q, std::vector<std::vector<T>>& R) override
 	{
 		auto N = A.size();
@@ -43,8 +42,8 @@ public:
 		{
 			for (auto i = j + 1; i < N; i++)
 			{
-				double Rjj = R[j][j];
-				double Rij = R[i][j];
+				double Rjj = R_aligned[j * N + j];
+				double Rij = R_aligned[i * N + j];
 
 				double denom = std::max(std::abs(Rjj), 1.0);
 				if (std::abs(Rij) < 1e-11 * denom || std::abs(Rij) < 1e-11 * std::abs(Rjj))
