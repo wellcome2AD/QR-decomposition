@@ -25,7 +25,6 @@ public:
 		{ // зануляем весь столбец j
 			for (auto i = j + 1; i < N; i++)
 			{ // под главной диагональю
-				std::cout << "rotate " << i << " and " << j << " rows\n";
 				double Rjj = R[j][j];
 				double Rij = R[i][j];
 
@@ -50,15 +49,13 @@ public:
 #pragma omp parallel for num_threads(thread_num) if (N >= 1000)
 				for (auto k = 0; k < N; k++)
 				{
-					if (k >= j)
-					{// меняются только две строки -- i и j
-						auto temp = R[j][k] * c - R[i][k] * s;
-						R[i][k] = R[j][k] * s + R[i][k] * c;
-						R[j][k] = temp;
-					}
+					// меняются только две строки -- i и j
+					auto temp = R[j][k] * c - R[i][k] * s;
+					R[i][k] = R[j][k] * s + R[i][k] * c;
+					R[j][k] = temp;
 
 					// меняются только два столбца -- i и j
-					auto temp = c * Q[k][j] - s * Q[k][i];
+					temp = c * Q[k][j] - s * Q[k][i];
 					Q[k][i] = s * Q[k][j] + c * Q[k][i];
 					Q[k][j] = temp;
 				}

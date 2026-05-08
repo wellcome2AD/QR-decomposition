@@ -35,25 +35,25 @@ public:
 	}
 
 private:
-	double count_beta(const std::vector<std::vector<T>>& Ak, int k_step)
+	double count_beta(const std::vector<std::vector<T>>& Ak, ptrdiff_t k_step)
 	{
 		const ptrdiff_t N = Ak.size();
 		double sum_by_k_col = 0.0;
 #pragma omp parallel for num_threads(thread_num) reduction(+:sum_by_k_col)
-		for (int str = k_step; str < N; ++str) {
+		for (ptrdiff_t str = k_step; str < N; ++str) {
 			sum_by_k_col += Ak[str][k_step] * Ak[str][k_step];
 		}
 		double beta = sign(-Ak[k_step][k_step]) * sqrt(sum_by_k_col);
 		return beta;
 	}
 
-	double count_mu(double beta, int k_step, const std::vector<std::vector<T>>& Ak)
+	double count_mu(double beta, ptrdiff_t k_step, const std::vector<std::vector<T>>& Ak)
 	{
 		double mu = 1.0 / sqrt(2.0 * beta * beta - 2 * beta * double(Ak[k_step][k_step]));
 		return mu;
 	}
 
-	std::vector<T> count_w(const std::vector<std::vector<T>>& Ak, int k_step, double beta, double mu)
+	std::vector<T> count_w(const std::vector<std::vector<T>>& Ak, ptrdiff_t k_step, double beta, double mu)
 	{
 		const ptrdiff_t N = Ak.size();
 		std::vector<T> w(N);
