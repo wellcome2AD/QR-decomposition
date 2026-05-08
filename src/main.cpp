@@ -110,11 +110,11 @@ void QRtests()
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};*/
 
-	methods[4] = {
-		new GivensMethodQRInOneMatrix<currentType>(),
-		"Givens with less memory accesses version",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500/*, 3000, 3500, 4000*/ },
-	};
+	//methods[4] = {
+	//	new GivensMethodQRInOneMatrix<currentType>(),
+	//	"Givens with less memory accesses version",
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500/*, 3000, 3500, 4000*/ },
+	//};
 
 	methods[5] = {
 		new GivensMethodSIMD<currentType>(),

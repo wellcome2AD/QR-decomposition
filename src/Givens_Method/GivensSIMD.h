@@ -18,45 +18,36 @@ static constexpr std::align_val_t c_align = std::align_val_t(64);
 template <typename T>
 class GivensMethodSIMD : public IQRSolver<T> {
 public:
-	// Константа выравнивания (64 байта для AVX-512)
-
-	virtual void QR_decomposition(const std::vector<std::vector<T>>& A,
-		std::vector<std::vector<T>>& Q,
-		std::vector<std::vector<T>>& R) override
+	virtual void QR_decomposition(const std::vector<std::vector<T>>& A, std::vector<std::vector<T>>& Q, std::vector<std::vector<T>>& R) override
 	{
 		const auto N = A.size();
-		if (N == 0) return;
 
-		// ---------- 1. Выделение памяти с выравниванием строк ----------
+		// выделение памяти с выравниванием строк
 		constexpr size_t elem_size = sizeof(T);
-		constexpr size_t align_mod = 64 / elem_size;   // 8 для double
-		// Шаг с padding: каждая строка начинается с выровненного адреса
-		size_t stride = N;
-		size_t rem = N % align_mod;
-		if (rem != 0) stride += align_mod - rem;       // stride теперь кратен 8
+		constexpr size_t align_mod = 64 / elem_size;
 
-		// RAII-обёртки для автоматического освобождения памяти
+		size_t stride = N; // каждая строка будет начинаться с выровненного адреса
+		size_t rem = N % align_mod;
+		if (rem != 0) stride += align_mod - rem; // stride кратен 8
+
+		// обёртки для автоматического освобождения памяти
 		auto deleter = [](T* p) { ::operator delete[](p, c_align); };
 		std::unique_ptr<T[], decltype(deleter)> R_data{
 			static_cast<T*>(::operator new[](N* stride* elem_size, c_align)), deleter };
 		std::unique_ptr<T[], decltype(deleter)> Q_data{
 			static_cast<T*>(::operator new[](N* stride* elem_size, c_align)), deleter };
 
-		// Функция доступа: R_data[i * stride + j]
-#define R(i, j) R_data[(i)*stride + (j)]
-#define Q_T(i, j) Q_data[(i)*stride + (j)]   // Q в транспонированном виде
+#define R(i, j) R_data[(i)*stride + (j)] // функция доступа: R_data[i * stride + j]
+#define Q_T(i, j) Q_data[(i)*stride + (j)] // Q в транспонированном виде
 
-// ---------- 2. Копирование A в R, Q = I (только диагональ) ----------
 #pragma omp parallel for num_threads(thread_num) if (N >= 1000)
 		for (int i = 0; i < N; ++i) {
 			for (size_t j = 0; j < N; ++j) {
-				R(i, j) = A[i][j];        // заполняем только первые N столбцов
+				R(i, j) = A[i][j];
 			}
-			// padding-элементы в конце строки не трогаем (их значения не используются)
-			Q_T(i, i) = 1.0;              // единичная диагональ
+			Q_T(i, i) = 1.0;
 		}
-		// (Остальные элементы Q_T уже равны 0, так как память zero-initialized?)
-		// Нет, new[] не обнуляет. Явно обнулим только что созданную матрицу Q_data:
+
 #pragma omp parallel for num_threads(thread_num) if (N >= 1000)
 		for (int i = 0; i < N; ++i) {
 			for (size_t j = 0; j < N; ++j) {
@@ -64,7 +55,6 @@ public:
 			}
 		}
 
-		// ---------- 3. Основной цикл вращений Гивенса ----------
 		for (int j = 0; j < N - 1; ++j) {
 			for (int i = j + 1; i < N; ++i) {
 				const double Rjj = R(j, j);
@@ -82,13 +72,12 @@ public:
 				const double c = Rjj / sqrt_val;
 				const double s = -Rij / sqrt_val;
 
-				// Локальные указатели на строки (выровнены!)
+				// локальные указатели на строки с выравниванием
 				T* __restrict Rj_ptr = &R_data[j * stride];
 				T* __restrict Ri_ptr = &R_data[i * stride];
 				T* __restrict Qj_ptr = &Q_data[j * stride];
 				T* __restrict Qi_ptr = &Q_data[i * stride];
 
-				// Явно сообщаем компилятору о выравнивании
 #pragma omp simd aligned(Rj_ptr, Ri_ptr, Qj_ptr, Qi_ptr : 64)
 				for (size_t k = 0; k < stride; ++k) {
 					const T Rj = Rj_ptr[k];
@@ -101,21 +90,14 @@ public:
 					Qj_ptr[k] = Qj * c - Qi * s;
 					Qi_ptr[k] = Qj * s + Qi * c;
 				}
-
-				// Зануляем R(i, j) для надёжности (он должен был стать ~0)
-				R(i, j) = 0.0;
 			}
 		}
 
-		// ---------- 4. Копирование обратно в векторы векторов ----------
-		Q = std::vector<std::vector<T>>(N, std::vector<T>(N));
-		R = std::vector<std::vector<T>>(N, std::vector<T>(N));
-
+		R = Q = std::vector<std::vector<T>>(N, std::vector<T>(N));
 #pragma omp parallel for num_threads(thread_num) if (N >= 1000)
 		for (int i = 0; i < N; ++i) {
 			for (size_t j = 0; j < N; ++j) {
 				R[i][j] = R(i, j);
-				// Q получается транспонированием Q_T: Q[i][j] = Q_T(j, i)
 				Q[i][j] = Q_T(j, i);
 			}
 		}
