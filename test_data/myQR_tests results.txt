@@ -539,58 +539,64 @@ time: 36.8808
 abs error: 2.17746e-10
 rel error: 9.40572e-15
 
-с выравненной аллокациями + simd
+интринсики без simd
 Givens SIMD
 test size: 100
-time: 0.0007248
-abs error: 8.36976e-13
-rel error: 1.45836e-15
+time: 0.0003563
+abs error: 9.47902e-13
+rel error: 1.62569e-15
 
 test size: 200
-time: 0.001907
-abs error: 2.30134e-12
-rel error: 1.99059e-15
+time: 0.0027869
+abs error: 2.70862e-12
+rel error: 2.33093e-15
 
 test size: 300
-time: 0.0074254
-abs error: 4.19066e-12
-rel error: 2.40988e-15
+time: 0.0079903
+abs error: 4.98704e-12
+rel error: 2.86936e-15
 
 test size: 400
-time: 0.0176516
-abs error: 6.74749e-12
-rel error: 2.91653e-15
+time: 0.0178781
+abs error: 7.4917e-12
+rel error: 3.23428e-15
 
 test size: 500
-time: 0.0417963
-abs error: 9.02217e-12
-rel error: 3.12122e-15
+time: 0.0597783
+abs error: 1.03778e-11
+rel error: 3.58582e-15
 
 test size: 1000
-time: 0.434452
-abs error: 2.55002e-11
-rel error: 4.40771e-15
+time: 0.378358
+abs error: 3.00974e-11
+rel error: 5.19957e-15
 
 test size: 1500
-time: 1.61268
-abs error: 4.72823e-11
-rel error: 5.44606e-15
+time: 1.54633
+abs error: 5.46217e-11
+rel error: 6.29163e-15
 
 test size: 2000
-time: 4.03532
-abs error: 7.18703e-11
-rel error: 6.2078e-15
+time: 4.02727
+abs error: 8.47584e-11
+rel error: 7.31958e-15
 
 test size: 2500
-time: 8.03407
-abs error: 1.00121e-10
-rel error: 6.91927e-15
+time: 8.38887
+abs error: 1.17697e-10
+rel error: 8.13698e-15
 
 test size: 3000
-time: 14.0705
-abs error: 1.33062e-10
-rel error: 7.66371e-15
+time: 14.2138
+abs error: 1.56487e-10
+rel error: 9.01107e-15
 
 test size: 3500
-time: 23.1564
-abs error:
+time: 22.3697
+abs error: 1.97869e-10
+rel error: 9.76728e-15
+
+test size: 4000
+time: 33.9248
+abs error: 2.40871e-10
+rel error: 1.04028e-14

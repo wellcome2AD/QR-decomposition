@@ -13,7 +13,6 @@
 #include "Givens_method/GivensBasic.h"
 #include "Givens_Method/GivensQRInOneMatrix.h"
 #include "Givens_Method/GivensSIMD.h"
-#include "Givens_Method/GivensBlock.h"
 
 #include "matrix.h"
 
@@ -61,15 +60,15 @@ void QR_decomposition_test_with_generated_matrix(IQRSolver<T>* solver, int N, bo
 	double end = omp_get_wtime();
 
 	std::cout << "time: " << end - start << std::endl;
-	std::cout << "abs error: " << Fnorm(substractMatrix(multiplyMatrix(Q, R), A)) << std::endl;
-	std::cout << "rel error: " << Fnorm(substractMatrix(multiplyMatrix(Q, R), A)) / Fnorm(A) << std::endl << std::endl;
+	std::cout << "abs error: " << Fnorm<T>(substractMatrix<T>(multiplyMatrix<T>(Q, R), A)) << std::endl;
+	std::cout << "rel error: " << Fnorm<T>(substractMatrix<T>(multiplyMatrix<T>(Q, R), A)) / Fnorm<T>(A) << std::endl << std::endl;
 
 	// printResultWithExpected(A, Q, R);
 
 	if (writeToFile) {
-		writeMatrixToFile<double>("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
-		writeMatrixToFile<double>("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
-		writeMatrixToFile<double>("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
+		writeMatrixToFile<T>("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
+		writeMatrixToFile<T>("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
+		writeMatrixToFile<T>("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
 	}
 }
 
@@ -84,7 +83,7 @@ void QRtests()
 {
 	auto methods = std::map<int, testParams>{};
 
-	/*methods[0] = {
+	methods[0] = {
 		new HouseholderMethodBasic<currentType>(),
 		"Householder basic version",
 		{ 100, 200, 300, 400, 500 },
@@ -106,25 +105,19 @@ void QRtests()
 		new GivensMethodBasic<currentType>(),
 		"Givens basic version",
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};*/
+	};
 
-	//methods[4] = {
-	//	new GivensMethodQRInOneMatrix<currentType>(),
-	//	"Givens with less memory accesses version",
-	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500/*, 3000, 3500, 4000*/ },
-	//};
-
+	methods[4] = {
+		new GivensMethodQRInOneMatrix<currentType>(),
+		"Givens with less memory accesses version",
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	};
+	
 	methods[5] = {
 		new GivensMethodSIMD<currentType>(),
 		"Givens SIMD",
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
-
-	//methods[6] = {
-	//	new GivensMethodBlock<currentType>(),
-	//	"Givens block",
-	//	{ 65, 70/*100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000*/ },
-	//};
 
 	for (const auto& method : methods)
 	{
@@ -147,26 +140,23 @@ void hassenberg_tests()
 	std::cout << "hassenberg matrix decomposition\n";
 	for (auto&& N : { 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 })
 	{
-		auto res = generateHassenbergMatrix<double>(N, true, true);
+		auto res = generateHassenbergMatrix<currentType>(N, true, true);
 		// printMatrix(res);
 		std::cout << "test size: " << N << std::endl;
-		std::vector<std::vector<double>> Q(N, std::vector<double>(N, 0)), R(N, std::vector<double>(N, 0));
+		std::vector<std::vector<currentType>> Q(N, std::vector<currentType>(N, 0)), R(N, std::vector<currentType>(N, 0));
 
 		double start = omp_get_wtime();
-		auto solver = new GivensMethodQRInOneMatrix<currentType>();
+		IQRSolver<currentType>* solver = new GivensMethodQRInOneMatrix<currentType>();
 		solver->QR_decomposition(res, Q, R);
 		double end = omp_get_wtime();
 
-		// printMatrix(Q);
-		// printMatrix(R);
-
 		std::cout << "time: " << end - start << std::endl;
-		std::cout << "abs error: " << Fnorm<double>(substractMatrix<double>(multiplyMatrix(Q, R), res)) << std::endl;
-		std::cout << "rel error: " << Fnorm<double>(substractMatrix<double>(multiplyMatrix(Q, R), res)) / Fnorm<double>(res) << std::endl << std::endl;
+		std::cout << "abs error: " << Fnorm(substractMatrix(multiplyMatrix(Q, R), res)) << std::endl;
+		std::cout << "rel error: " << Fnorm(substractMatrix(multiplyMatrix(Q, R), res)) / Fnorm(res) << std::endl << std::endl;
 
-		writeMatrixToFile<double>("test_data\\matrixA_" + std::to_string(N) + ".txt", res);
-		writeMatrixToFile<double>("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
-		writeMatrixToFile<double>("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
+		writeMatrixToFile<currentType>("test_data\\matrixA_" + std::to_string(N) + ".txt", res);
+		writeMatrixToFile<currentType>("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
+		writeMatrixToFile<currentType>("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
 	}
 	std::cout << "all hassenberg tests passed\n\n";
 }
@@ -174,7 +164,23 @@ void hassenberg_tests()
 int main()
 {
 	QRtests();
-	//hassenberg_tests();
+	hassenberg_tests();
+
+	// std::vector < std::vector <currentType>> A = { {1,2,3}, {4, 5, 6}, {7, 8, 9} }, R, Q;
+	//for (auto&& N : { 3/*100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000*/ })
+	//{
+	//	std::vector<std::vector<currentType>> A = generateMatrix<currentType>(N, N);
+	//	std::vector<std::vector<currentType>> Q(N, std::vector<currentType>(N, 0)), R(N, std::vector<currentType>(N, 0));
+	//	double start = omp_get_wtime();
+	//	QR_decomposition(A, Q, R);
+	//	double end = omp_get_wtime();
+
+	//	std::cout << "size: " << N << std::endl;
+	//	std::cout << "time: " << end - start << std::endl;
+	//	std::cout << "abs error: " << Fnorm<currentType>(substractMatrix<currentType>(multiplyMatrix<currentType>(Q, R), A)) << std::endl;
+	//	std::cout << "rel error: " << Fnorm<currentType>(substractMatrix<currentType>(multiplyMatrix<currentType>(Q, R), A)) / Fnorm<currentType>(A) << std::endl << std::endl;
+	//	printResultWithExpected(A, Q, R);
+	//}
 	return 0;
 }
 

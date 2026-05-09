@@ -84,11 +84,11 @@ inline std::vector<std::vector<T>> multiplyMatrix(const std::vector<std::vector<
 		for (int jj = 0; jj < N; jj += s) {
 			for (int kk = 0; kk < N; kk += s) {
 				for (int j = jj; j < ((jj + s) > N ? N : (jj + s)); j++) {
-					T temp = 0;
+					double temp = 0.0;
 					for (int k = kk; k < ((kk + s) > N ? N : (kk + s)); k++) {
-						temp += m1[i][k] * m2[k][j];
+						temp += static_cast<double>(m1[i][k]) * static_cast<double>(m2[k][j]);
 					}
-					res[i][j] += temp;
+					res[i][j] += static_cast<T>(temp);
 				}
 			}
 		}
