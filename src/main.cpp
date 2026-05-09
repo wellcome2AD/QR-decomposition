@@ -4,9 +4,6 @@
 #include <omp.h>
 #include <map>
 #include <vector>
-#include <memory>
-#include <new>
-
 #include "IQRSolver.h"
 
 #include "Householder_method/HouseholderBasic.h"
@@ -16,6 +13,7 @@
 #include "Givens_method/GivensBasic.h"
 #include "Givens_Method/GivensQRInOneMatrix.h"
 #include "Givens_Method/GivensSIMD.h"
+#include "Givens_Method/GivensBlock.h"
 
 #include "matrix.h"
 
@@ -119,8 +117,14 @@ void QRtests()
 	methods[5] = {
 		new GivensMethodSIMD<currentType>(),
 		"Givens SIMD",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500/*, 3000, 3500, 4000*/ },
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
+
+	//methods[6] = {
+	//	new GivensMethodBlock<currentType>(),
+	//	"Givens block",
+	//	{ 65, 70/*100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000*/ },
+	//};
 
 	for (const auto& method : methods)
 	{
@@ -131,7 +135,7 @@ void QRtests()
 		}
 	}
 
-	std::cout << "all QR tests passed";
+	std::cout << "all QR tests passed\n";
 }
 
 // Использование: QR разложение матрицы Хессенберга с использованием вращений
@@ -164,7 +168,7 @@ void hassenberg_tests()
 		writeMatrixToFile<double>("test_data\\matrixQ_" + std::to_string(N) + ".txt", Q);
 		writeMatrixToFile<double>("test_data\\matrixR_" + std::to_string(N) + ".txt", R);
 	}
-	std::cout << "all hassenberg tests passed\n";
+	std::cout << "all hassenberg tests passed\n\n";
 }
 
 int main()

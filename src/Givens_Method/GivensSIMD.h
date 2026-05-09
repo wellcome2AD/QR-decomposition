@@ -1,108 +1,105 @@
 #pragma once
 
+#include <immintrin.h>   // AVX2
 #include <vector>
-#include <iostream>
 #include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cassert>
-#include <memory>
-#include <new>
 #include <algorithm>
 
 #include "../IQRSolver.h"
 #include "math.h"
 
-static constexpr std::align_val_t c_align = std::align_val_t(64);
-
 template <typename T>
 class GivensMethodSIMD : public IQRSolver<T> {
 public:
-	virtual void QR_decomposition(const std::vector<std::vector<T>>& A, std::vector<std::vector<T>>& Q, std::vector<std::vector<T>>& R) override
-	{
-		const auto N = A.size();
+    virtual void QR_decomposition(const std::vector<std::vector<T>>& A,
+        std::vector<std::vector<T>>& Q,
+        std::vector<std::vector<T>>& R) override
+    {
+        const auto N = A.size();
+        if (N == 0) return;
 
-		// выделение памяти с выравниванием строк
-		constexpr size_t elem_size = sizeof(T);
-		constexpr size_t align_mod = 64 / elem_size;
-
-		size_t stride = N; // каждая строка будет начинаться с выровненного адреса
-		size_t rem = N % align_mod;
-		if (rem != 0) stride += align_mod - rem; // stride кратен 8
-
-		// обёртки для автоматического освобождения памяти
-		auto deleter = [](T* p) { ::operator delete[](p, c_align); };
-		std::unique_ptr<T[], decltype(deleter)> R_data{
-			static_cast<T*>(::operator new[](N* stride* elem_size, c_align)), deleter };
-		std::unique_ptr<T[], decltype(deleter)> Q_data{
-			static_cast<T*>(::operator new[](N* stride* elem_size, c_align)), deleter };
-
-#define R(i, j) R_data[(i)*stride + (j)] // функция доступа: R_data[i * stride + j]
-#define Q_T(i, j) Q_data[(i)*stride + (j)] // Q в транспонированном виде
+        // Плоские массивы для R и Q_T (транспонированная Q)
+        size_t total = static_cast<size_t>(N) * N;
+        auto R_data = std::make_unique<T[]>(total);
+        auto Q_data = std::make_unique<T[]>(total);   // Q_T
 
 #pragma omp parallel for num_threads(thread_num) if (N >= 1000)
-		for (int i = 0; i < N; ++i) {
-			for (size_t j = 0; j < N; ++j) {
-				R(i, j) = A[i][j];
-			}
-			Q_T(i, i) = 1.0;
-		}
+        for (int i = 0; i < N; ++i) {
+            for (int j = 0; j < N; ++j) {
+                R_data[i * N + j] = A[i][j];
+                Q_data[i * N + j] = (i == j) ? T(1) : T(0);
+            }
+        }
 
+        for (int j = 0; j < N - 1; ++j) {
+            for (int i = j + 1; i < N; ++i) {
+                const double Rjj = R_data[j * N + j];
+                const double Rij = R_data[i * N + j];
+
+ 
+                if (std::abs(Rij) < 1e-11)
+                    continue;
+
+                const double sqrt_val = std::sqrt(Rjj * Rjj + Rij * Rij);
+                if (std::abs(sqrt_val) < 1e-11)
+                    continue;
+
+                const double c = Rjj / sqrt_val;
+                const double s = -Rij / sqrt_val;
+
+                // Указатели на начала строк
+                T* Rj_ptr = &R_data[j * N];
+                T* Ri_ptr = &R_data[i * N];
+                T* Qj_ptr = &Q_data[j * N];
+                T* Qi_ptr = &Q_data[i * N];
+
+                // Векторный цикл (по 4 double, AVX2)
+                // Если N не кратен 4, оставшийся хвост обработаем после цикла
+                size_t k = 0;
+                for (; k + 3 < N; k += 4) {
+                    __m256d Rj = _mm256_loadu_pd(&Rj_ptr[k]);
+                    __m256d Ri = _mm256_loadu_pd(&Ri_ptr[k]);
+                    __m256d Qj = _mm256_loadu_pd(&Qj_ptr[k]);
+                    __m256d Qi = _mm256_loadu_pd(&Qi_ptr[k]);
+
+                    __m256d c_vec = _mm256_set1_pd(c);
+                    __m256d s_vec = _mm256_set1_pd(s);
+
+                    // Обновление R и Q (FMA)
+                    __m256d new_Rj = _mm256_fmsub_pd(Rj, c_vec, _mm256_mul_pd(Ri, s_vec));
+                    __m256d new_Ri = _mm256_fmadd_pd(Rj, s_vec, _mm256_mul_pd(Ri, c_vec));
+                    __m256d new_Qj = _mm256_fmsub_pd(Qj, c_vec, _mm256_mul_pd(Qi, s_vec));
+                    __m256d new_Qi = _mm256_fmadd_pd(Qj, s_vec, _mm256_mul_pd(Qi, c_vec));
+
+                    _mm256_storeu_pd(&Rj_ptr[k], new_Rj);
+                    _mm256_storeu_pd(&Ri_ptr[k], new_Ri);
+                    _mm256_storeu_pd(&Qj_ptr[k], new_Qj);
+                    _mm256_storeu_pd(&Qi_ptr[k], new_Qi);
+                }
+
+                // Обработка остатка (если N не кратно 4)
+                for (; k < N; ++k) {
+                    double Rj_val = Rj_ptr[k];
+                    double Ri_val = Ri_ptr[k];
+                    double Qj_val = Qj_ptr[k];
+                    double Qi_val = Qi_ptr[k];
+
+                    Rj_ptr[k] = Rj_val * c - Ri_val * s;
+                    Ri_ptr[k] = Rj_val * s + Ri_val * c;
+                    Qj_ptr[k] = Qj_val * c - Qi_val * s;
+                    Qi_ptr[k] = Qj_val * s + Qi_val * c;
+                }
+            }
+        }
+
+        Q.assign(N, std::vector<T>(N));
+        R.assign(N, std::vector<T>(N));
 #pragma omp parallel for num_threads(thread_num) if (N >= 1000)
-		for (int i = 0; i < N; ++i) {
-			for (size_t j = 0; j < N; ++j) {
-				if (i != j) Q_T(i, j) = 0.0;
-			}
-		}
-
-		for (int j = 0; j < N - 1; ++j) {
-			for (int i = j + 1; i < N; ++i) {
-				const double Rjj = R(j, j);
-				const double Rij = R(i, j);
-
-				const double denom = std::max(std::abs(Rjj), 1.0);
-				if (std::abs(Rij) < 1e-11 * denom ||
-					std::abs(Rij) < 1e-11 * std::abs(Rjj))
-					continue;
-
-				const double sqrt_val = std::sqrt(Rjj * Rjj + Rij * Rij);
-				if (std::abs(sqrt_val) < 1e-11)
-					continue;
-
-				const double c = Rjj / sqrt_val;
-				const double s = -Rij / sqrt_val;
-
-				// локальные указатели на строки с выравниванием
-				T* __restrict Rj_ptr = &R_data[j * stride];
-				T* __restrict Ri_ptr = &R_data[i * stride];
-				T* __restrict Qj_ptr = &Q_data[j * stride];
-				T* __restrict Qi_ptr = &Q_data[i * stride];
-
-#pragma omp simd aligned(Rj_ptr, Ri_ptr, Qj_ptr, Qi_ptr : 64)
-				for (size_t k = 0; k < stride; ++k) {
-					const T Rj = Rj_ptr[k];
-					const T Ri = Ri_ptr[k];
-					const T Qj = Qj_ptr[k];
-					const T Qi = Qi_ptr[k];
-
-					Rj_ptr[k] = Rj * c - Ri * s;
-					Ri_ptr[k] = Rj * s + Ri * c;
-					Qj_ptr[k] = Qj * c - Qi * s;
-					Qi_ptr[k] = Qj * s + Qi * c;
-				}
-			}
-		}
-
-		R = Q = std::vector<std::vector<T>>(N, std::vector<T>(N));
-#pragma omp parallel for num_threads(thread_num) if (N >= 1000)
-		for (int i = 0; i < N; ++i) {
-			for (size_t j = 0; j < N; ++j) {
-				R[i][j] = R(i, j);
-				Q[i][j] = Q_T(j, i);
-			}
-		}
-
-#undef R
-#undef Q_T
-	}
+        for (int i = 0; i < N; ++i) {
+            for (int j = 0; j < N; ++j) {
+                R[i][j] = R_data[i * N + j];
+                Q[i][j] = Q_data[j * N + i];
+            }
+        }
+    }
 };

@@ -83,7 +83,8 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
       <EnableModules>true</EnableModules>
-      <AdditionalOptions>-openmp:experimental</AdditionalOptions>
+      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG</AdditionalOptions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -104,7 +105,7 @@
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableModules>true</EnableModules>
-      <AdditionalOptions>-openmp:experimental</AdditionalOptions>
+      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -120,7 +121,8 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
       <EnableModules>true</EnableModules>
-      <AdditionalOptions>-openmp:experimental</AdditionalOptions>
+      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG</AdditionalOptions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,7 +143,7 @@
       </AdditionalOptions>
       <EnableModules>false</EnableModules>
       <Optimization>Full</Optimization>
-      <AdditionalOptions>-openmp:experimental</AdditionalOptions>
+      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG</AdditionalOptions>
       <EnableModules>true</EnableModules>
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
@@ -154,6 +156,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Givens_Method\GivensBasic.h" />
+    <ClInclude Include="src\Givens_Method\GivensBlock.h" />
     <ClInclude Include="src\Givens_Method\GivensQRInOneMatrix.h" />
     <ClInclude Include="src\Givens_Method\GivensSIMD.h" />
     <ClInclude Include="src\Householder_method\HouseholderBasic.h" />
