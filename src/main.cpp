@@ -54,6 +54,7 @@ void QR_decomposition_test_with_generated_matrix(IQRSolver<T>* solver, int N, bo
 	std::cout << "test size: " << N << std::endl;
 	std::vector<std::vector<T>> A = generateMatrix<T>(N, N);
 	std::vector<std::vector<T>> Q(N, std::vector<T>(N, 0)), R(N, std::vector<T>(N, 0));
+	// std::vector < std::vector <currentType>> A = { {1,2,3}, {4, 5, 6}, {7, 8, 9} }, R, Q;
 
 	double start = omp_get_wtime();
 	solver->QR_decomposition(A, Q, R);
@@ -83,31 +84,31 @@ void QRtests()
 {
 	auto methods = std::map<int, testParams>{};
 
-	methods[0] = {
+	/*methods[0] = {
 		new HouseholderMethodBasic<currentType>(),
 		"Householder basic version",
 		{ 100, 200, 300, 400, 500 },
 	};
-
+	
 	methods[1] = {
 		new HouseholderMethodWithoutMatrixMults<currentType>(),
 		"Householder without matrix multiplications",
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
-
+	
 	methods[2] = {
 		new HouseholderMethodWithNormW < currentType>,
 		"Householder with normal w in-place",
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
-
+	};*/
+	
 	methods[3] = {
 		new GivensMethodBasic<currentType>(),
 		"Givens basic version",
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
-
-	methods[4] = {
+	
+	/*methods[4] = {
 		new GivensMethodQRInOneMatrix<currentType>(),
 		"Givens with less memory accesses version",
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
@@ -117,7 +118,7 @@ void QRtests()
 		new GivensMethodSIMD<currentType>(),
 		"Givens SIMD",
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
+	};*/
 
 	for (const auto& method : methods)
 	{
@@ -164,10 +165,9 @@ void hassenberg_tests()
 int main()
 {
 	QRtests();
-	hassenberg_tests();
-
+	// hassenberg_tests();
 	// std::vector < std::vector <currentType>> A = { {1,2,3}, {4, 5, 6}, {7, 8, 9} }, R, Q;
-	//for (auto&& N : { 3/*100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000*/ })
+	//for (auto&& N : { 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 })
 	//{
 	//	std::vector<std::vector<currentType>> A = generateMatrix<currentType>(N, N);
 	//	std::vector<std::vector<currentType>> Q(N, std::vector<currentType>(N, 0)), R(N, std::vector<currentType>(N, 0));
@@ -179,7 +179,7 @@ int main()
 	//	std::cout << "time: " << end - start << std::endl;
 	//	std::cout << "abs error: " << Fnorm<currentType>(substractMatrix<currentType>(multiplyMatrix<currentType>(Q, R), A)) << std::endl;
 	//	std::cout << "rel error: " << Fnorm<currentType>(substractMatrix<currentType>(multiplyMatrix<currentType>(Q, R), A)) / Fnorm<currentType>(A) << std::endl << std::endl;
-	//	printResultWithExpected(A, Q, R);
+	//	//printResultWithExpected(A, Q, R);
 	//}
 	return 0;
 }

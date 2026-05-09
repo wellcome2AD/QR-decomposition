@@ -419,64 +419,61 @@ rel error: 5.88992e-15
 
 Givens basic version
 test size: 100
-time: 0.0020211
-abs error: 8.58151e-13
-rel error: 1.49371e-15
+time: 0.001185
+abs error: 7.30942e-13
+rel error: 1.25551e-15
 
 test size: 200
-time: 0.0133321
-abs error: 2.35456e-12
-rel error: 2.03474e-15
+time: 0.0135766
+abs error: 2.12267e-12
+rel error: 1.82853e-15
 
 test size: 300
-time: 0.0463535
-abs error: 4.5015e-12
-rel error: 2.58997e-15
+time: 0.0540983
+abs error: 4.47286e-12
+rel error: 2.56907e-15
 
 test size: 400
-time: 0.108506
-abs error: 6.80949e-12
-rel error: 2.93754e-15
+time: 0.104402
+abs error: 6.81046e-12
+rel error: 2.93707e-15
 
 test size: 500
-time: 0.220809
-abs error: 9.5604e-12
-rel error: 3.29942e-15
+time: 0.226203
+abs error: 1.40561e-11
+rel error: 4.85349e-15
 
 test size: 1000
-time: 1.01994
-abs error: 2.69627e-11
-rel error: 4.65961e-15
+time: 1.53719
+abs error: 2.501e-11
+rel error: 4.32117e-15
 
 test size: 1500
-time: 3.76906
-abs error: 5.03343e-11
-rel error: 5.79791e-15
+time: 4.61551
+abs error: 4.8997e-11
+rel error: 5.6432e-15
 
 test size: 2000
-time: 8.99904
-abs error: 7.51954e-11
-rel error: 6.49571e-15
+time: 10.0443
+abs error: 8.12886e-11
+rel error: 7.02225e-15
 
 test size: 2500
-time: 13.9235
-abs error: 1.05371e-10
-rel error: 7.28252e-15
+time: 18.5745
+abs error: 8.609e-11
+rel error: 5.94922e-15
 
 test size: 3000
-time: 24.6476
-abs error: 1.40569e-10
-rel error: 8.09457e-15
+time: 30.3805
+abs error: 1.27333e-10
+rel error: 7.33428e-15
 
 test size: 3500
-time: 41.1946
-abs error: 1.79351e-10
-rel error: 8.85388e-15
+time: 46.6785
+abs error: 1.45948e-10
+rel error: 7.20316e-15
 
 test size: 4000
-time: 64.043
-abs error: 2.18755e-10
-rel error: 9.44817e-15
 
 Givens with less memory accesses version
 test size: 100
