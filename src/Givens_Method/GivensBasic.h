@@ -14,6 +14,7 @@ public:
 		std::vector<std::vector<T>>& R) override
 	{
 		auto N = A.size();
+		// матрица Q будет хранится транспонированной
 		Q = std::vector<std::vector<T>>(N, std::vector<T>(N, 0));
 		R = A;
 
@@ -37,6 +38,7 @@ public:
 				double c = Rjj / sqrt_val;
 				double s = -Rij / sqrt_val;
 
+				// вычисление матрицы R путём вращения строк
 #pragma omp parallel for num_threads(thread_num) if (N >= 1000)
 				for (int k = j; k < N; ++k) {
 					T temp = static_cast<T>(R[j][k] * c - R[i][k] * s);
@@ -44,6 +46,7 @@ public:
 					R[j][k] = temp;
 				}
 
+				// сохранение коэффициентов вращения
 				double tau = s / (1.0 + c);
 				R[i][j] = static_cast<T>(tau);
 			}
@@ -54,22 +57,29 @@ public:
 			for (int i = j + 1; i < N; ++i)
 			{
 				if (std::abs(R[i][j]) < 1e-11) continue;
-
+				// восстановление коэффициентов вращения
 				double tau = static_cast<double>(R[i][j]);
 				double tau2 = tau * tau;
 				double denom = 1.0 + tau2;
 				double c = (1.0 - tau2) / denom;
 				double s = 2.0 * tau / denom;
 
+				// вычисление матрицы Q путём вращения столбцов
 #pragma omp parallel for num_threads(thread_num) if (N >= 1000)
 				for (int k = 0; k < N; ++k)
-				{
-					T temp = static_cast<T>(c * Q[k][j] - s * Q[k][i]);
-					Q[k][i] = static_cast<T>(s * Q[k][j] + c * Q[k][i]);
-					Q[k][j] = temp;
+				{// обращение к элементам транспонированной матрицы Q
+					T temp = static_cast<T>(c * Q[j][k] - s * Q[i][k]);
+					Q[i][k] = static_cast<T>(s * Q[j][k] + c * Q[i][k]);
+					Q[j][k] = temp;
 				}
 				R[i][j] = T(0);
 			}
+		}
+		// транспонирование
+		for (int i = 0; i < N; ++i)
+		{
+			for (int j = 0; j < i; ++j)
+				std::swap(Q[i][j], Q[j][i]);
 		}
 	}
 };
