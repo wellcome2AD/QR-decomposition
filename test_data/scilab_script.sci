@@ -24,7 +24,7 @@ function res=Fnorm(m)
   res = sqrt(res)
 endfunction
 
-sizes = [100 200 300 400 500 1000 1500 2000 2500 3000 3500];
+sizes = [100 200 300 400 500 1000 1500 2000 2500 3000 3500 4000];
 times = [];
 absErrors = [];
 relErrors = [];
@@ -48,6 +48,9 @@ for i = 1:length(sizes)
   relErrorsR = [relErrorsR, Fnorm(myR - R) / Fnorm(R)];
 end
 for i = 1:length(sizes)
+  // disp(A);
+  // disp(Q);
+  // disp(R);
   disp("test size: " + string(sizes(i)))
   disp("time: " + string(times(i)))
   disp("abs error: " + string(absErrors(i)))

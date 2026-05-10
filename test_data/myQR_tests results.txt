@@ -149,65 +149,125 @@ rel error: 1.31741e-06
 
 Givens basic version
 test size: 100
-time: 0.0018987
-abs error: 0.000187344
-rel error: 3.24884e-07
+time: 0.0020424
+abs error: 0.000195268
+rel error: 3.39392e-07
 
 test size: 200
-time: 0.0162364
-abs error: 0.000538278
-rel error: 4.65781e-07
+time: 0.0159689
+abs error: 0.000540545
+rel error: 4.67707e-07
 
 test size: 300
-time: 0.0528406
-abs error: 0.00098628
-rel error: 5.67804e-07
+time: 0.0532713
+abs error: 0.000983395
+rel error: 5.67086e-07
 
 test size: 400
-time: 0.121419
-abs error: 0.00150063
-rel error: 6.48901e-07
+time: 0.137013
+abs error: 0.00149281
+rel error: 6.45891e-07
 
 test size: 500
-time: 0.216806
-abs error: 0.00209906
-rel error: 7.25046e-07
+time: 0.224985
+abs error: 0.00207783
+rel error: 7.18232e-07
 
 test size: 1000
-time: 1.00021
-abs error: 0.00590927
-rel error: 1.02115e-06
+time: 0.973617
+abs error: 0.00593806
+rel error: 1.02681e-06
 
 test size: 1500
-time: 3.0171
-abs error: 0.0108192
-rel error: 1.2463e-06
+time: 2.86749
+abs error: 0.0108186
+rel error: 1.24618e-06
 
 test size: 2000
-time: 6.25125
-abs error: 0.0166031
-rel error: 1.43404e-06
+time: 7.92074
+abs error: 0.016582
+rel error: 1.43258e-06
 
 test size: 2500
-time: 10.6965
-abs error: 0.0232145
-rel error: 1.60456e-06
+time: 15.3121
+abs error: 0.0231815
+rel error: 1.60212e-06
 
 test size: 3000
-time: 16.9614
-abs error: 0.0307257
-rel error: 1.76953e-06
+time: 31.5235
+abs error: 0.0306045
+rel error: 1.7624e-06
 
 test size: 3500
-time: 25.6152
-abs error: 0.0385993
-rel error: 1.90528e-06
+time: 40.1071
+abs error: 0.0387203
+rel error: 1.91083e-06
 
 test size: 4000
-time: 37.1385
-abs error: 0.0472647
-rel error: 2.0413e-06
+time: 71.885
+abs error: 0.0472851
+rel error: 2.04276e-06
 
+Givens with less memory accesses version
+test size: 100
+time: 0.0019078
+abs error: 0.000193604
+rel error: 3.33483e-07
+
+test size: 200
+time: 0.0168968
+abs error: 0.000544384
+rel error: 4.6868e-07
+
+test size: 300
+time: 0.0624578
+abs error: 0.000977642
+rel error: 5.61874e-07
+
+test size: 400
+time: 0.118155
+abs error: 0.00150695
+rel error: 6.49968e-07
+
+test size: 500
+time: 0.216311
+abs error: 0.00208987
+rel error: 7.21825e-07
+
+test size: 1000
+time: 0.982732
+abs error: 0.00595103
+rel error: 1.02795e-06
+
+test size: 1500
+time: 2.89884
+abs error: 0.0108286
+rel error: 1.24673e-06
+
+test size: 2000
+time: 6.15392
+abs error: 0.0166536
+rel error: 1.43867e-06
+
+test size: 2500
+time: 10.6838
+abs error: 0.023231
+rel error: 1.60481e-06
+
+test size: 3000
+time: 16.9057
+abs error: 0.0306883
+rel error: 1.76749e-06
+
+test size: 3500
+time: 25.4222
+abs error: 0.0386017
+rel error: 1.90558e-06
+
+test size: 4000
+time: 36.5541
+abs error: 0.047384
+rel error: 2.04657e-06
 double
 Householder basic version
 test size: 100
@@ -298,122 +358,490 @@ rel error: 4.54104e-15
 
 Householder with normal w in-place
 test size: 100
-time: 0.0009344
-abs error: 5.48309e-13
-rel error: 9.46262e-16
+time: 0.0013707
+abs error: 3.36933e-13
+rel error: 5.82462e-16
 
 test size: 200
-time: 0.0088197
-abs error: 1.60809e-12
-rel error: 1.38938e-15
+time: 0.0078925
+abs error: 8.58554e-13
+rel error: 7.41941e-16
 
 test size: 300
-time: 0.0287179
-abs error: 2.74935e-12
-rel error: 1.58245e-15
+time: 0.0239516
+abs error: 1.4739e-12
+rel error: 8.48078e-16
 
 test size: 400
-time: 0.073563
-abs error: 4.35703e-12
-rel error: 1.88114e-15
+time: 0.0492212
+abs error: 2.21509e-12
+rel error: 9.57071e-16
 
 test size: 500
-time: 0.139082
-abs error: 6.10612e-12
-rel error: 2.10877e-15
+time: 0.0921322
+abs error: 3.05388e-12
+rel error: 1.05565e-15
 
 test size: 1000
-time: 0.171962
-abs error: 1.83452e-11
-rel error: 3.16931e-15
+time: 0.189128
+abs error: 8.23612e-12
+rel error: 1.42198e-15
 
 test size: 1500
-time: 0.667425
-abs error: 3.15012e-11
-rel error: 3.629e-15
+time: 0.776455
+abs error: 1.49654e-11
+rel error: 1.72341e-15
 
 test size: 2000
-time: 2.80849
-abs error: 5.07804e-11
-rel error: 4.38692e-15
+time: 2.38406
+abs error: 2.28861e-11
+rel error: 1.97659e-15
 
 test size: 2500
-time: 5.58732
-abs error: 6.66833e-11
-rel error: 4.60944e-15
+time: 4.97292
+abs error: 3.18511e-11
+rel error: 2.20118e-15
 
 test size: 3000
-time: 11.3973
-abs error: 8.88838e-11
-rel error: 5.12032e-15
+time: 9.53905
+abs error: 4.17271e-11
+rel error: 2.40314e-15
 
 test size: 3500
-time: 18.1994
-abs error: 1.23474e-10
-rel error: 6.09524e-15
+time: 16.6415
+abs error: 5.24459e-11
+rel error: 2.58923e-15
 
 test size: 4000
-time: 27.4943
-abs error: 1.36348e-10
-rel error: 5.88992e-15
+time: 24.5809
+abs error: 6.39372e-11
+rel error: 2.76182e-15
 
 Givens basic version
 test size: 100
-time: 0.0027369
-abs error: 8.56541e-13
-rel error: 1.47692e-15
+time: 0.0022843
+abs error: 7.19403e-13
+rel error: 1.23671e-15
 
 test size: 200
-time: 0.0166883
-abs error: 2.4303e-12
-rel error: 2.1026e-15
+time: 0.0144698
+abs error: 3.16086e-12
+rel error: 2.73019e-15
 
 test size: 300
-time: 0.0466827
-abs error: 4.34459e-12
-rel error: 2.50572e-15
+time: 0.0419104
+abs error: 3.63924e-12
+rel error: 2.09723e-15
 
 test size: 400
-time: 0.107939
-abs error: 6.69974e-12
-rel error: 2.89391e-15
+time: 0.0981446
+abs error: 6.31026e-12
+rel error: 2.72622e-15
 
 test size: 500
-time: 0.397674
-abs error: 9.33753e-12
-rel error: 3.22679e-15
+time: 0.166818
+abs error: 1.71245e-11
+rel error: 5.91832e-15
 
 test size: 1000
-time: 1.22331
-abs error: 2.71479e-11
-rel error: 4.6936e-15
+time: 1.44459
+abs error: 3.34199e-11
+rel error: 5.77418e-15
 
 test size: 1500
-time: 3.07282
-abs error: 4.98842e-11
-rel error: 5.74576e-15
+time: 3.84659
+abs error: 4.3534e-11
+rel error: 5.01552e-15
 
 test size: 2000
-time: 6.28347
-abs error: 7.57192e-11
-rel error: 6.54098e-15
+time: 8.2133
+abs error: 7.78822e-11
+rel error: 6.72769e-15
 
 test size: 2500
-time: 11.8272
-abs error: 1.06426e-10
-rel error: 7.35348e-15
+time: 14.1009
+abs error: 1.41329e-10
+rel error: 9.76936e-15
 
 test size: 3000
-time: 18.7008
-abs error: 1.4084e-10
-rel error: 8.10977e-15
+time: 21.5005
+abs error: 1.17723e-10
+rel error: 6.77994e-15
 
 test size: 3500
-time: 27.5735
-abs error: 1.79638e-10
-rel error: 8.86769e-15
+time: 30.9923
+abs error: 2.25582e-10
+rel error: 1.11367e-14
 
 test size: 4000
-time: 41.626
-abs error: 2.19198e-10
-rel error: 9.46739e-15
+time: 42.9903
+abs error: 8.86865e-10
+rel error: 1.02863e-15
+
+Givens with less memory accesses version
+test size: 100
+time: 0.0013685
+abs error: 9.89951e-13
+rel error: 1.71461e-15
+
+test size: 200
+time: 0.0096698
+abs error: 2.47702e-12
+rel error: 2.14315e-15
+
+test size: 300
+time: 0.0418232
+abs error: 4.71759e-12
+rel error: 2.72148e-15
+
+test size: 400
+time: 0.0906898
+abs error: 7.1141e-12
+rel error: 3.07619e-15
+
+test size: 500
+time: 0.171549
+abs error: 1.03212e-11
+rel error: 3.56978e-15
+
+test size: 1000
+time: 1.02815
+abs error: 2.98765e-11
+rel error: 5.16677e-15
+
+test size: 1500
+time: 2.76514
+abs error: 5.33655e-11
+rel error: 6.14249e-15
+
+test size: 2000
+time: 5.62658
+abs error: 8.33215e-11
+rel error: 7.19782e-15
+
+test size: 2500
+time: 10.2853
+abs error: 1.18223e-10
+rel error: 8.17344e-15
+
+test size: 3000
+time: 17.7229
+abs error: 1.56368e-10
+rel error: 9.0053e-15
+
+test size: 3500
+time: 25.7584
+abs error: 1.79082e-10
+rel error: 8.84042e-15
+
+test size: 4000
+time: 36.8808
+abs error: 2.17746e-10
+rel error: 9.40572e-15
+
+интринсики без simd
+Givens SIMD
+test size: 100
+time: 0.0007135
+abs error: 1.52037e-12
+rel error: 2.61387e-15
+
+test size: 200
+time: 0.002601
+abs error: 2.15553e-12
+rel error: 1.86207e-15
+
+test size: 300
+time: 0.0075208
+abs error: 4.80508e-11
+rel error: 2.76725e-14
+
+test size: 400
+time: 0.0281519
+abs error: 8.8374e-12
+rel error: 3.82011e-15
+
+test size: 500
+time: 0.0563042
+abs error: 8.5848e-12
+rel error: 2.96849e-15
+
+test size: 1000
+time: 0.492064
+abs error: 2.63061e-11
+rel error: 4.54486e-15
+
+test size: 1500
+time: 1.53585
+abs error: 1.13318e-10
+rel error: 1.3056e-14
+
+test size: 2000
+time: 4.09997
+abs error: 7.10169e-11
+rel error: 6.1344e-15
+
+test size: 2500
+time: 7.30167
+abs error: 1.17623e-10
+rel error: 8.12915e-15
+
+test size: 3000
+time: 12.8405
+abs error: 1.31167e-10
+rel error: 7.55444e-15
+
+test size: 3500
+time: 21.0383
+abs error: 1.70714e-10
+rel error: 8.42617e-15
+
+test size: 4000
+time: 31.7556
+abs error:
+
+upper hassenberg matrix decomposition
+Householder with normal w in-place
+test size: 100
+time: 0.0009429
+abs error: 1.52372e-13
+rel error: 3.57066e-16
+
+test size: 200
+time: 0.0076185
+abs error: 3.11888e-13
+rel error: 3.68138e-16
+
+test size: 300
+time: 0.0222422
+abs error: 4.77645e-13
+rel error: 3.77634e-16
+
+test size: 400
+time: 0.0370319
+abs error: 6.31426e-13
+rel error: 3.74241e-16
+
+test size: 500
+time: 0.0707061
+abs error: 7.86319e-13
+rel error: 3.73614e-16
+
+test size: 1000
+time: 0.193794
+abs error: 1.58296e-12
+rel error: 3.76858e-16
+
+test size: 1500
+time: 1.14657
+abs error: 2.35794e-12
+rel error: 3.73899e-16
+
+test size: 2000
+time: 6.44008
+abs error: 3.19734e-12
+rel error: 3.80464e-16
+
+test size: 2500
+time: 16.1027
+abs error: 3.9621e-12
+rel error: 3.77078e-16
+
+test size: 3000
+time: 28.8915
+abs error: 4.7653e-12
+rel error: 3.78164e-16
+
+test size: 3500
+time: 42.731
+abs error: 5.55193e-12
+rel error: 3.77579e-16
+
+test size: 4000
+time: 67.3722
+abs error: 6.38828e-12
+rel error: 3.80141e-16
+
+Givens SIMD
+test size: 100
+time: 0.0001294
+abs error: 1.72691e-13
+rel error: 3.96704e-16
+
+test size: 200
+time: 0.0004733
+abs error: 4.35751e-13
+rel error: 5.12334e-16
+
+test size: 300
+time: 0.0012873
+abs error: 7.65538e-13
+rel error: 6.02391e-16
+
+test size: 400
+time: 0.0014392
+abs error: 1.00576e-12
+rel error: 5.94795e-16
+
+test size: 500
+time: 0.0022636
+abs error: 1.00504e-12
+rel error: 4.75652e-16
+
+test size: 1000
+time: 0.0099787
+abs error: 2.17572e-12
+rel error: 5.1767e-16
+
+test size: 1500
+time: 0.0244809
+abs error: 3.3853e-12
+rel error: 5.37109e-16
+
+test size: 2000
+time: 0.049296
+abs error: 4.86743e-12
+rel error: 5.79139e-16
+
+test size: 2500
+time: 0.070357
+abs error: 5.2855e-12
+rel error: 5.03187e-16
+
+test size: 3000
+time: 0.111763
+abs error: 6.14355e-12
+rel error: 4.87305e-16
+
+test size: 3500
+time: 0.165066
+abs error: 7.15125e-12
+rel error: 4.86434e-16
+
+test size: 4000
+time: 0.226181
+abs error: 8.15974e-12
+rel error: 4.85676e-16
+
+lower hassenberg matrix decomposition
+Householder with normal w in-place
+test size: 100
+time: 0.0013103
+abs error: 1.95702e-13
+rel error: 4.60186e-16
+
+test size: 200
+time: 0.0069098
+abs error: 4.93703e-13
+rel error: 5.81195e-16
+
+test size: 300
+time: 0.018879
+abs error: 8.45062e-13
+rel error: 6.66891e-16
+
+test size: 400
+time: 0.0363722
+abs error: 1.28211e-12
+rel error: 7.60006e-16
+
+test size: 500
+time: 0.0720739
+abs error: 1.75979e-12
+rel error: 8.36143e-16
+
+test size: 1000
+time: 0.173632
+abs error: 4.7731e-12
+rel error: 1.13568e-15
+
+test size: 1500
+time: 0.643838
+abs error: 8.66892e-12
+rel error: 1.3747e-15
+
+test size: 2000
+time: 2.10122
+abs error: 1.32885e-11
+rel error: 1.58037e-15
+
+test size: 2500
+time: 5.00486
+abs error: 1.84925e-11
+rel error: 1.76008e-15
+
+test size: 3000
+time: 9.74322
+abs error: 2.42394e-11
+rel error: 1.92303e-15
+
+test size: 3500
+time: 16.1714
+abs error: 3.0456e-11
+rel error: 2.07144e-15
+
+test size: 4000
+time: 24.6837
+abs error: 3.71167e-11
+rel error: 2.2092e-15
+
+Givens SIMD
+test size: 100
+time: 0.0003957
+abs error: 4.88333e-13
+rel error: 1.13733e-15
+
+test size: 200
+time: 0.0023856
+abs error: 3.06317e-11
+rel error: 3.60861e-14
+
+test size: 300
+time: 0.0092742
+abs error: 4.29573e-11
+rel error: 3.38006e-14
+
+test size: 400
+time: 0.0168637
+abs error: 5.3466e-11
+rel error: 3.1643e-14
+
+test size: 500
+time: 0.0427091
+abs error: 8.16871e-11
+rel error: 3.8824e-14
+
+test size: 1000
+time: 0.510321
+abs error: 1.5201e-10
+rel error: 3.61548e-14
+
+test size: 1500
+time: 1.63854
+abs error: 2.58259e-10
+rel error: 4.0964e-14
+
+test size: 2000
+time: 3.54986
+abs error: 3.18305e-10
+rel error: 3.78726e-14
+
+test size: 2500
+time: 7.19002
+abs error: 4.15997e-10
+rel error: 3.95907e-14
+
+test size: 3000
+time: 12.8882
+abs error: 5.49607e-10
+rel error: 4.3609e-14
+
+test size: 3500
+time: 20.7162
+abs error: 6.47443e-10
+rel error: 4.4026e-14
+
+test size: 4000
+time: 31.2464
+abs error: 7.60356e-10
+rel error: 4.5248e-14

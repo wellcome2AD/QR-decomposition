@@ -1,7 +1,9 @@
 #pragma once
 
+#include <iomanip>
 #include <vector>
 #include <string>
+#include <cassert>
 
 template <typename T>
 inline double Fnorm(const std::vector<std::vector<T>>& m) {
@@ -82,11 +84,11 @@ inline std::vector<std::vector<T>> multiplyMatrix(const std::vector<std::vector<
 		for (int jj = 0; jj < N; jj += s) {
 			for (int kk = 0; kk < N; kk += s) {
 				for (int j = jj; j < ((jj + s) > N ? N : (jj + s)); j++) {
-					T temp = 0;
+					double temp = 0.0;
 					for (int k = kk; k < ((kk + s) > N ? N : (kk + s)); k++) {
-						temp += m1[i][k] * m2[k][j];
+						temp += static_cast<double>(m1[i][k]) * static_cast<double>(m2[k][j]);
 					}
-					res[i][j] += temp;
+					res[i][j] += static_cast<T>(temp);
 				}
 			}
 		}
@@ -101,6 +103,52 @@ std::vector<std::vector<T>> substractMatrix(const std::vector<std::vector<T>>& m
 	for (auto i = 0; i < N; ++i) {
 		for (auto j = 0; j < N; ++j) {
 			res[i][j] -= m2[i][j];
+		}
+	}
+	return res;
+}
+
+template <typename T>
+T randomNotZeroValue()
+{
+	T value = 0;
+	while (value == 0)
+	{
+		value = std::rand() % 20 - 10;
+	}
+	return value;
+}
+
+template <typename T>
+std::vector<std::vector<T>> generateHassenbergMatrix(size_t size, bool upper, bool lower)
+{
+	std::srand(std::time(0));
+	std::vector<std::vector<T>> res(size, std::vector<T>(size, 0));
+	size_t N = size, M = size;
+	if (upper == true && lower == true)
+	{
+		for (size_t i = 0; i < N; ++i) {
+			if (i != 0) res[i][i - 1] = randomNotZeroValue<T>();
+			if (i != N - 1) res[i][i + 1] = randomNotZeroValue<T>();
+			res[i][i] = randomNotZeroValue<T>();
+		}
+	}
+	else if (upper == true)
+	{
+		for (size_t i = 0; i < N; ++i) {
+			if (i != 0) res[i][i - 1] = randomNotZeroValue<T>();
+			for (size_t j = i; j < M; ++j) {
+				res[i][j] = randomNotZeroValue<T>();
+			}
+		}
+	}
+	else if (lower == true)
+	{
+		for (size_t i = 0; i < N; ++i) {
+			if (i != N - 1) res[i][i + 1] = randomNotZeroValue<T>();
+			for (size_t j = 0; j < i + 1; ++j) {
+				res[i][j] = randomNotZeroValue<T>();
+			}
 		}
 	}
 	return res;

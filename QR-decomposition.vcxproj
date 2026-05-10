@@ -81,6 +81,10 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
+      <EnableModules>true</EnableModules>
+      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG</AdditionalOptions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -100,6 +104,8 @@
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <EnableModules>true</EnableModules>
+      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -113,6 +119,10 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <OpenMPSupport>true</OpenMPSupport>
+      <EnableModules>true</EnableModules>
+      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG</AdditionalOptions>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,9 +143,8 @@
       </AdditionalOptions>
       <EnableModules>false</EnableModules>
       <Optimization>Full</Optimization>
-      <AdditionalOptions>
-      </AdditionalOptions>
-      <EnableModules>false</EnableModules>
+      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG</AdditionalOptions>
+      <EnableModules>true</EnableModules>
       <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -147,6 +156,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Givens_Method\GivensBasic.h" />
+    <ClInclude Include="src\Givens_Method\GivensQRInOneMatrix.h" />
+    <ClInclude Include="src\Givens_Method\GivensSIMD.h" />
     <ClInclude Include="src\Householder_method\HouseholderBasic.h" />
     <ClInclude Include="src\Householder_method\HouseholderWithNormW.h" />
     <ClInclude Include="src\Householder_method\HouseholderWithoutMatrixMul.h" />
