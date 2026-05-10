@@ -93,13 +93,6 @@ public:
                         Ri_ptr[k] = Rj * s + Ri * c;
                     }
                 }
-                else {
-                    for (int k = j; k < N; ++k) {
-                        T Rj = Rj_ptr[k], Ri = Ri_ptr[k];
-                        Rj_ptr[k] = Rj * c - Ri * s;
-                        Ri_ptr[k] = Rj * s + Ri * c;
-                    }
-                }
 
                 // сохраняем c и s в виде tau
                 double tau = s / (1.0 + c);
@@ -159,13 +152,6 @@ public:
                         _mm256_storeu_ps(&Qi_ptr[k], new_Qi);
                     }
                     for (; k < N; ++k) {
-                        T Qj = Qj_ptr[k], Qi = Qi_ptr[k];
-                        Qj_ptr[k] = Qj * c - Qi * s;
-                        Qi_ptr[k] = Qj * s + Qi * c;
-                    }
-                }
-                else {
-                    for (int k = 0; k < N; ++k) {
                         T Qj = Qj_ptr[k], Qi = Qi_ptr[k];
                         Qj_ptr[k] = Qj * c - Qi * s;
                         Qi_ptr[k] = Qj * s + Qi * c;
