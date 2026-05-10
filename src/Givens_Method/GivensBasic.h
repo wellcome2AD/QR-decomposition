@@ -68,7 +68,7 @@ public:
 				double c = (1.0 - tau2) / denom;
 				double s = 2.0 * tau / denom;
 
-				// вычисление матрицы Q путём вращения столбцов
+				// вычисление матрицы Q_T путём вращения строк
 #pragma omp parallel for num_threads(thread_num) if (N >= 1000)
 				for (int k = 0; k < N; ++k)
 				{// обращение к элементам транспонированной матрицы Q

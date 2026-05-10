@@ -1,4 +1,5 @@
-  "test size: 100"
+random matrix QR-decomposition tests 
+ "test size: 100"
   "time: 0.0335941"
   "abs error: 7.692D-15"
   "rel error: 1.381D-16"

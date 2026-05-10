@@ -358,64 +358,64 @@ rel error: 4.54104e-15
 
 Householder with normal w in-place
 test size: 100
-time: 0.0009344
-abs error: 5.48309e-13
-rel error: 9.46262e-16
+time: 0.0013707
+abs error: 3.36933e-13
+rel error: 5.82462e-16
 
 test size: 200
-time: 0.0088197
-abs error: 1.60809e-12
-rel error: 1.38938e-15
+time: 0.0078925
+abs error: 8.58554e-13
+rel error: 7.41941e-16
 
 test size: 300
-time: 0.0287179
-abs error: 2.74935e-12
-rel error: 1.58245e-15
+time: 0.0239516
+abs error: 1.4739e-12
+rel error: 8.48078e-16
 
 test size: 400
-time: 0.073563
-abs error: 4.35703e-12
-rel error: 1.88114e-15
+time: 0.0492212
+abs error: 2.21509e-12
+rel error: 9.57071e-16
 
 test size: 500
-time: 0.139082
-abs error: 6.10612e-12
-rel error: 2.10877e-15
+time: 0.0921322
+abs error: 3.05388e-12
+rel error: 1.05565e-15
 
 test size: 1000
-time: 0.171962
-abs error: 1.83452e-11
-rel error: 3.16931e-15
+time: 0.189128
+abs error: 8.23612e-12
+rel error: 1.42198e-15
 
 test size: 1500
-time: 0.667425
-abs error: 3.15012e-11
-rel error: 3.629e-15
+time: 0.776455
+abs error: 1.49654e-11
+rel error: 1.72341e-15
 
 test size: 2000
-time: 2.80849
-abs error: 5.07804e-11
-rel error: 4.38692e-15
+time: 2.38406
+abs error: 2.28861e-11
+rel error: 1.97659e-15
 
 test size: 2500
-time: 5.58732
-abs error: 6.66833e-11
-rel error: 4.60944e-15
+time: 4.97292
+abs error: 3.18511e-11
+rel error: 2.20118e-15
 
 test size: 3000
-time: 11.3973
-abs error: 8.88838e-11
-rel error: 5.12032e-15
+time: 9.53905
+abs error: 4.17271e-11
+rel error: 2.40314e-15
 
 test size: 3500
-time: 18.1994
-abs error: 1.23474e-10
-rel error: 6.09524e-15
+time: 16.6415
+abs error: 5.24459e-11
+rel error: 2.58923e-15
 
 test size: 4000
-time: 27.4943
-abs error: 1.36348e-10
-rel error: 5.88992e-15
+time: 24.5809
+abs error: 6.39372e-11
+rel error: 2.76182e-15
 
 Givens basic version
 test size: 100
@@ -480,54 +480,54 @@ rel error: 1.02863e-15
 
 Givens with less memory accesses version
 test size: 100
-time: 0.0014549
-abs error: 8.87099e-13
-rel error: 1.52331e-15
+time: 0.0013685
+abs error: 9.89951e-13
+rel error: 1.71461e-15
 
 test size: 200
-time: 0.0126019
-abs error: 2.38081e-12
-rel error: 2.05123e-15
+time: 0.0096698
+abs error: 2.47702e-12
+rel error: 2.14315e-15
 
 test size: 300
-time: 0.0385651
-abs error: 4.64864e-12
-rel error: 2.67023e-15
+time: 0.0418232
+abs error: 4.71759e-12
+rel error: 2.72148e-15
 
 test size: 400
-time: 0.0853047
-abs error: 6.9234e-12
-rel error: 2.98834e-15
+time: 0.0906898
+abs error: 7.1141e-12
+rel error: 3.07619e-15
 
 test size: 500
-time: 0.192276
-abs error: 9.33496e-12
-rel error: 3.22268e-15
+time: 0.171549
+abs error: 1.03212e-11
+rel error: 3.56978e-15
 
 test size: 1000
-time: 0.9526
-abs error: 2.77198e-11
-rel error: 4.78695e-15
+time: 1.02815
+abs error: 2.98765e-11
+rel error: 5.16677e-15
 
 test size: 1500
-time: 2.75152
-abs error: 5.00217e-11
-rel error: 5.76181e-15
+time: 2.76514
+abs error: 5.33655e-11
+rel error: 6.14249e-15
 
 test size: 2000
-time: 5.63408
-abs error: 7.51626e-11
-rel error: 6.49529e-15
+time: 5.62658
+abs error: 8.33215e-11
+rel error: 7.19782e-15
 
 test size: 2500
-time: 10.3036
-abs error: 1.04929e-10
-rel error: 7.25095e-15
+time: 10.2853
+abs error: 1.18223e-10
+rel error: 8.17344e-15
 
 test size: 3000
-time: 16.7909
-abs error: 1.41742e-10
-rel error: 8.1617e-15
+time: 17.7229
+abs error: 1.56368e-10
+rel error: 9.0053e-15
 
 test size: 3500
 time: 25.7584
@@ -599,3 +599,249 @@ rel error: 8.42617e-15
 test size: 4000
 time: 31.7556
 abs error:
+
+upper hassenberg matrix decomposition
+Householder with normal w in-place
+test size: 100
+time: 0.0009429
+abs error: 1.52372e-13
+rel error: 3.57066e-16
+
+test size: 200
+time: 0.0076185
+abs error: 3.11888e-13
+rel error: 3.68138e-16
+
+test size: 300
+time: 0.0222422
+abs error: 4.77645e-13
+rel error: 3.77634e-16
+
+test size: 400
+time: 0.0370319
+abs error: 6.31426e-13
+rel error: 3.74241e-16
+
+test size: 500
+time: 0.0707061
+abs error: 7.86319e-13
+rel error: 3.73614e-16
+
+test size: 1000
+time: 0.193794
+abs error: 1.58296e-12
+rel error: 3.76858e-16
+
+test size: 1500
+time: 1.14657
+abs error: 2.35794e-12
+rel error: 3.73899e-16
+
+test size: 2000
+time: 6.44008
+abs error: 3.19734e-12
+rel error: 3.80464e-16
+
+test size: 2500
+time: 16.1027
+abs error: 3.9621e-12
+rel error: 3.77078e-16
+
+test size: 3000
+time: 28.8915
+abs error: 4.7653e-12
+rel error: 3.78164e-16
+
+test size: 3500
+time: 42.731
+abs error: 5.55193e-12
+rel error: 3.77579e-16
+
+test size: 4000
+time: 67.3722
+abs error: 6.38828e-12
+rel error: 3.80141e-16
+
+Givens SIMD
+test size: 100
+time: 0.0001294
+abs error: 1.72691e-13
+rel error: 3.96704e-16
+
+test size: 200
+time: 0.0004733
+abs error: 4.35751e-13
+rel error: 5.12334e-16
+
+test size: 300
+time: 0.0012873
+abs error: 7.65538e-13
+rel error: 6.02391e-16
+
+test size: 400
+time: 0.0014392
+abs error: 1.00576e-12
+rel error: 5.94795e-16
+
+test size: 500
+time: 0.0022636
+abs error: 1.00504e-12
+rel error: 4.75652e-16
+
+test size: 1000
+time: 0.0099787
+abs error: 2.17572e-12
+rel error: 5.1767e-16
+
+test size: 1500
+time: 0.0244809
+abs error: 3.3853e-12
+rel error: 5.37109e-16
+
+test size: 2000
+time: 0.049296
+abs error: 4.86743e-12
+rel error: 5.79139e-16
+
+test size: 2500
+time: 0.070357
+abs error: 5.2855e-12
+rel error: 5.03187e-16
+
+test size: 3000
+time: 0.111763
+abs error: 6.14355e-12
+rel error: 4.87305e-16
+
+test size: 3500
+time: 0.165066
+abs error: 7.15125e-12
+rel error: 4.86434e-16
+
+test size: 4000
+time: 0.226181
+abs error: 8.15974e-12
+rel error: 4.85676e-16
+
+lower hassenberg matrix decomposition
+Householder with normal w in-place
+test size: 100
+time: 0.0013103
+abs error: 1.95702e-13
+rel error: 4.60186e-16
+
+test size: 200
+time: 0.0069098
+abs error: 4.93703e-13
+rel error: 5.81195e-16
+
+test size: 300
+time: 0.018879
+abs error: 8.45062e-13
+rel error: 6.66891e-16
+
+test size: 400
+time: 0.0363722
+abs error: 1.28211e-12
+rel error: 7.60006e-16
+
+test size: 500
+time: 0.0720739
+abs error: 1.75979e-12
+rel error: 8.36143e-16
+
+test size: 1000
+time: 0.173632
+abs error: 4.7731e-12
+rel error: 1.13568e-15
+
+test size: 1500
+time: 0.643838
+abs error: 8.66892e-12
+rel error: 1.3747e-15
+
+test size: 2000
+time: 2.10122
+abs error: 1.32885e-11
+rel error: 1.58037e-15
+
+test size: 2500
+time: 5.00486
+abs error: 1.84925e-11
+rel error: 1.76008e-15
+
+test size: 3000
+time: 9.74322
+abs error: 2.42394e-11
+rel error: 1.92303e-15
+
+test size: 3500
+time: 16.1714
+abs error: 3.0456e-11
+rel error: 2.07144e-15
+
+test size: 4000
+time: 24.6837
+abs error: 3.71167e-11
+rel error: 2.2092e-15
+
+Givens SIMD
+test size: 100
+time: 0.0003957
+abs error: 4.88333e-13
+rel error: 1.13733e-15
+
+test size: 200
+time: 0.0023856
+abs error: 3.06317e-11
+rel error: 3.60861e-14
+
+test size: 300
+time: 0.0092742
+abs error: 4.29573e-11
+rel error: 3.38006e-14
+
+test size: 400
+time: 0.0168637
+abs error: 5.3466e-11
+rel error: 3.1643e-14
+
+test size: 500
+time: 0.0427091
+abs error: 8.16871e-11
+rel error: 3.8824e-14
+
+test size: 1000
+time: 0.510321
+abs error: 1.5201e-10
+rel error: 3.61548e-14
+
+test size: 1500
+time: 1.63854
+abs error: 2.58259e-10
+rel error: 4.0964e-14
+
+test size: 2000
+time: 3.54986
+abs error: 3.18305e-10
+rel error: 3.78726e-14
+
+test size: 2500
+time: 7.19002
+abs error: 4.15997e-10
+rel error: 3.95907e-14
+
+test size: 3000
+time: 12.8882
+abs error: 5.49607e-10
+rel error: 4.3609e-14
+
+test size: 3500
+time: 20.7162
+abs error: 6.47443e-10
+rel error: 4.4026e-14
+
+test size: 4000
+time: 31.2464
+abs error: 7.60356e-10
+rel error: 4.5248e-14

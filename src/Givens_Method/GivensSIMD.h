@@ -22,7 +22,7 @@ public:
         auto R_data = std::make_unique<T[]>(total);
         auto Q_data = std::make_unique<T[]>(total);   // Q_T
 
-		// инициализация: R = A, Q = E
+        // инициализация: R = A, Q = E
 #pragma omp parallel for num_threads(thread_num) if (N >= 1000)
         for (int i = 0; i < N; ++i) {
             for (int j = 0; j < N; ++j) {
@@ -109,12 +109,12 @@ public:
                 double tau2 = tau * tau;
                 double denom = 1.0 + tau2;
                 double c = (1.0 - tau2) / denom;
-                double s = 2.0 * tau / denom;   // точно те же c и s
+                double s = 2.0 * tau / denom;   // восстанавливаем c и s
 
                 T* Qj_ptr = &Q_data[j * N];
                 T* Qi_ptr = &Q_data[i * N];
 
-                // применяем то же вращение строк Q_T, что и в совмещённой версии
+                // применяем вращение строк Q_T
                 if constexpr (std::is_same_v<T, double>) {
                     size_t k = 0;
                     for (; k + 3 < N; k += 4) {

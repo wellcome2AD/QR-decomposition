@@ -156,7 +156,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Givens_Method\GivensBasic.h" />
-    <ClInclude Include="src\Givens_Method\GivensConcurrentTasks.h" />
     <ClInclude Include="src\Givens_Method\GivensQRInOneMatrix.h" />
     <ClInclude Include="src\Givens_Method\GivensSIMD.h" />
     <ClInclude Include="src\Householder_method\HouseholderBasic.h" />
