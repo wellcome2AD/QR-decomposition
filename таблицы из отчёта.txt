@@ -1,0 +1,48 @@
+left[matrix{  color red {1}  # ⋯ # 0 # 0 # 0 # ⋯ # 0 # 0 # 0 # ⋯ # 0 ##
+ ⋯ # ⋱ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # 0 ##
+ 0 # ⋯ # color red {1}  # 0 # 0 # ⋯ # 0 # 0 # 0 # ⋯ # 0 ##
+ 0 # ⋯ # 0 #  color blue {c}  # 0 # ⋯ # 0 # color blue { − s } # 0 # ⋯ # 0 ##
+ 0 # ⋯ # 0 # 0 # color red {1}  # ⋯ # 0 # 0 # 0 # ⋯ # 0 ##
+ ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋱ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ ##
+ 0 # ⋯ # 0 # 0 # 0 # ⋯ # color red { 1}  # 0 # 0 # ⋯ # 0 ##
+ 0 # ⋯ # 0 #  color blue {s}  # 0 # ⋯ # 0 # color blue {c}  # 0 # ⋯ # 0 ##
+ 0 # ⋯ # 0 # 0 # 0 # ⋯ # 0 # 0 # color red {1}  # ⋯ # 0 ##
+ ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋱ # ⋮ ##
+ 0 # ⋯ # 0 # 0 # 0 # ⋯ # 0 # 0 # 0 # ⋯ # color red {1}  } right] ⋅ 
+
+left [matrix { color red {{a} rsub {11}}  # ⋯ # {a} rsub {1 , j − 1} # {a} rsub {1 j} # {a} rsub {1 , j + 1} # ⋯ # {a} rsub {1 , i − 1} # {a} rsub {1 i} # {a} rsub {1 , i + 1} # ⋯ # {a} rsub {1 n} ##
+ ⋯ # ⋱ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ ##
+ 0 # ⋯ #  color red {{a} rsub {j − 1 , j − 1}}  # {a} rsub {j − 1 , j} # {a} rsub {j − 1 , j + 1} # ⋯ # {a} rsub {j − 1 , i − 1} # {a} rsub {j − 1 , i} # {a} rsub {j − 1 , i + 1} # ⋯ # {a} rsub {j − 1 , n} ##
+ color blue {0}  # ⋯ #  color blue {0}  # color red {{a} rsub {jj}}  # color blue {{a} rsub {j , j + 1}}  # ⋯ # color blue {{a} rsub {j , i − 1}}  # color blue {{a} rsub {j , i}}  # color blue {{a} rsub {j , i + 1}}  # ⋯ # color blue {{a} rsub {jn}}  ##
+ 0 # ⋯ # 0 # 0 #  color red {{a} rsub {j + 1 , j + 1}}  # ⋯ # {a} rsub {j + 1 , i − 1} # {a} rsub {j + 1 , i} # {a} rsub {j + 1 , i + 1} # ⋯ # {a} rsub {j + 1 , n} ##
+ ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋱ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ ##
+ 0 # ⋯ # 0 # 0 # {a} rsub {i − 1 , j + 1} # ⋯ #  color red {{a} rsub {i − 1 , i − 1}}  # {a} rsub {i − 1 , i} # {a} rsub {i − 1 , i + 1} # ⋯ # {a} rsub {i − 1 , n} ##
+ color blue {0}  # ⋯ # color blue {0}  # color blue {{a} rsub {ij}}  # color blue {{a} rsub {i , j + 1}}  # ⋯ #  color blue {{a} rsub {i , i − 1}}  #  color red {{a} rsub {ii}}  # color blue {{a} rsub {i , i + 1}}  # ⋯ # color blue {{a} rsub {i n}}  ##
+ 0 # ⋯ # 0 # {a} rsub {i + 1 , j} # {a} rsub {i + 1 , j} # ⋯ # {a} rsub {i + 1 , i − 1} # {a} rsub {i + 1 , i} #  color red {{a} rsub {i + 1 , i + 1}}  # ⋯ # {a} rsub {i + 1 , n} ##
+ ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋱ # ⋮ ## 0 # ⋯ # 0 # {a} rsub {n , j} # {a} rsub {n , j + 1} # ⋯ # {a} rsub {n , i − 1} # {a} rsub {n i} # {a} rsub {n , i + 1} # ⋯ #  color red {{a} rsub {nn}} } right ]
+
+
+left[matrix{ color red {{Q} rsub {11}}  # ⋯ # {Q} rsub {1 , j − 1} #  color blue {{Q} rsub {1 j}}  # {Q} rsub {1 , j + 1} # ⋯ # {Q} rsub {1 , i − 1} #  color blue {{Q} rsub {1 i}}  # {Q} rsub {1 , i + 1} # ⋯ # {Q} rsub {1 n} ##
+ ⋯ # ⋱ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ ##
+ {Q} rsub {j − 1,1} # ⋯ #  color red {{Q} rsub {j − 1 , j − 1}}  #  color blue {{Q} rsub {j − 1 , j}}  # {Q} rsub {j − 1 , j + 1} # ⋯ # {Q} rsub {j − 1 , i − 1} # {Q} rsub {j − 1 , i} # {Q} rsub {j − 1 , i + 1} # ⋯ # {Q} rsub {j − 1 , n} ##
+ {Q} rsub {j ,1} # ⋯ #  {Q} rsub {j , j − 1} #  color red {{Q} rsub {jj}}  # {Q} rsub {j , j + 1} # ⋯ # {Q} rsub {j , i − 1} # color blue { {Q} rsub {j , i}}  # {Q} rsub {j , i + 1} # ⋯ # {Q} rsub {jn} ##
+ {Q} rsub {j + 1,1} # ⋯ # {Q} rsub {j + 1 , j − 1} # {Q} rsub {j + 1 , j} #  color red {{Q} rsub {j + 1 , j + 1}}  # ⋯ # {Q} rsub {j + 1 , i − 1} # color blue {{Q} rsub {j + 1 , i}}  # {Q} rsub {j + 1 , i + 1} # ⋯ # {Q} rsub {j + 1 , n} ##
+ ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋱ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ ##
+ {Q} rsub {i − 1,1} # ⋯ # {Q} rsub {i − 1 , j − 1} #  color blue {{Q} rsub {i − 1 , j}}  # {Q} rsub {i − 1 , j + 1} # ⋯ #  color red {{Q} rsub {i − 1 , i − 1}}  # color blue {{Q} rsub {i − 1 , i}}  # {Q} rsub {i − 1 , i + 1} # ⋯ # {Q} rsub {i − 1 , n} ##
+ {Q} rsub {i ,1} # ⋯ # {Q} rsub {i , j − 1} #  color blue {{Q} rsub {ij}}  # {Q} rsub {i , j + 1} # ⋯ # {Q} rsub {i , i − 1} #  color blue {{Q} rsub {ii}}  # {Q} rsub {i , i + 1} # ⋯ # {Q} rsub {i n} ##
+ {Q} rsub {i + 1,1} # ⋯ # {Q} rsub {i + 1 , j − 1} # color blue {{Q} rsub {i + 1 , j} } # {Q} rsub {i + 1 , j} # ⋯ # {Q} rsub {i + 1 , i − 1} #  color blue {{Q} rsub {i + 1 , i}}  # color red {{Q} rsub {i + 1 , i + 1}}  # ⋯ # {Q} rsub {i + 1 , n} ##
+ ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋱ # ⋮ ##
+ {Q} rsub {n ,1} # ⋯ # {Q} rsub {n , j − 1} #  color blue {{Q} rsub {n , j}}  # {Q} rsub {n , j + 1} # ⋯ # {Q} rsub {n , i − 1} #  color blue {{Q} rsub {n i}}  # {Q} rsub {n , i + 1} # ⋯ #  color red {{Q} rsub {nn} }}  right] ⋅ 
+ 
+left[matrix{  color red {1}  # ⋯ # 0 # 0 # 0 # ⋯ # 0 # 0 # 0 # ⋯ # 0 ##
+ ⋯ # ⋱ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # 0 ##
+ 0 # ⋯ # color red {1}  # 0 # 0 # ⋯ # 0 # 0 # 0 # ⋯ # 0 ##
+ 0 # ⋯ # 0 #  color blue {c}  # 0 # ⋯ # 0 # color blue { − s } # 0 # ⋯ # 0 ##
+ 0 # ⋯ # 0 # 0 # color red {1}  # ⋯ # 0 # 0 # 0 # ⋯ # 0 ##
+ ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋱ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ ##
+ 0 # ⋯ # 0 # 0 # 0 # ⋯ # color red { 1}  # 0 # 0 # ⋯ # 0 ##
+ 0 # ⋯ # 0 #  color blue {s}  # 0 # ⋯ # 0 # color blue {c}  # 0 # ⋯ # 0 ##
+ 0 # ⋯ # 0 # 0 # 0 # ⋯ # 0 # 0 # color red {1}  # ⋯ # 0 ##
+ ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋮ # ⋱ # ⋮ ##
+ 0 # ⋯ # 0 # 0 # 0 # ⋯ # 0 # 0 # 0 # ⋯ # color red {1}  } right] 
+
