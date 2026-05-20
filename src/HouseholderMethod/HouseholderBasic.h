@@ -3,8 +3,7 @@
 #include <vector>
 
 #include "../IQRSolver.h"
-#include "math.h"
-#include "matrix.h"
+#include "Matrix/MatrixOperations.h"
 
 template <typename T>
 class HouseholderMethodBasic : public IQRSolver<T> {
@@ -65,10 +64,10 @@ private:
 		return w;
 	}
 
-	 std::vector<std::vector<T>> count_H(double beta, double mu, std::vector<T> w)
+	std::vector<std::vector<T>> count_H(double beta, double mu, std::vector<T> w)
 	{
 		ptrdiff_t N = w.size();
-		 std::vector<std::vector<T>> H(N, std::vector<T>(N, 0));
+		std::vector<std::vector<T>> H(N, std::vector<T>(N, 0));
 #pragma omp parallel for num_threads(thread_num)
 		for (int i = 0; i < N; ++i) {
 			H[i][i] = 1.0;
@@ -77,5 +76,14 @@ private:
 			}
 		}
 		return H;
+	}
+private:
+	static double sign(double x)
+	{
+		if (x > 0.0)
+			return 1.0;
+		if (x < 0.0)
+			return -1.0;
+		return 1.0;
 	}
 };

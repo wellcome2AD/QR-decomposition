@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "../IQRSolver.h"
-#include "matrix.h"
+#include "../Matrix/MatrixOperations.h"
 
 template <typename T>
 class HouseholderMethodWithoutMatrixMults : public IQRSolver<T> {

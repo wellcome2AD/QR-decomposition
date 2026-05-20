@@ -155,20 +155,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Givens_Method\GivensBasic.h" />
-    <ClInclude Include="src\Givens_Method\GivensQRInOneMatrix.h" />
-    <ClInclude Include="src\Givens_Method\GivensSIMD.h" />
-    <ClInclude Include="src\Householder_method\HouseholderBasic.h" />
-    <ClInclude Include="src\Householder_method\HouseholderWithNormW.h" />
-    <ClInclude Include="src\Householder_method\HouseholderWithoutMatrixMul.h" />
+    <ClInclude Include="src\GivensMethod\GivensBasic.h" />
+    <ClInclude Include="src\GivensMethod\GivensQRInOneStruct.h" />
+    <ClInclude Include="src\GivensMethod\GivensVectorized.h" />
+    <ClInclude Include="src\HouseholderMethod\HouseholderBasic.h" />
+    <ClInclude Include="src\HouseholderMethod\HouseholderWithNormWInplace.h" />
+    <ClInclude Include="src\HouseholderMethod\HouseholderWithoutMatrixMultiplication.h" />
     <ClInclude Include="src\IQRSolver.h" />
-    <ClInclude Include="src\math.h" />
-    <ClInclude Include="src\matrix.h" />
+    <ClInclude Include="src\MatrixOperations.h" />
     <ClInclude Include="src\Matrix\TransposedMatrix.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\math.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

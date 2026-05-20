@@ -6,45 +6,8 @@
 #include "../IQRSolver.h"
 #include "math.h"
 
-
-template <class T>
-class QRMatrix
-{
-public:
-	QRMatrix(const std::vector<std::vector<T>>& A)
-		: _data(A.size()* A.size())
-		, N(A.size())
-	{
-#pragma omp parallel for num_threads(thread_num) if (N >= 1000)
-		for (int i = 0; i < N; ++i)
-		{
-			QAt(i, i) = 1.0;
-			for (int j = 0; j < N; ++j)
-			{
-				RAt(i, j) = A[i][j];
-			}
-		}
-	}
-
-	T& RAt(size_t row, size_t col)
-	{
-		return _data[row * N + col].r;
-	}
-	T& QAt(size_t row, size_t col) {
-		return _data[col * N + row].q;
-	}
-
-private:
-	struct QRElement {
-		T q;
-		T r;
-	};
-	std::vector<QRElement> _data;
-	size_t N;
-};
-
 template <typename T>
-class GivensMethodQRInOneMatrix : public IQRSolver<T> {
+class GivensQRInOneStruct : public IQRSolver<T> {
 public:
 	// оптимизированная версия. уменьшены обращения к памяти. QR хранятся в одной структуре, каждый элемент попарно рядом в памяти. Q записана по столбцам, R -- по строкам.
 	virtual void QR_decomposition(const std::vector<std::vector<T>>& A, std::vector<std::vector<T>>& Q, std::vector<std::vector<T>>& R) override
@@ -106,4 +69,41 @@ public:
 			}
 		}
 	}
+
+private:
+	template <class T>
+	class QRMatrix
+	{
+	public:
+		QRMatrix(const std::vector<std::vector<T>>& A)
+			: _data(A.size()* A.size())
+			, N(A.size())
+		{
+#pragma omp parallel for num_threads(thread_num) if (N >= 1000)
+			for (int i = 0; i < N; ++i)
+			{
+				QAt(i, i) = 1.0;
+				for (int j = 0; j < N; ++j)
+				{
+					RAt(i, j) = A[i][j];
+				}
+			}
+		}
+
+		T& RAt(size_t row, size_t col)
+		{
+			return _data[row * N + col].r;
+		}
+		T& QAt(size_t row, size_t col) {
+			return _data[col * N + row].q;
+		}
+
+	private:
+		struct QRElement {
+			T q;
+			T r;
+		};
+		std::vector<QRElement> _data;
+		size_t N;
+	};
 };

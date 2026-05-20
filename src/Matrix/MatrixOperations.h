@@ -78,7 +78,7 @@ inline std::vector<std::vector<T>> multiplyMatrix(const std::vector<std::vector<
 	assert(m1.size() == m2[0].size());
 	auto N = m1.size();
 	std::vector<std::vector<T>> res(N, std::vector<T>(N, 0));
-	int s = 50;
+	int s = N / 4;
 #pragma omp parallel for num_threads(thread_num)
 	for (int i = 0; i < N; i++) {
 		for (int jj = 0; jj < N; jj += s) {
@@ -120,7 +120,7 @@ T randomNotZeroValue()
 }
 
 template <typename T>
-std::vector<std::vector<T>> generateHassenbergMatrix(size_t size, bool upper, bool lower)
+std::vector<std::vector<T>> generateHessenbergMatrix(size_t size, bool upper, bool lower)
 {
 	std::srand(std::time(0));
 	std::vector<std::vector<T>> res(size, std::vector<T>(size, 0));

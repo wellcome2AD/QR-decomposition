@@ -268,6 +268,7 @@ test size: 4000
 time: 36.5541
 abs error: 0.047384
 rel error: 2.04657e-06
+
 double
 Householder basic version
 test size: 100
@@ -295,72 +296,87 @@ time: 24.0397
 abs error: 1.33081e-11
 rel error: 4.59559e-15
 
+test size: 600
+time: 54.1162
+abs error: 2.704e-11
+rel error: 7.79517e-15
+
+test size: 700
+time: 97.9165
+abs error: 3.69887e-11
+rel error: 9.14064e-15
+
+test size: 800
+time: 175.203
+abs error: 4.78312e-11
+rel error: 1.03286e-14
+
 Householder without matrix multiplications
 test size: 100
-time: 0.0009483
-abs error: 5.96766e-13
-rel error: 1.03729e-15
+time: 0.0024067
+abs error: 5.50121e-13
+rel error: 9.50331e-16
 
 test size: 200
-time: 0.0095061
-abs error: 1.47227e-12
-rel error: 1.2714e-15
+time: 0.007821
+abs error: 1.41818e-12
+rel error: 1.23128e-15
 
 test size: 300
-time: 0.0241419
-abs error: 2.57375e-12
-rel error: 1.48396e-15
+time: 0.0277781
+abs error: 2.61175e-12
+rel error: 1.50716e-15
 
 test size: 400
-time: 0.06885
-abs error: 3.96581e-12
-rel error: 1.71369e-15
+time: 0.0683314
+abs error: 3.96735e-12
+rel error: 1.71368e-15
 
 test size: 500
-time: 0.131161
-abs error: 5.47313e-12
-rel error: 1.89186e-15
+time: 0.124243
+abs error: 5.58048e-12
+rel error: 1.92803e-15
 
 test size: 1000
-time: 0.505565
-abs error: 1.34788e-11
-rel error: 2.33108e-15
+time: 0.5183
+abs error: 1.35426e-11
+rel error: 2.33941e-15
 
 test size: 1500
-time: 2.55495
-abs error: 2.46046e-11
-rel error: 2.83402e-15
+time: 2.5391
+abs error: 2.44526e-11
+rel error: 2.81542e-15
 
 test size: 2000
-time: 9.66371
-abs error: 3.75266e-11
-rel error: 3.24137e-15
+time: 9.02875
+abs error: 3.77546e-11
+rel error: 3.26146e-15
 
 test size: 2500
-time: 19.8107
-abs error: 5.22318e-11
-rel error: 3.61036e-15
+time: 17.9961
+abs error: 5.22521e-11
+rel error: 3.61042e-15
 
 test size: 3000
-time: 39.0474
-abs error: 6.84507e-11
-rel error: 3.94111e-15
+time: 34.9417
+abs error: 6.81897e-11
+rel error: 3.92764e-15
 
 test size: 3500
-time: 63.0323
-abs error: 8.57196e-11
-rel error: 4.23058e-15
+time: 57.1634
+abs error: 8.5811e-11
+rel error: 4.23576e-15
 
 test size: 4000
-time: 112.981
-abs error: 1.05148e-10
-rel error: 4.54104e-15
+time: 102.108
+abs error: 1.04343e-10
+rel error: 4.50667e-15
 
 Householder with normal w in-place
 test size: 100
-time: 0.0013707
-abs error: 3.36933e-13
-rel error: 5.82462e-16
+time: 0.0009159
+abs error: 3.31111e-13
+rel error: 5.72568e-16
 
 test size: 200
 time: 0.0078925

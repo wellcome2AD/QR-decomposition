@@ -46,10 +46,6 @@ public:
 					R[j][k] = temp;
 				}
 
-				//std::cout << "expected R, rotation (" << i << "," << j << "):";
-				//printMatrix(R);
-				//std::cout << std::endl;
-
 				// сохранение коэффициентов вращения
 				double tau = s / (1.0 + c);
 				R[i][j] = static_cast<T>(tau);
