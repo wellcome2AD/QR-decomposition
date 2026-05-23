@@ -162,7 +162,7 @@
     <ClInclude Include="src\HouseholderMethod\HouseholderWithNormWInplace.h" />
     <ClInclude Include="src\HouseholderMethod\HouseholderWithoutMatrixMultiplication.h" />
     <ClInclude Include="src\IQRSolver.h" />
-    <ClInclude Include="src\MatrixOperations.h" />
+    <ClInclude Include="src\Matrix\MatrixOperations.h" />
     <ClInclude Include="src\Matrix\TransposedMatrix.h" />
   </ItemGroup>
   <ItemGroup>

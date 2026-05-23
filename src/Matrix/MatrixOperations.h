@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <cassert>
+#include <random>
+#include <algorithm>
 
 template <typename T>
 inline double Fnorm(const std::vector<std::vector<T>>& m) {
@@ -46,22 +48,6 @@ inline void printMatrix(std::vector<std::vector<T>> m) {
 }
 
 template <typename T>
-inline void printFlatMatrix(std::vector<T> m, size_t N, size_t M) {
-	std::cout << "[\n  ";
-	for (auto i = 0; i < N; ++i) {
-		std::cout << std::left << std::setw(7);
-		for (auto j = 0; j < M - 1; ++j) {
-			std::cout << m[i * M + j] << ", ";
-		}
-		std::cout << m[i * M + M - 1];
-		if (i == N - 1) {
-			std::cout << "\n]";
-		}
-		std::cout << "\n  ";
-	}
-}
-
-template <typename T>
 inline std::vector<std::vector<T>> generateMatrix(int N, int M) {
 	std::vector<std::vector<T>> res(N, std::vector<T>(M));
 	std::srand(std::time(0));
@@ -70,6 +56,49 @@ inline std::vector<std::vector<T>> generateMatrix(int N, int M) {
 			res[i][j] = std::rand() % 20 - 10;
 		}
 	}
+	return res;
+}
+
+template <typename T>
+inline std::vector<std::vector<T>> generateMatrixWithLowerZeros(int N, int M, float zeros_ratio) {
+	std::vector<std::vector<T>> res(N, std::vector<T>(M));
+	// Генераторы случайных чисел
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<double> valueDist(-10, 10);
+	std::uniform_real_distribution<double> zeroDist(0.0, 1.0);
+
+
+	// Количество элементов под главной диагональю
+	int lowerElemCount = N * (N - 1) / 2;
+	// Целевое количество нулей среди них
+	int targetZeroCount = static_cast<int>(lowerElemCount * zeros_ratio);
+
+	// Собираем все позиции под главной диагональю
+	std::vector<std::pair<int, int>> lowerPositions;
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < i; ++j) {  // j < i — строго под диагональю
+			lowerPositions.emplace_back(i, j);
+		}
+	}
+
+	// Перемешиваем позиции, чтобы нули распределялись равномерно
+	std::shuffle(lowerPositions.begin(), lowerPositions.end(), gen);
+
+	// Первые targetZeroCount позиций заполняем нулями (оставятся нулями, т.к. матрица обнулена)
+	// Остальные заполняем случайными значениями
+	for (size_t k = targetZeroCount; k < lowerPositions.size(); ++k) {
+		auto [i, j] = lowerPositions[k];
+		res[i][j] = valueDist(gen);
+	}
+
+	// Заполняем диагональ и верхнюю треугольную часть случайными числами
+	for (int i = 0; i < N; ++i) {
+		for (int j = i; j < N; ++j) {  // j >= i — диагональ и выше
+			res[i][j] = valueDist(gen);
+		}
+	}
+
 	return res;
 }
 
