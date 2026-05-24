@@ -10,7 +10,7 @@
 
 #include "HouseholderMethod/HouseholderBasic.h"
 #include "HouseholderMethod/HouseholderWithoutMatrixMultiplication.h"
-#include "HouseholderMethod/HouseholderWithNormWInplace.h"
+#include "HouseholderMethod/HouseholderWithNormVInplace.h"
 
 #include "GivensMethod/GivensBasic.h"
 #include "GivensMethod/GivensQRInOneStruct.h"
@@ -19,7 +19,7 @@
 #include "Matrix/MatrixOperations.h"
 
 typedef double currentType;
-int thread_num = 12;
+int thread_num = 8;
 
 template <typename T>
 void printResultWithExpected(const std::vector<std::vector<T>>& A, const std::vector<std::vector<T>>& Q, const std::vector<std::vector<T>>& R)
@@ -53,16 +53,17 @@ void printResultWithExpected(const std::vector<std::vector<T>>& A, const std::ve
 template <typename T>
 void QR_decomposition_test(IQRSolver<T>* solver, const std::vector<std::vector<T>> &A, int N, bool writeToFile)
 {
-	std::cout << "test size: " << N << std::endl;
 	std::vector<std::vector<T>> Q(N, std::vector<T>(N, 0)), R(N, std::vector<T>(N, 0));
 
 	double start = omp_get_wtime();
 	solver->QR_decomposition(A, Q, R);
 	double end = omp_get_wtime();
 
+	//std::cout << end - start << std::endl;
+	std::cout << "test size: " << N << std::endl;
 	std::cout << "time: " << end - start << std::endl;
-	//std::cout << "abs error: " << Fnorm<T>(substractMatrix<T>(multiplyMatrix<T>(Q, R), A)) << std::endl;
-	//std::cout << "rel error: " << Fnorm<T>(substractMatrix<T>(multiplyMatrix<T>(Q, R), A)) / Fnorm<T>(A) << std::endl;
+	std::cout << "abs error: " << Fnorm<T>(substractMatrix<T>(multiplyMatrix<T>(Q, R), A)) << std::endl;
+	std::cout << "rel error: " << Fnorm<T>(substractMatrix<T>(multiplyMatrix<T>(Q, R), A)) / Fnorm<T>(A) << std::endl;
 	std::cout << std::endl;
 
 	//printResultWithExpected(A, Q, R);
@@ -78,6 +79,7 @@ template <typename T>
 void QR_decomposition_test_with_randomly_generated_matrix(IQRSolver<T>* solver, int N, bool writeToFile)
 {
 	std::vector<std::vector<T>> A = generateMatrix<T>(N, N);
+	//std::vector<std::vector<T>> A = { {1,2,3},{4,5,6},{7,8,9} };
 	QR_decomposition_test<T>(solver, A, N, writeToFile);
 }
 
@@ -101,11 +103,11 @@ void QRtests()
 
 	auto methods = std::map<int, testParams>{};
 
-	methods[0] = {
-		new HouseholderMethodBasic<currentType>(),
-		"Householder basic version",
-		{/* 100, 200, 300, 400, 500, 600,*/ 700/*, 800, 900, 1000*/},
-	};
+	//methods[0] = {
+	//	new HouseholderMethodBasic<currentType>(),
+	//	"Householder basic version",
+	//	{ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000},
+	//};
 
 	//methods[1] = {
 	//	new HouseholderMethodWithoutMatrixMults<currentType>(),
@@ -113,11 +115,11 @@ void QRtests()
 	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	//};
 
-	/*methods[2] = {
-		new HouseholderWithNormWInplace < currentType>,
+	methods[2] = {
+		new HouseholderWithNormVInplace < currentType>,
 		"Householder with normal w in-place",
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};*/
+	};
 
 	//methods[3] = {
 	//	new GivensMethodBasic<currentType>(),
@@ -158,7 +160,7 @@ void hessenberg_tests()
 	auto methods = std::map<int, testParams>{};
 
 	methods[0] = {
-		new HouseholderWithNormWInplace<currentType>(),
+		new HouseholderWithNormVInplace<currentType>(),
 		"Householder with normal w in-place",
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
@@ -196,7 +198,7 @@ void compare_two_methods_tests()
 {
 	auto methods = std::map<int, testParams>{};
 	methods[0] = {
-		new HouseholderWithNormWInplace<currentType>(),
+		new HouseholderWithNormVInplace<currentType>(),
 		"Householder",
 	};
 
@@ -298,7 +300,7 @@ void QR_decomposition1(const std::vector<std::vector<T>>& A, std::vector<std::ve
 	float ratio = sum / ((N * N - N) / 2.0);
 	if (ratio < 0.9)
 	{
-		solver = new HouseholderWithNormWInplace<currentType>();
+		solver = new HouseholderWithNormVInplace<currentType>();
 		std::cout << "householder method was choosen to solve" << std::endl;
 	}
 	else

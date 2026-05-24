@@ -159,7 +159,7 @@
     <ClInclude Include="src\GivensMethod\GivensQRInOneStruct.h" />
     <ClInclude Include="src\GivensMethod\GivensVectorized.h" />
     <ClInclude Include="src\HouseholderMethod\HouseholderBasic.h" />
-    <ClInclude Include="src\HouseholderMethod\HouseholderWithNormWInplace.h" />
+    <ClInclude Include="src\HouseholderMethod\HouseholderWithNormVInplace.h" />
     <ClInclude Include="src\HouseholderMethod\HouseholderWithoutMatrixMultiplication.h" />
     <ClInclude Include="src\IQRSolver.h" />
     <ClInclude Include="src\MatrixOperations.h" />
