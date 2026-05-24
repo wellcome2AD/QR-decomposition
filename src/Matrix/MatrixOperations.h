@@ -119,18 +119,17 @@ inline std::vector<std::vector<T>> generateMatrixWithLowerZeros(int N, int M, fl
 }
 
 template <typename T>
-inline std::vector<std::vector<T>> multiplyMatrix(const std::vector<std::vector<T>>& m1, const std::vector<std::vector<T>>& m2) {
+inline std::vector<std::vector<T>> multiplyMatrix(const std::vector<std::vector<T>>& m1, const std::vector<std::vector<T>>& m2, int block_size=50) {
 	assert(m1.size() == m2[0].size());
 	auto N = m1.size();
 	std::vector<std::vector<T>> res(N, std::vector<T>(N, 0));
-	int s = N / 4;
 #pragma omp parallel for num_threads(thread_num)
 	for (int i = 0; i < N; i++) {
-		for (int jj = 0; jj < N; jj += s) {
-			for (int kk = 0; kk < N; kk += s) {
-				for (int j = jj; j < ((jj + s) > N ? N : (jj + s)); j++) {
+		for (int jj = 0; jj < N; jj += block_size) {
+			for (int kk = 0; kk < N; kk += block_size) {
+				for (int j = jj; j < ((jj + block_size) > N ? N : (jj + block_size)); j++) {
 					double temp = 0.0;
-					for (int k = kk; k < ((kk + s) > N ? N : (kk + s)); k++) {
+					for (int k = kk; k < ((kk + block_size) > N ? N : (kk + block_size)); k++) {
 						temp += static_cast<double>(m1[i][k]) * static_cast<double>(m2[k][j]);
 					}
 					res[i][j] += static_cast<T>(temp);

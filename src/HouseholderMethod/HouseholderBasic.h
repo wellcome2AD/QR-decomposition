@@ -14,6 +14,11 @@ public:
 	{
 		const ptrdiff_t N = A.size();
 		R = A;
+		Q = std::vector<std::vector<T>>(N, std::vector<T>(N, 0));
+		for (int i = 0; i < N; ++i) {
+			Q[i][i] = 1.0;
+		}
+
 		for (ptrdiff_t k = 0; k < N - 1; ++k) {
 			// count beta
 			double sum = 0.0;
@@ -44,14 +49,8 @@ public:
 				}
 			}
 
-			if (k == 0) {
-				Q = H;
-			}
-			else {
-				Q = multiplyMatrix(Q, H);
-			}
-
 			R = multiplyMatrix(H, R);
+			Q = multiplyMatrix(Q, H);
 		}
 	}
 
