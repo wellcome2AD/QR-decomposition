@@ -4,6 +4,7 @@
 #include <omp.h>
 #include <map>
 #include <vector>
+
 #include "IQRSolver.h"
 
 #include "HouseholderMethod/HouseholderBasic.h"
@@ -60,9 +61,10 @@ void QR_decomposition_test(IQRSolver<T>* solver, const std::vector<std::vector<T
 
 	std::cout << "time: " << end - start << std::endl;
 	std::cout << "abs error: " << Fnorm<T>(substractMatrix<T>(multiplyMatrix<T>(Q, R), A)) << std::endl;
-	std::cout << "rel error: " << Fnorm<T>(substractMatrix<T>(multiplyMatrix<T>(Q, R), A)) / Fnorm<T>(A) << std::endl << std::endl;
+	std::cout << "rel error: " << Fnorm<T>(substractMatrix<T>(multiplyMatrix<T>(Q, R), A)) / Fnorm<T>(A) << std::endl;
+	std::cout << std::endl;
 
-	// printResultWithExpected(A, Q, R);
+	//printResultWithExpected(A, Q, R);
 
 	if (writeToFile) {
 		writeMatrixToFile<T>("test_data\\matrixA_" + std::to_string(N) + ".txt", A);
@@ -103,33 +105,35 @@ void QRtests()
 		"Householder basic version",
 		{ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000},
 	};
+
 	//methods[1] = {
 	//	new HouseholderMethodWithoutMatrixMults<currentType>(),
 	//	"Householder without matrix multiplications",
 	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	//};
 
-	//methods[2] = {
-	//	new HouseholderWithNormWInplace < currentType>,
-	//	"Householder with normal w in-place",
-	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	//};
+	/*methods[2] = {
+		new HouseholderWithNormWInplace < currentType>,
+		"Householder with normal w in-place",
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	};*/
 
 	//methods[3] = {
 	//	new GivensMethodBasic<currentType>(),
 	//	"Givens basic version",
 	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	//};
+
 	//methods[4] = {
 	//	new GivensQRInOneStruct<currentType>(),
 	//	"Givens with less memory accesses version",
 	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	//};
-	//
+
 	//methods[5] = {
 	//	new GivensVectorized<currentType>(),
 	//	"Givens SIMD",
-	//	{100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	//};
 
 	for (const auto& method : methods)
@@ -187,9 +191,149 @@ void hessenberg_tests()
 	std::cout << "all hessenberg tests passed\n\n";
 }
 
+void compare_two_methods_tests()
+{
+	auto methods = std::map<int, testParams>{};
+	methods[0] = {
+		new HouseholderWithNormWInplace<currentType>(),
+		"Householder",
+	};
+
+	methods[1] = {
+		new GivensVectorized<currentType>(),
+		"Givens",
+	};
+
+	int N = 5000;
+	std::cout << "test size: " << N << std::endl;
+	std::cout << std::endl;
+	for (const auto& zeros_ratio : { 0.0, 0.1, 0.2, 0.5, 0.7, 0.75, 0.8, 0.9, 0.95, 1.0 })
+	{
+		std::cout << "zeros' ratio: " << zeros_ratio << std::endl;
+		std::vector<std::vector<currentType>> A = generateMatrixWithLowerZeros<currentType>(N, N, zeros_ratio);
+		std::cout << std::endl;
+		for (const auto& method : methods)
+		{
+			std::vector<std::vector<currentType>> Q, R;
+			auto& solver = method.second.solver;
+			double start = omp_get_wtime();
+			solver->QR_decomposition(A, Q, R);
+			double end = omp_get_wtime();
+
+			std::cout << method.second.description << " time: " << end - start << std::endl;
+		}
+		std::cout << "------------------------" << std::endl;
+	}
+	std::cout << "all compares tests passed\n\n";
+
+	/*
+	test size: 5000
+
+zeros' ratio: 0
+
+Householder time: 49.117
+Givens time: 63.2722
+------------------------
+zeros' ratio: 0.1
+
+Householder time: 46.8949
+Givens time: 63.2339
+------------------------
+zeros' ratio: 0.2
+
+Householder time: 46.6289
+Givens time: 63.3328
+------------------------
+zeros' ratio: 0.5
+
+Householder time: 50.2441
+Givens time: 62.9841
+------------------------
+zeros' ratio: 0.7
+
+Householder time: 47.0082
+Givens time: 63.5073
+------------------------
+zeros' ratio: 0.75
+
+Householder time: 47.2866
+Givens time: 63.1858
+------------------------
+zeros' ratio: 0.8
+
+Householder time: 47.1892
+Givens time: 63.3863
+------------------------
+zeros' ratio: 0.9
+
+Householder time: 46.7706
+Givens time: 62.9441
+------------------------
+zeros' ratio: 0.95
+
+Householder time: 46.9988
+Givens time: 62.8217
+------------------------
+zeros' ratio: 1
+
+Householder time: 46.782
+Givens time: 0.404332
+------------------------
+all compares tests passed
+	*/
+}
+
+template <typename T>
+void QR_decomposition1(const std::vector<std::vector<T>>& A, std::vector<std::vector<T>>& Q, std::vector<std::vector<T>>& R)
+{
+	int N = A.size();
+	int sum = 0;
+	for (int i = 0; i < N; ++i)
+		for (int j = 0; j < N; ++j)
+			if (std::abs(A[i][j]) < 1e-11)
+				sum++;
+
+	IQRSolver<T>* solver;
+	float ratio = sum / ((N * N - N) / 2.0);
+	if (ratio < 0.9)
+	{
+		solver = new HouseholderWithNormWInplace<currentType>();
+		std::cout << "householder method was choosen to solve" << std::endl;
+	}
+	else
+	{
+		solver = new GivensVectorized<currentType>();
+		std::cout << "givens method was choosen to solve" << std::endl;
+	}
+	std::cout << std::endl;
+	solver->QR_decomposition(A, Q, R);
+}
+
+void choose_method_tests()
+{
+	int N = 5000;
+
+	std::cout << "test size: " << N << std::endl;
+	for (const auto& zeros_ratio : { 0.0, 0.1, 0.2, 0.5, 0.7, 0.75, 0.8, 0.9, 0.95, 1.0 })
+	{
+		std::cout << "zeros' ratio: " << zeros_ratio << std::endl;
+		std::vector<std::vector<currentType>> A = generateMatrixWithLowerZeros<currentType>(N, N, zeros_ratio);
+		std::vector<std::vector<currentType>> Q, R;
+
+		double start = omp_get_wtime();
+		QR_decomposition1(A, Q, R);
+		double end = omp_get_wtime();
+		std::cout << "time: " << end - start << std::endl;
+	}
+
+	std::cout << "all choosing method tests passed\n\n";
+}
+
 int main()
 {
 	QRtests();
 	//hessenberg_tests();
+	//compare_two_methods_tests();
+	//choose_method_tests();
 	return 0;
 }

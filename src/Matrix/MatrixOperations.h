@@ -4,6 +4,8 @@
 #include <vector>
 #include <string>
 #include <cassert>
+#include <random>
+#include <algorithm>
 
 template <typename T>
 inline double Fnorm(const std::vector<std::vector<T>>& m) {
@@ -74,6 +76,49 @@ inline std::vector<std::vector<T>> generateMatrix(int N, int M) {
 }
 
 template <typename T>
+inline std::vector<std::vector<T>> generateMatrixWithLowerZeros(int N, int M, float zeros_ratio) {
+	std::vector<std::vector<T>> res(N, std::vector<T>(M));
+	// Генераторы случайных чисел
+	std::random_device rd;
+	std::mt19937 gen(rd());
+	std::uniform_real_distribution<double> valueDist(-10, 10);
+	std::uniform_real_distribution<double> zeroDist(0.0, 1.0);
+
+
+	// Количество элементов под главной диагональю
+	int lowerElemCount = N * (N - 1) / 2;
+	// Целевое количество нулей среди них
+	int targetZeroCount = static_cast<int>(lowerElemCount * zeros_ratio);
+
+	// Собираем все позиции под главной диагональю
+	std::vector<std::pair<int, int>> lowerPositions;
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < i; ++j) {  // j < i — строго под диагональю
+			lowerPositions.emplace_back(i, j);
+		}
+	}
+
+	// Перемешиваем позиции, чтобы нули распределялись равномерно
+	std::shuffle(lowerPositions.begin(), lowerPositions.end(), gen);
+
+	// Первые targetZeroCount позиций заполняем нулями (оставятся нулями, т.к. матрица обнулена)
+	// Остальные заполняем случайными значениями
+	for (size_t k = targetZeroCount; k < lowerPositions.size(); ++k) {
+		auto [i, j] = lowerPositions[k];
+		res[i][j] = valueDist(gen);
+	}
+
+	// Заполняем диагональ и верхнюю треугольную часть случайными числами
+	for (int i = 0; i < N; ++i) {
+		for (int j = i; j < N; ++j) {  // j >= i — диагональ и выше
+			res[i][j] = valueDist(gen);
+		}
+	}
+
+	return res;
+}
+
+template <typename T>
 inline std::vector<std::vector<T>> multiplyMatrix(const std::vector<std::vector<T>>& m1, const std::vector<std::vector<T>>& m2) {
 	assert(m1.size() == m2[0].size());
 	auto N = m1.size();
@@ -100,6 +145,7 @@ template <typename T>
 std::vector<std::vector<T>> substractMatrix(const std::vector<std::vector<T>>& m1, const std::vector<std::vector<T>>& m2) {
 	std::vector<std::vector<T>> res(m1);
 	auto N = m1.size();
+#pragma omp parallel for num_threads(thread_num)
 	for (auto i = 0; i < N; ++i) {
 		for (auto j = 0; j < N; ++j) {
 			res[i][j] -= m2[i][j];

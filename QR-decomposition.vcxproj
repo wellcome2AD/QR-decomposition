@@ -83,7 +83,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
       <EnableModules>true</EnableModules>
-      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG</AdditionalOptions>
+      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG -O3 -march=native -mavx2 -mfma -ffast-math -fopenmp</AdditionalOptions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
@@ -121,7 +121,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <OpenMPSupport>true</OpenMPSupport>
       <EnableModules>true</EnableModules>
-      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG</AdditionalOptions>
+      <AdditionalOptions>/O2 /arch:AVX2 /openmp:experimental /fp:fast /favor:INTEL64 /Gw /GL /LTCG -O3 -march=native -mavx2 -mfma -ffast-math -fopenmp</AdditionalOptions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
     </ClCompile>
     <Link>
@@ -163,6 +163,7 @@
     <ClInclude Include="src\HouseholderMethod\HouseholderWithoutMatrixMultiplication.h" />
     <ClInclude Include="src\IQRSolver.h" />
     <ClInclude Include="src\MatrixOperations.h" />
+    <ClInclude Include="src\Matrix\MatrixOperations.h" />
     <ClInclude Include="src\Matrix\TransposedMatrix.h" />
   </ItemGroup>
   <ItemGroup>
