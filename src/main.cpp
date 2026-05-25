@@ -79,7 +79,6 @@ template <typename T>
 void QR_decomposition_test_with_randomly_generated_matrix(IQRSolver<T>* solver, int N, bool writeToFile)
 {
 	std::vector<std::vector<T>> A = generateMatrix<T>(N, N);
-	//std::vector<std::vector<T>> A = { {1,2,3},{4,5,6},{7,8,9} };
 	QR_decomposition_test<T>(solver, A, N, writeToFile);
 }
 
@@ -103,17 +102,17 @@ void QRtests()
 
 	auto methods = std::map<int, testParams>{};
 
-	//methods[0] = {
-	//	new HouseholderMethodBasic<currentType>(),
-	//	"Householder basic version",
-	//	{ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000},
-	//};
+	methods[0] = {
+		new HouseholderMethodBasic<currentType>(),
+		"Householder basic version",
+		{ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000},
+	};
 
-	//methods[1] = {
-	//	new HouseholderMethodWithoutMatrixMults<currentType>(),
-	//	"Householder without matrix multiplications",
-	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	//};
+	methods[1] = {
+		new HouseholderMethodWithoutMatrixMults<currentType>(),
+		"Householder without matrix multiplications",
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	};
 
 	methods[2] = {
 		new HouseholderWithNormVInplace < currentType>,
@@ -121,23 +120,23 @@ void QRtests()
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
 
-	//methods[3] = {
-	//	new GivensMethodBasic<currentType>(),
-	//	"Givens basic version",
-	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	//};
+	methods[3] = {
+		new GivensMethodBasic<currentType>(),
+		"Givens basic version",
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	};
 
-	//methods[4] = {
-	//	new GivensQRInOneStruct<currentType>(),
-	//	"Givens with less memory accesses version",
-	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	//};
+	methods[4] = {
+		new GivensQRInOneStruct<currentType>(),
+		"Givens with less memory accesses version",
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	};
 
-	//methods[5] = {
-	//	new GivensVectorized<currentType>(),
-	//	"Givens SIMD",
-	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	//};
+	methods[5] = {
+		new GivensVectorized<currentType>(),
+		"Givens SIMD",
+		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	};
 
 	for (const auto& method : methods)
 	{
@@ -334,39 +333,9 @@ void choose_method_tests()
 
 int main()
 {
-	// test multiplyMatrix block size
-	if (false)
-	{
-		int N = 2000;
-		auto A = generateMatrix<currentType>(N, N);
-		std::cout << "test size: " << N << std::endl;
-		std::cout << std::endl;
-		float min_time = 1000;
-		int block_size_with_min_time;
-		for (auto&& size : { 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, N / 2, N / 4, N / 5, N / 10 })
-		{
-			std::cout << "block size: " << size << std::endl;
-			double start = omp_get_wtime();
-			multiplyMatrix(A, A, size);
-			double end = omp_get_wtime();
-			float time = end - start;
-			std::cout << "time: " << time << std::endl;
-			std::cout << std::endl;
-			if (min_time > time)
-			{
-				min_time = time;
-				block_size_with_min_time = size;
-			}
-		}
-
-		std::cout << std::endl;
-		std::cout << "min_time: " << min_time << std::endl;
-		std::cout << "block size: " << block_size_with_min_time << std::endl;
-	}
-
 	QRtests();
-	//hessenberg_tests();
-	//compare_two_methods_tests();
-	//choose_method_tests();
+	hessenberg_tests();
+	compare_two_methods_tests();
+	choose_method_tests();
 	return 0;
 }

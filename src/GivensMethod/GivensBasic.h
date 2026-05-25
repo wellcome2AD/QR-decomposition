@@ -4,7 +4,6 @@
 #include <cmath>
 
 #include "../IQRSolver.h"
-#include "math.h"
 
 template <typename T>
 class GivensMethodBasic : public IQRSolver<T> {
