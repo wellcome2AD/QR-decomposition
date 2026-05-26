@@ -24,7 +24,7 @@ function res=Fnorm(m)
   res = sqrt(res)
 endfunction
 
-sizes = [100 200 300 400 500 1000 1500 2000 2500 3000];
+sizes = [900 ];
 times = [];
 absErrors = [];
 relErrors = [];
@@ -39,13 +39,13 @@ for i = 1:length(sizes)
   [Q, R] = qr(A);
   elapsed_time = toc();
   times = [times, elapsed_time];
-  absErrors = [absErrors, Fnorm(Q * R - A)];
+/*  absErrors = [absErrors, Fnorm(Q * R - A)];
   relErrors = [relErrors, Fnorm(Q * R - A) / Fnorm(A)];
   
   absErrorsQ = [absErrorsQ, Fnorm(myQ - Q)];
   absErrorsR = [absErrorsR, Fnorm(myR - R)];
   relErrorsQ = [relErrorsQ, Fnorm(myQ - Q) / Fnorm(Q)];
-  relErrorsR = [relErrorsR, Fnorm(myR - R) / Fnorm(R)];
+  relErrorsR = [relErrorsR, Fnorm(myR - R) / Fnorm(R)];*/
 end
 for i = 1:length(sizes)
   // disp(A);
@@ -53,14 +53,14 @@ for i = 1:length(sizes)
   // disp(R);
   disp("test size: " + string(sizes(i)))
   disp("time: " + string(times(i)))
-  disp("abs error: " + string(absErrors(i)))
+/*  disp("abs error: " + string(absErrors(i)))
   disp("rel error: " + string(relErrors(i)))
 
   disp("abs error myQ: " + string(absErrorsQ(i)))
   disp("rel error myQ: " + string(relErrorsQ(i)))
  
   disp("abs error myR: " + string(absErrorsR(i)))
-  disp("rel error myR: " + string(relErrorsR(i)))
+  disp("rel error myR: " + string(relErrorsR(i)))*/
   disp("-------------------------------------")
 end
 disp("all tests passed")

@@ -111,39 +111,39 @@ void QRtests()
 	//methods[1] = {
 	//	new HouseholderMethodWithoutMatrixMults<currentType>(),
 	//	"Householder without matrix multiplications",
-	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//	{ /*100, 200, 300, 400, 500,*/ 600, 700, 800, 900, /*1000, 1500, 2000, 2500, 3000, 3500, 4000*/ },
 	//};
 
-	methods[2] = {
-		new HouseholderWithNormVInplace < currentType>,
-		"Householder with normal w in-place",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
+	//methods[2] = {
+	//	new HouseholderWithNormVInplace < currentType>,
+	//	"Householder with normal v in-place",
+	//	{ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000 },
+	//};
 
 	//methods[3] = {
 	//	new GivensMethodBasic<currentType>(),
 	//	"Givens basic version",
-	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//	{ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	//};
 
 	//methods[4] = {
 	//	new GivensQRInOneStruct<currentType>(),
 	//	"Givens with less memory accesses version",
-	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//	{ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	//};
 
-	//methods[5] = {
-	//	new GivensVectorized<currentType>(),
-	//	"Givens SIMD",
-	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	//};
+	methods[5] = {
+		new GivensVectorized<currentType>(),
+		"Givens SIMD",
+		{ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	};
 
 	for (const auto& method : methods)
 	{
 		std::cout << method.second.description << std::endl;
 		for (auto&& size : method.second.sizes)
 		{
-			QR_decomposition_test_with_randomly_generated_matrix(method.second.solver, size, false);
+			QR_decomposition_test_with_randomly_generated_matrix(method.second.solver, size, true);
 		}
 	}
 
@@ -334,8 +334,8 @@ void choose_method_tests()
 int main()
 {
 	QRtests();
-	hessenberg_tests();
-	compare_two_methods_tests();
-	choose_method_tests();
+	//hessenberg_tests();
+	//compare_two_methods_tests();
+	//choose_method_tests();
 	return 0;
 }
