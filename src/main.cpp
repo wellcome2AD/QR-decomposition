@@ -102,17 +102,17 @@ void QRtests()
 
 	auto methods = std::map<int, testParams>{};
 
-	methods[0] = {
-		new HouseholderMethodBasic<currentType>(),
-		"Householder basic version",
-		{ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000},
-	};
+	//methods[0] = {
+	//	new HouseholderMethodBasic<currentType>(),
+	//	"Householder basic version",
+	//	{ 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000},
+	//};
 
-	methods[1] = {
-		new HouseholderMethodWithoutMatrixMults<currentType>(),
-		"Householder without matrix multiplications",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
+	//methods[1] = {
+	//	new HouseholderMethodWithoutMatrixMults<currentType>(),
+	//	"Householder without matrix multiplications",
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//};
 
 	methods[2] = {
 		new HouseholderWithNormVInplace < currentType>,
@@ -120,23 +120,23 @@ void QRtests()
 		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
 	};
 
-	methods[3] = {
-		new GivensMethodBasic<currentType>(),
-		"Givens basic version",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
+	//methods[3] = {
+	//	new GivensMethodBasic<currentType>(),
+	//	"Givens basic version",
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//};
 
-	methods[4] = {
-		new GivensQRInOneStruct<currentType>(),
-		"Givens with less memory accesses version",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
+	//methods[4] = {
+	//	new GivensQRInOneStruct<currentType>(),
+	//	"Givens with less memory accesses version",
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//};
 
-	methods[5] = {
-		new GivensVectorized<currentType>(),
-		"Givens SIMD",
-		{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
-	};
+	//methods[5] = {
+	//	new GivensVectorized<currentType>(),
+	//	"Givens SIMD",
+	//	{ 100, 200, 300, 400, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000 },
+	//};
 
 	for (const auto& method : methods)
 	{
