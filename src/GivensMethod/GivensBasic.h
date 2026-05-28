@@ -4,7 +4,6 @@
 #include <cmath>
 
 #include "../IQRSolver.h"
-#include "math.h"
 
 template <typename T>
 class GivensMethodBasic : public IQRSolver<T> {
@@ -45,10 +44,6 @@ public:
 					R[i][k] = static_cast<T>(R[j][k] * s + R[i][k] * c);
 					R[j][k] = temp;
 				}
-
-				//std::cout << "expected R, rotation (" << i << "," << j << "):";
-				//printMatrix(R);
-				//std::cout << std::endl;
 
 				// сохранение коэффициентов вращения
 				double tau = s / (1.0 + c);

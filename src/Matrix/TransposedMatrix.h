@@ -16,7 +16,7 @@ public:
 		_n = rows.size();
 		_m = rows[0].size();
 		_matrix = std::vector<T>(_n * _m);
-#pragma omp parallel for num_threads(thread_num) if (_n >= 1000)
+#pragma omp parallel for num_threads(thread_num)
 		for (int j = 0; j < _m; ++j)
 		{
 			for (size_t i = 0; i < _n; ++i)
@@ -31,7 +31,7 @@ public:
 		_n = other.size();
 		_m = other[0].size();
 		_matrix = std::vector<T>(_n * _m);
-#pragma omp parallel for num_threads(thread_num) if (_n >= 1000)
+#pragma omp parallel for num_threads(thread_num)
 		for (int j = 0; j < _m; ++j)
 		{
 			for (size_t i = 0; i < _n; ++i)
@@ -68,7 +68,8 @@ public:
 	std::vector<std::vector<T>> Transpose() const
 	{
 		auto res = std::vector<std::vector<T>>(_n, std::vector<T>(_m, 0));
-		for (size_t j = 0; j < _m; ++j)
+#pragma omp parallel for num_threads(thread_num)
+		for (int j = 0; j < _m; ++j)
 		{
 			for (size_t i = 0; i < _n; ++i)
 			{
